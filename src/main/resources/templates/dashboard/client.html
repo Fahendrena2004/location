@@ -7,7 +7,8 @@
     <div class="d-flex">
         <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left:260px; min-height:100vh;">
+        <div class="flex-grow-1 main-content-layout">
+            <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
 
             <!-- Header -->
             <div class="header-section mb-5 animate__animated animate__fadeIn">
