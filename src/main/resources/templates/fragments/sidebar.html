@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <div class="sidebar-wrapper d-flex flex-column flex-shrink-0">
+    <!-- Desktop Sidebar (Hidden on mobile) -->
+    <div class="sidebar-wrapper d-none d-lg-flex flex-column flex-shrink-0">
+        <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
+    </div>
 
-        <!-- Logo -->
-        <div class="sidebar-logo">
-            <p class="h5 mb-0" style="text-transform: uppercase;">Location Voiture</p>
+    <!-- Mobile Sidebar (Offcanvas) -->
+    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+        <div class="offcanvas-header border-bottom py-3">
+            <p class="h5 mb-0 fw-bold text-primary" id="sidebarOffcanvasLabel">AUTORENT</p>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
+        <div class="offcanvas-body">
+            <div class="sidebar-wrapper d-flex flex-column h-100">
+                <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Sidebar Content Fragment -->
+    <div th:fragment="sidebar-content">
         <!-- Menu Principal -->
-        <div class="px-3 mb-2">
+        <div class="px-3 mb-2 mt-4">
             <p class="text-uppercase text-muted fw-bold x-small mb-0 opacity-50 px-3" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Main Navigation</p>
         </div>
         <ul class="nav flex-column mb-auto gap-1">
@@ -85,9 +97,9 @@
         </ul>
 
         <!-- Bottom Section: User Profile -->
-        <div class="mt-auto border-top p-3 bg-light-subtle">
+        <div class="mt-auto border-top p-3">
             <!-- Currency Toggle -->
-            <div class="d-flex align-items-center justify-content-between mb-3 p-2 bg-white rounded-3 shadow-sm border border-opacity-50">
+            <div class="d-flex align-items-center justify-content-between mb-3 p-2 bg-light rounded-3 shadow-sm border border-opacity-50">
                 <span class="fw-bold text-muted ms-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Devise</span>
                 <div class="btn-group" role="group">
                     <input type="radio" class="btn-check" name="currencyToggle" id="currMGA" value="MGA" autocomplete="off">

@@ -1,8 +1,8 @@
 :root {
-    /* Brand Colors - Sophisticated Indigo/Blue */
+    /* Refined Premium Palette - "Modern Clean" */
     --primary: #4f46e5;
     --primary-hover: #4338ca;
-    --primary-soft: rgba(79, 70, 229, 0.08);
+    --primary-soft: rgba(79, 70, 229, 0.06);
     
     /* Semantic Colors */
     --success: #10b981;
@@ -10,8 +10,8 @@
     --danger: #ef4444;
     --info: #0ea5e9;
 
-    /* Neutrals - Slate Palette */
-    --bg-body: #f8fafc;
+    /* Neutrals - Balanced Slate */
+    --bg-body: #f1f5f9; /* Slightly more gray for contrast */
     --bg-surface: #ffffff;
     --bg-sidebar: #ffffff;
     --border: #e2e8f0;
@@ -22,25 +22,25 @@
     /* Spacing & Radii */
     --radius-sm: 8px;
     --radius-md: 12px;
-    --radius-lg: 20px;
-    --padding-page: 2.5rem;
+    --radius-lg: 18px;
+    --padding-page: 2rem;
     
-    /* Shadows - Layered Elevation */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    /* Layered Shadows */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.05);
     
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.25s ease-out;
 }
 
 [data-bs-theme="dark"] {
-    --bg-body: #020617;
-    --bg-surface: #0f172a;
-    --bg-sidebar: #0f172a;
-    --border: #1e293b;
-    --text-main: #f8fafc;
+    --bg-body: #0b0f1a;
+    --bg-surface: #151b2d;
+    --bg-sidebar: #151b2d;
+    --border: #222b44;
+    --text-main: #f1f5f9;
     --text-muted: #94a3b8;
-    --primary-soft: rgba(79, 70, 229, 0.15);
+    --primary-soft: rgba(79, 70, 229, 0.12);
 }
 
 /* Base Styles */
@@ -113,29 +113,67 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 /* Sidebar Custom Utilities */
 /* --- Dashboard Shell & Layout --- */
 /* --- Standard Professional Sidebar --- */
+/* Fixed Sidebar (Desktop only) */
 .sidebar-wrapper {
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
-    width: 260px;
+    width: 280px;
     background-color: var(--bg-sidebar);
-    box-shadow: 2px 0 15px rgba(0,0,0,0.03);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
-    z-index: 1000;
-    overflow-y: auto;
-    border-right: 1px solid var(--border);
+    z-index: 1030;
+    transition: var(--transition);
 }
 
 .main-content-layout {
-    margin-left: 280px; /* Width + Spacing */
+    margin-left: 280px;
+    min-height: 100vh;
     padding: var(--padding-page);
-    width: calc(100% - 280px);
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    transition: var(--transition);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 991.98px) {
+    .sidebar-wrapper {
+        transform: translateX(-100%);
+        visibility: hidden;
+    }
+    
+    .main-content-layout {
+        margin-left: 0;
+        padding-top: 5rem; /* Space for fixed top navbar */
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .top-navbar {
+        left: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* Offcanvas Adjustment */
+.offcanvas.offcanvas-start {
+    width: 280px !important;
+    border-right: 1px solid var(--border);
+}
+
+.offcanvas-body {
+    padding: 0;
+}
+
+.offcanvas-body .sidebar-wrapper {
+    position: relative;
+    transform: none;
+    visibility: visible;
+    width: 100%;
+    box-shadow: none;
 }
 
 .sidebar-link {
