@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+
+  # ─────────────────────────────────────────
+  # Base de données PostgreSQL
+  # ─────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: location_voiture_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: location_voiture_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-fafana}
+    ports:
+      - "5433:5432"          # 5433 sur l'hôte pour éviter les conflits avec postgres local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d location_voiture_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────
+  # Application Spring Boot
+  # ─────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: location_voiture_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_started
+    environment:
+      # Base de données - pointe vers le service Docker "db"
+      DB_URL: jdbc:postgresql://db:5432/location_voiture_db
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-fafana}
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      # Email
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      # Spring config
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_THYMELEAF_CACHE: "false"
+    volumes:
+      - uploads_data:/app/uploads
+    env_file:
+      - .env                 # Lit les secrets depuis le fichier .env local (gitignored)
+
+volumes:
+  postgres_data:
+    name: location_voiture_pgdata
+  uploads_data:
+    name: location_voiture_uploads

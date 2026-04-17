@@ -1,25 +1,34 @@
-# Étape 1 : Build avec Maven (optionnel - multi-stage build)
+# Étape 1 : Build avec Maven (multi-stage pour une image finale légère)
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline
-COPY src ./src
-RUN mvn clean package -DskipTests
 
-# Étape 2 : Image finale légère
-FROM openjdk:17-jdk-slim
+# Cache les dépendances Maven séparément pour les layers
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Build du projet
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+# ──────────────────────────────────────────────
+# Étape 2 : Image finale légère (JRE uniquement)
+# ──────────────────────────────────────────────
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
-# Copier le JAR depuis l'étape de build
-COPY --from=build /app/target/*.jar location_voiture.jar
+# Répertoire pour les uploads
+RUN mkdir -p /app/uploads
 
-# Créer un utilisateur non-root (sécurité)
-RUN addgroup --system --gid 1001 appgroup && \
-    adduser --system --uid 1001 --gid 1001 appuser
+# Utilisateur non-root (sécurité)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN chown -R appuser:appgroup /app
 USER appuser
 
-# Port exposé (Spring Boot par défaut)
+# Copie du JAR depuis le stage de build
+COPY --from=build /app/target/location_voiture-0.0.1-SNAPSHOT.jar app.jar
+
 EXPOSE 8080
 
-# Commande de démarrage
-ENTRYPOINT ["java", "-jar", "location_voiture.jar"]
+ENTRYPOINT ["java", \
+  "-Djava.security.egd=file:/dev/./urandom", \
+  "-jar", "app.jar"]
