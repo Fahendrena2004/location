@@ -176,30 +176,41 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 .sidebar-link {
     display: flex;
     align-items: center;
-    padding: 0.85rem 1.25rem;
+    gap: 12px;
+    padding: 12px 18px;
+    margin: 4px 12px;
+    border-radius: var(--radius-md);
     color: var(--text-muted);
     text-decoration: none;
-    border-radius: 12px;
-    margin: 4px 16px;
-    transition: var(--transition);
+    font-size: 0.9rem;
     font-weight: 500;
+    transition: var(--transition);
 }
+
 .sidebar-link i {
-    font-size: 1.25rem;
-    width: 24px;
-    margin-right: 1.25rem;
-    opacity: 0.7;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    transition: var(--transition);
 }
-.sidebar-link:hover { 
-    color: var(--primary); 
-    background-color: var(--primary-soft);
+
+.sidebar-link:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
 }
+
+.sidebar-link:hover i {
+    color: var(--primary);
+}
+
 .sidebar-link.active {
-    background-color: var(--primary);
-    color: #ffffff !important;
-    font-weight: 600;
+    background: var(--primary);
+    color: white !important;
+    box-shadow: 0 8px 20px -6px rgba(79, 70, 229, 0.4);
 }
-.sidebar-link.active i { opacity: 1; }
+
+.sidebar-link.active i {
+    color: white;
+}
 
 .sidebar-logo {
     padding: 2rem 1.5rem;
