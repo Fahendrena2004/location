@@ -1,8 +1,9 @@
 :root {
     /* Refined Premium Palette - "Modern Clean" */
     --primary: #4f46e5;
+    --primary-rgb: 79, 70, 229;
     --primary-hover: #4338ca;
-    --primary-soft: rgba(79, 70, 229, 0.08);
+    --primary-soft: rgba(var(--primary-rgb), 0.08);
     
     /* Semantic Colors */
     --success: #10b981;
@@ -12,7 +13,9 @@
     
     /* Neutrals - Balanced Slate */
     --bg-body: #f8fafc;
+    --bg-body-rgb: 248, 250, 252;
     --bg-surface: #ffffff;
+    --bg-surface-rgb: 255, 255, 255;
     --bg-sidebar: #ffffff;
     --border: #e2e8f0;
     --text-main: #0f172a;
@@ -23,7 +26,7 @@
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 20px;
-    --padding-page: 2rem;
+    --padding-page: 2.5rem; /* Increased for breathing room */
     
     /* Layered Shadows */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -35,12 +38,14 @@
 
 [data-bs-theme="dark"] {
     --bg-body: #020617; /* Deep Navy Premium */
+    --bg-body-rgb: 2, 6, 23;
     --bg-surface: #0f172a;
+    --bg-surface-rgb: 15, 23, 42;
     --bg-sidebar: #0f172a;
     --border: #1e293b;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --primary-soft: rgba(79, 70, 229, 0.15);
+    --primary-soft: rgba(var(--primary-rgb), 0.15);
 }
 
 /* Base Styles */
@@ -131,6 +136,7 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 
 .main-content-layout {
     margin-left: 280px;
+    padding-left: 1.5rem; /* Gutter between sidebar and content */
 }
 
 /* Responsive Hide Rules */
@@ -190,16 +196,16 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 }
 
 .currency-glass {
-    background: rgba(241, 245, 249, 0.6);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
+    background: rgba(var(--bg-body-rgb), 0.4);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(var(--primary-rgb), 0.1);
     border-radius: 100px;
     display: flex;
     padding: 2px;
 }
 
 [data-bs-theme="dark"] .currency-glass {
-    background: rgba(15, 23, 42, 0.6);
+    background: rgba(var(--bg-body-rgb), 0.2);
 }
 
 .currency-btn {
@@ -270,15 +276,15 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     position: fixed;
     top: 0;
     right: 0;
-    left: 280px;
-    height: 70px;
-    background: rgba(var(--bg-surface-rgb), 0.8);
-    backdrop-filter: blur(12px);
+    left: 280px; /* Aligned with sidebar */
+    height: 76px;
+    background: rgba(var(--bg-surface-rgb), 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
     z-index: 1020;
     display: flex;
     align-items: center;
-    padding: 0 2rem;
+    padding: 0 2.5rem; /* Increased padding for right profile breathing room */
 }
 
 @media (max-width: 991.98px) {
