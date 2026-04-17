@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!-- Desktop Sidebar (Hidden on mobile) -->
-    <div class="sidebar-wrapper d-none d-lg-flex flex-column flex-shrink-0">
+    <div class="sidebar-main d-none d-lg-flex flex-column flex-shrink-0 shadow-sm">
         <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
     </div>
 
@@ -12,10 +12,8 @@
             <p class="h5 mb-0 fw-bold text-primary" id="sidebarOffcanvasLabel">AUTORENT</p>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
-        <div class="offcanvas-body">
-            <div class="sidebar-wrapper d-flex flex-column h-100">
-                <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
-            </div>
+        <div class="offcanvas-body p-0">
+            <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
         </div>
     </div>
 
