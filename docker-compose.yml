@@ -12,7 +12,7 @@ services:
     environment:
       POSTGRES_DB: location_voiture_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-fafana}
+      POSTGRES_PASSWORD: fafana
     ports:
       - "5433:5432"          # 5433 sur l'hôte pour éviter les conflits avec postgres local
     volumes:
