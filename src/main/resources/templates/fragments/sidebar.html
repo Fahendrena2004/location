@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!-- Desktop Sidebar (Hidden on mobile) -->
     <div class="sidebar-wrapper d-none d-lg-flex flex-column flex-shrink-0">
         <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
@@ -126,6 +127,7 @@
             </form>
         </div>
     </div>
+</div>
 
     <!-- Keep hidden scripts/styles for logic -->
     <script th:inline="javascript">
