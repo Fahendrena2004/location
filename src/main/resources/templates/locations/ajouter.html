@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header}">
+    <title>Nouvelle Location - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 1000px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/locations" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Nouvelle Réservation</h2>
+                        <p class="text-muted small mb-0">Planifiez une nouvelle location pour un client</p>
+                    </div>
+                </div>
+
+                <form th:action="@{/locations/ajouter}" th:object="${location}" method="post" id="locationForm">
+                    <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 d-flex align-items-center rounded-3">
+                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                        <div class="fw-medium" th:text="${error}">Message d'erreur</div>
+                    </div>
+
+                    <!-- Client Selection -->
+                    <div class="card border-0 shadow-sm p-4 mb-4">
+                        <label for="client" class="form-label text-main fw-bold small text-uppercase mb-3">Choisir le Client</label>
+                        <select class="form-select py-2" th:field="*{client}" id="client" required>
+                            <option value="">Sélectionner un client...</option>
+                            <option th:each="client : ${clients}" th:value="${client.id}"
+                                    th:text="${client.nom} + ' ' + ${client.prenom} + ' (' + ${client.telephone} + ')'"></option>
+                        </select>
+                    </div>
+
+                    <!-- Date Selection -->
+                    <div class="card border-0 shadow-sm p-4 mb-4">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label for="dateDebut" class="form-label text-main fw-bold small text-uppercase mb-2">Date de Départ</label>
+                                <input type="date" class="form-control py-2" th:attr="min=${#temporals.format(today, 'yyyy-MM-dd')}" th:value="${#temporals.format(location.dateDebut, 'yyyy-MM-dd')}" name="dateDebut" id="dateDebut" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dateFin" class="form-label text-main fw-bold small text-uppercase mb-2">Date de Retour</label>
+                                <input type="date" class="form-control py-2" th:attr="min=${#temporals.format(today, 'yyyy-MM-dd')}" th:value="${#temporals.format(location.dateFin, 'yyyy-MM-dd')}" name="dateFin" id="dateFin" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Selection -->
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-car-front text-primary"></i> 
+                        Choisir le(s) Véhicule(s) <span class="badge bg-primary-soft text-primary ms-2" style="font-size: 0.6rem;" id="countVoitures">0 sélectionnés</span>
+                    </h5>
+                    <div class="selectable-grid mb-4">
+                        <div th:each="voiture : ${voitures}" 
+                             class="selectable-card" 
+                             th:classappend="${location.voitures != null and location.voitures.contains(voiture)} ? 'selected' : ''"
+                             th:data-price="${voiture.prixParJour}"
+                             onclick="toggleSelection(this, 'voitureInput')">
+                            
+                            <div class="card-checkbox-indicator"></div>
+                            
+                            <div class="card-img-wrapper">
+                                <img th:if="${voiture.images != null and !voiture.images.isEmpty()}" 
+                                     th:src="${voiture.images[0]}" alt="Vimage">
+                                <i th:unless="${voiture.images != null and !voiture.images.isEmpty()}" class="bi bi-car-front card-img-placeholder"></i>
+                                <div class="card-price-tag" th:text="${voiture.prixParJour != null ? #numbers.formatDecimal(voiture.prixParJour, 0, 'COMMA', 0, 'POINT') : '0'} + ' Ar/j'"></div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <p class="card-title mb-1" th:text="${voiture.marque} + ' ' + ${voiture.modele}"></p>
+                                <div class="d-flex flex-wrap gap-1 mt-2">
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.categorie}">SUV</span>
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.transmission}">Auto</span>
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.carburant}">Diesel</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden checkbox actually bound to Th -->
+                            <input type="checkbox" name="voitures" th:value="${voiture.id}" 
+                                   th:checked="${location.voitures != null and location.voitures.contains(voiture)}"
+                                   class="voitureInput d-none">
+                        </div>
+                    </div>
+
+                    <!-- Chauffeur Selection -->
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge text-primary"></i> 
+                        Attribuer un Chauffeur (Optionnel) <span class="badge bg-primary-soft text-primary ms-2" style="font-size: 0.6rem;" id="countChauffeurs">0 sélectionnés</span>
+                    </h5>
+                    <div class="selectable-grid mb-5">
+                        <div th:each="chauffeur : ${chauffeurs}" 
+                             class="selectable-card"
+                             th:classappend="${location.chauffeurs != null and location.chauffeurs.contains(chauffeur)} ? 'selected' : ''"
+                             th:data-price="${chauffeur.tarifJournalier}"
+                             onclick="toggleSelection(this, 'chauffeurInput')">
+                            
+                            <div class="card-checkbox-indicator"></div>
+                            
+                            <div class="card-body pt-4">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div class="avatar bg-primary-soft text-primary d-flex align-items-center justify-content-center fw-bold" 
+                                         style="width: 48px; height: 48px; border-radius: 12px; font-size: 1.2rem;">
+                                        <span th:text="${chauffeur.prenom != null and !chauffeur.prenom.isEmpty() ? #strings.substring(chauffeur.prenom, 0, 1).toUpperCase() : 'C'}">C</span>
+                                    </div>
+                                    <div>
+                                        <p class="card-title mb-0" th:text="${chauffeur.prenom} + ' ' + ${chauffeur.nom}"></p>
+                                        <p class="card-subtitle mb-0" th:text="'Permis: ' + ${chauffeur.numeroPermis}"></p>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                    <span class="text-muted small">Tarif journalier</span>
+                                    <span class="fw-bold text-primary" th:text="${#numbers.formatDecimal(chauffeur.tarifJournalier, 0, 'COMMA', 0, 'POINT')} + ' Ar'"></span>
+                                </div>
+                            </div>
+                            
+                            <input type="checkbox" name="chauffeurs" th:value="${chauffeur.id}"
+                                   th:checked="${location.chauffeurs != null and location.chauffeurs.contains(chauffeur)}"
+                                   class="chauffeurInput d-none">
+                        </div>
+                    </div>
+
+                    <!-- Résumé de la Location -->
+                    <div id="summaryCard" class="card border-0 shadow-sm p-4 mb-5 glass" style="display: none; border-left: 4px solid var(--primary) !important;">
+                        <div class="row g-4 align-items-center">
+                            <div class="col-md-7">
+                                <h5 class="fw-bold mb-4 text-main">Résumé Financier</h5>
+                                <div class="d-flex flex-column gap-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small fw-bold text-uppercase">Durée</span>
+                                        <span class="fw-bold" id="summaryDuration">0 jour</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small fw-bold text-uppercase">Véhicules</span>
+                                        <span class="fw-bold amount-convertible" id="summaryVoitures" data-mga="0">0 Ar</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small fw-bold text-uppercase">Chauffeurs</span>
+                                        <span class="fw-bold amount-convertible" id="summaryChauffeurs" data-mga="0">0 Ar</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="text-muted small fw-bold text-uppercase">Total Brut</span>
+                                        <span class="fw-bold amount-convertible text-secondary" id="summaryBase" data-mga="0">0 Ar</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-5 border-start ps-lg-5 text-center text-md-end">
+                                <p class="text-muted small text-uppercase fw-bold mb-1">Montant Total</p>
+                                <h2 class="fw-bold text-primary mb-0 amount-convertible" id="summaryTotal" data-mga="0">0 Ar</h2>
+                            </div>
+                        </div>
+                    </div>
+                        <a href="/locations" class="btn btn-light px-4 py-2">Annuler</a>
+                        <button type="submit" class="btn btn-primary px-5 py-2 shadow-sm">
+                            Confirmer la Réservation
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSelection(card, inputClass) {
+            const checkbox = card.querySelector('.' + inputClass);
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) { card.classList.add('selected'); } 
+            else { card.classList.remove('selected'); }
+            
+            updatePricePreview();
+        }
+
+        function updatePricePreview() {
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+            const summaryCard = document.getElementById('summaryCard');
+            
+            const voitureCards = document.querySelectorAll('.voitureInput:checked');
+            const chauffeurCards = document.querySelectorAll('.chauffeurInput:checked');
+            
+            document.getElementById('countVoitures').textContent = voitureCards.length + ' sélectionné(s)';
+            document.getElementById('countChauffeurs').textContent = chauffeurCards.length + ' sélectionné(s)';
+
+            if (!dateDebut || !dateFin || (voitureCards.length === 0 && chauffeurCards.length === 0)) {
+                summaryCard.style.display = 'none';
+                return;
+            }
+
+            const start = new Date(dateDebut);
+            const end = new Date(dateFin);
+            const diffTime = end - start;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 0;
+
+            if (diffDays <= 0) {
+                summaryCard.style.display = 'none';
+                return;
+            }
+
+            summaryCard.style.display = 'block';
+            document.getElementById('summaryDuration').textContent = diffDays + (diffDays > 1 ? ' jours' : ' jour');
+
+            let vTotal = 0;
+            voitureCards.forEach(input => {
+                const card = input.closest('.selectable-card');
+                vTotal += parseFloat(card.dataset.price || 0);
+            });
+            const vGrandTotal = vTotal * diffDays;
+            
+            let cTotal = 0;
+            chauffeurCards.forEach(input => {
+                const card = input.closest('.selectable-card');
+                cTotal += parseFloat(card.dataset.price || 0);
+            });
+            const cGrandTotal = cTotal * diffDays;
+
+            const finalTotal = vGrandTotal + cGrandTotal;
+            const baseTotal = finalTotal;
+
+            updateAmount('summaryVoitures', vGrandTotal);
+            updateAmount('summaryChauffeurs', cGrandTotal);
+            updateAmount('summaryBase', baseTotal);
+            updateAmount('summaryTotal', finalTotal);
+            
+            if (window.formatCurrency) { window.formatCurrency(); }
+        }
+
+        function updateAmount(id, value) {
+            const el = document.getElementById(id);
+            el.dataset.mga = value;
+            el.textContent = new Intl.NumberFormat('fr-FR').format(Math.round(value)) + ' Ar';
+        }
+
+        document.getElementById('dateDebut').addEventListener('change', updatePricePreview);
+        document.getElementById('dateFin').addEventListener('change', updatePricePreview);
+        window.addEventListener('DOMContentLoaded', updatePricePreview);
+    </script>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

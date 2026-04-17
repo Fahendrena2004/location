@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Mon Profil - Location Voitures</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="main-content-layout">
+                <!-- Header Section -->
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2" style="font-size: 0.75rem; letter-spacing: 0.05rem; text-transform: uppercase;">
+                                <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-muted">Platform</a></li>
+                                <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Mon Profil</li>
+                            </ol>
+                        </nav>
+                        <h2 class="fw-bold text-main mb-0">Paramètres du Compte</h2>
+                        <p class="text-muted small mb-0">Gestion de vos informations et sécurité</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge rounded-pill px-4 py-2 shadow-sm" th:classappend="${user.role.name() == 'ADMIN' ? 'badge-soft-primary' : 'badge-soft-warning'}" th:text="${user.role}">ADMIN</span>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Informations Personnelles -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm p-4 h-100">
+                             <div class="d-flex align-items-center gap-3 mb-4 mt-2">
+                                <div class="icon-box bg-primary-soft text-primary rounded-circle" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-person-lines-fill" style="font-size: 1.2rem;"></i>
+                                </div>
+                                <h5 class="fw-bold mb-0">Identité</h5>
+                            </div>
+                            
+                            <form th:action="@{/profile/update}" method="post">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold small text-uppercase text-muted mb-2" style="font-size: 0.65rem;">Nom Complet</label>
+                                        <input type="text" name="nomComplet" class="form-control bg-light border-0 py-2" th:value="${user.nomComplet}" required style="border-radius: 10px;">
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label fw-bold small text-uppercase text-muted mb-2" style="font-size: 0.65rem;">Adresse Email</label>
+                                        <input type="email" name="email" class="form-control bg-light border-0 py-2" th:value="${user.email}" required style="border-radius: 10px;">
+                                    </div>
+                                </div>
+                                <div class="mt-5">
+                                    <button type="submit" class="btn btn-primary px-5 rounded-pill shadow-sm">Enregistrer les modifications</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sécurité -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm p-4 h-100">
+                             <div class="d-flex align-items-center gap-3 mb-4 mt-2">
+                                <div class="icon-box bg-danger-soft text-danger rounded-circle" style="width: 48px; height: 48px;">
+                                    <i class="bi bi-shield-lock-fill" style="font-size: 1.2rem;"></i>
+                                </div>
+                                <h5 class="fw-bold mb-0">Sécurité</h5>
+                            </div>
+
+                            <form th:action="@{/profile/password}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted mb-2" style="font-size: 0.65rem;">Mot de passe actuel</label>
+                                    <input type="password" name="currentPassword" class="form-control bg-light border-0 py-2" required style="border-radius: 10px;">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-uppercase text-muted mb-2" style="font-size: 0.65rem;">Nouveau mot de passe</label>
+                                    <input type="password" name="newPassword" class="form-control bg-light border-0 py-2" required style="border-radius: 10px;">
+                                </div>
+                                <div class="mb-3 text-end">
+                                    <button type="submit" class="btn btn-outline-danger border-0 fw-bold small">Mettre à jour l'accès</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Footnote / Status Info -->
+                    <div class="col-12 mt-4">
+                        <div class="card border-0 shadow-sm p-3 bg-white">
+                            <div class="d-flex align-items-center gap-3 px-2">
+                                <i class="bi bi-info-circle text-primary"></i>
+                                <span class="small text-muted">Votre compte est actif depuis <strong th:text="${user.client != null ? #temporals.format(user.client.dateNaissance, 'yyyy') : '2024'}">2024</strong>. Les modifications d'email nécessiteront une nouvelle connexion.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-label { letter-spacing: 0.05rem; }
+        .bg-primary-soft { background: var(--primary-soft); }
+        .icon-box {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+    </style>
+
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

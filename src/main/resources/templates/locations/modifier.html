@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Modifier Location - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 1000px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/locations" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Modifier la Réservation</h2>
+                        <p class="text-muted small mb-0">Ajustez les détails de la location #<span th:text="${location.id}"></span></p>
+                    </div>
+                </div>
+
+                <form th:action="@{'/locations/modifier/' + ${location.id}}" th:object="${location}" method="post" id="editForm">
+                    <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 d-flex align-items-center rounded-3">
+                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                        <div class="fw-medium" th:text="${error}">Message d'erreur</div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-8">
+                            <!-- Basic Info Card -->
+                            <div class="card border-0 shadow-sm p-4 h-100">
+                                <div class="row g-4">
+                                    <div class="col-12">
+                                        <label for="client" class="form-label text-main fw-bold small text-uppercase mb-2">Client</label>
+                                        <select class="form-select py-2 border-light bg-light-subtle" th:field="*{client}" required>
+                                            <option th:each="client : ${clients}" th:value="${client.id}"
+                                                    th:text="${client.nom} + ' ' + ${client.prenom}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="dateDebut" class="form-label text-main fw-bold small text-uppercase mb-2">Début</label>
+                                        <input type="date" class="form-control py-2" th:value="${#temporals.format(location.dateDebut, 'yyyy-MM-dd')}" name="dateDebut" id="dateDebut" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="dateFin" class="form-label text-main fw-bold small text-uppercase mb-2">Fin</label>
+                                        <input type="date" class="form-control py-2" th:value="${#temporals.format(location.dateFin, 'yyyy-MM-dd')}" name="dateFin" id="dateFin" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <!-- Status Card -->
+                            <div class="card border-0 shadow-sm p-4 h-100">
+                                <label for="statut" class="form-label text-main fw-bold small text-uppercase mb-2">Statut de la demande</label>
+                                <select class="form-select py-2 fw-bold mb-3" th:field="*{statut}" id="statutSelect">
+                                    <option value="EN_ATTENTE" class="text-warning">En attente</option>
+                                    <option value="EN_COURS" class="text-primary">En cours</option>
+                                    <option value="TERMINEE" class="text-success">Terminée</option>
+                                    <option value="ANNULEE" class="text-danger">Annulée</option>
+                                </select>
+                                <div class="alert alert-info border-0 smaller mb-0 mt-auto bg-info-soft text-info">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Changer le statut peut affecter la disponibilité des ressources.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Selection -->
+                    <h5 class="fw-bold mb-3 mt-5 d-flex align-items-center gap-2">
+                        <i class="bi bi-car-front text-primary"></i> 
+                        Modifier les Véhicules <span class="badge bg-primary-soft text-primary ms-2" style="font-size: 0.6rem;" id="countVoitures">0 sélectionnés</span>
+                    </h5>
+                    <div class="selectable-grid mb-4">
+                        <div th:each="voiture : ${voitures}" 
+                             class="selectable-card" 
+                             th:classappend="${location.voitures != null and #lists.contains(location.voitures.![id], voiture.id)} ? 'selected' : ''"
+                             onclick="toggleSelection(this, 'voitureInput')">
+                            
+                            <div class="card-checkbox-indicator"></div>
+                            
+                            <div class="card-img-wrapper">
+                                <img th:if="${voiture.images != null and !voiture.images.isEmpty()}" 
+                                     th:src="${voiture.images[0]}" alt="Vimage">
+                                <i th:unless="${voiture.images != null and !voiture.images.isEmpty()}" class="bi bi-car-front card-img-placeholder"></i>
+                                <div class="card-price-tag" th:text="${voiture.prixParJour != null ? #numbers.formatDecimal(voiture.prixParJour, 0, 'COMMA', 0, 'POINT') : '0'} + ' Ar/j'"></div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <p class="card-title mb-1" th:text="${voiture.marque} + ' ' + ${voiture.modele}"></p>
+                                <div class="d-flex flex-wrap gap-1 mt-2">
+                                    <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.categorie}">SUV</span>
+                                </div>
+                            </div>
+                            
+                            <input type="checkbox" name="voitures" th:value="${voiture.id}" 
+                                   th:checked="${location.voitures != null and #lists.contains(location.voitures.![id], voiture.id)}"
+                                   class="voitureInput d-none">
+                        </div>
+                    </div>
+
+                    <!-- Chauffeur Selection -->
+                    <h5 class="fw-bold mb-3 mt-5 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-badge text-primary"></i> 
+                        Modifier les Chauffeurs <span class="badge bg-primary-soft text-primary ms-2" style="font-size: 0.6rem;" id="countChauffeurs">0 sélectionnés</span>
+                    </h5>
+                    <div class="selectable-grid mb-5">
+                        <div th:each="chauffeur : ${chauffeurs}" 
+                             class="selectable-card"
+                             th:classappend="${location.chauffeurs != null and #lists.contains(location.chauffeurs.![id], chauffeur.id)} ? 'selected' : ''"
+                             onclick="toggleSelection(this, 'chauffeurInput')">
+                            
+                            <div class="card-checkbox-indicator"></div>
+                            
+                            <div class="card-body pt-4">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <div class="avatar bg-primary-soft text-primary d-flex align-items-center justify-content-center fw-bold" 
+                                         style="width: 40px; height: 40px; border-radius: 10px;">
+                                        <span th:text="${chauffeur.prenom != null and !chauffeur.prenom.isEmpty() ? #strings.substring(chauffeur.prenom, 0, 1).toUpperCase() : 'C'}">C</span>
+                                    </div>
+                                    <p class="card-title mb-0" th:text="${chauffeur.prenom} + ' ' + ${chauffeur.nom}"></p>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center pt-2">
+                                    <span class="text-muted smaller" th:text="${#numbers.formatDecimal(chauffeur.tarifJournalier, 0, 'COMMA', 0, 'POINT')} + ' Ar/j'"></span>
+                                </div>
+                            </div>
+                            
+                            <input type="checkbox" name="chauffeurs" th:value="${chauffeur.id}"
+                                   th:checked="${location.chauffeurs != null and #lists.contains(location.chauffeurs.![id], chauffeur.id)}"
+                                   class="chauffeurInput d-none">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-3 mt-5 pb-5">
+                        <a href="/locations" class="btn btn-light px-4 border">Annuler</a>
+                        <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                            <i class="bi bi-check2-circle me-1"></i> Enregistrer les modifications
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSelection(card, inputClass) {
+            const checkbox = card.querySelector('.' + inputClass);
+            checkbox.checked = !checkbox.checked;
+            
+            if (checkbox.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+            
+            updateCounts();
+        }
+
+        function updateCounts() {
+            const voitures = document.querySelectorAll('.voitureInput:checked').length;
+            const chauffeurs = document.querySelectorAll('.chauffeurInput:checked').length;
+            
+            const vCountEl = document.getElementById('countVoitures');
+            const cCountEl = document.getElementById('countChauffeurs');
+            
+            if (vCountEl) vCountEl.textContent = voitures + ' sélectionné(s)';
+            if (cCountEl) cCountEl.textContent = chauffeurs + ' sélectionné(s)';
+        }
+
+        // Color coordination for status select
+        const statusSelect = document.getElementById('statutSelect');
+        function updateStatusColor() {
+            const val = statusSelect.value;
+            statusSelect.className = 'form-select py-2 fw-bold';
+            if (val === 'EN_ATTENTE') statusSelect.classList.add('text-warning');
+            if (val === 'EN_COURS') statusSelect.classList.add('text-primary');
+            if (val === 'TERMINEE') statusSelect.classList.add('text-success');
+            if (val === 'ANNULEE') statusSelect.classList.add('text-danger');
+        }
+        statusSelect.addEventListener('change', updateStatusColor);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateCounts();
+            updateStatusColor();
+        });
+    </script>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

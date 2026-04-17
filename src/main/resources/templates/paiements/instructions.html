@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Instructions de Paiement - Location Voitures</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+            <div class="container" style="max-width: 800px;">
+                
+                <!-- Stepper Header -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+                        <div class="progress-line position-absolute w-100" style="height: 2px; background: var(--primary); top: 18px; z-index: 1;"></div>
+                        
+                        <div class="step-item text-center position-relative" style="z-index: 3;">
+                            <div class="step-icon bg-primary text-white rounded-circle shadow-sm mx-auto mb-2" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <span class="small fw-bold text-primary">Résumé</span>
+                        </div>
+                        
+                        <div class="step-item text-center position-relative" style="z-index: 3;">
+                            <div class="step-icon bg-primary text-white border-primary rounded-circle mx-auto mb-2" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</div>
+                            <span class="small fw-bold text-primary">Instructions</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-5">
+                    <div class="icon-box bg-success-soft text-success rounded-circle mx-auto mb-3" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2">Réservation enregistrée !</h2>
+                    <p class="text-muted">Votre demande de location <strong th:text="'#' + ${location.id}"></strong> a bien été prise en compte.</p>
+                </div>
+
+                <!-- Instructions Mobile Money -->
+                <div th:if="${mode == 'MOBILE_MONEY'}" class="card border-0 shadow-sm p-5 mb-4 text-center" style="border-radius: 20px;">
+                    <h4 class="fw-bold mb-4 text-main">Paiement par Mobile Money</h4>
+                    <p class="text-muted mb-4">Veuillez envoyer le montant total de <strong class="fs-5 text-primary amount-convertible" th:data-mga="${location.montantTotal}" th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'"></strong> au numéro suivant :</p>
+                    
+                    <div class="bg-light p-4 rounded-4 d-inline-block mx-auto mb-4 border" style="min-width: 300px;">
+                        <div class="d-flex align-items-center justify-content-center gap-3 mb-2">
+                            <i class="bi bi-phone text-warning fs-3"></i>
+                            <h2 class="fw-bold mb-0 text-dark">034 00 000 00</h2>
+                        </div>
+                        <p class="text-muted small mb-0 mt-2">Au nom de : <strong>AUTORENT MADAGASCAR</strong></p>
+                    </div>
+
+                    <div class="alert alert-warning border-0 d-flex align-items-center gap-3 text-start mt-3">
+                        <i class="bi bi-info-circle-fill fs-4 flex-shrink-0"></i>
+                        <div>
+                            <strong>Important :</strong> N'oubliez pas de mettre votre référence de réservation <b>#[[${location.id}]]</b> dans le motif du transfert. Dès réception de votre transfert, un administrateur validera votre paiement et votre location.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions Paiement sur Place (Cash) -->
+                <div th:if="${mode == 'CASH'}" class="card border-0 shadow-sm p-4 mb-4 text-center" style="border-radius: 20px;">
+                    <h4 class="fw-bold mb-4 text-main">Paiement sur place à l'agence</h4>
+                    <p class="text-muted mb-4">Votre véhicule vous attend ! Veuillez prévoir le règlement de <strong class="fs-5 text-primary amount-convertible" th:data-mga="${location.montantTotal}" th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'"></strong> lors de la perception des clés à notre agence.</p>
+                    
+                    <div class="bg-success-soft text-success p-4 rounded-4 d-inline-block mx-auto mb-4">
+                        <i class="bi bi-geo-alt-fill fs-1 mb-2 d-block"></i>
+                        <h5 class="fw-bold">AutoRent Agence Centrale</h5>
+                        <p class="mb-0 small">Analakely, Antananarivo<br>Ouvert de 08h00 à 18h00</p>
+                    </div>
+                    
+                    <p class="small text-muted font-italic mb-0">Note : Veuillez vous munir de votre pièce d'identité et de votre permis de conduire original.</p>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="text-center mt-5">
+                    <form th:action="@{'/paiements/declarer/' + ${location.id}}" method="post">
+                        <input type="hidden" name="modePaiement" th:value="${mode}">
+                        <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow-lg d-flex align-items-center justify-content-center gap-2 mx-auto">
+                            <i class="bi bi-check-circle fs-5"></i> J'ai effectué le versement
+                        </button>
+                    </form>
+                    
+                    <a href="/locations" class="btn btn-link link-secondary text-decoration-none mt-3">
+                        Voir mes autres réservations
+                    </a>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

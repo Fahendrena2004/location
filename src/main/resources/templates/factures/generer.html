@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Générer une Facture - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 700px; margin-top: 50px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/factures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Générer une Facture</h2>
+                        <p class="text-muted small mb-0">Créez un document de facturation pour une location clôturée ou en cours</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-5 mb-5" style="border-radius: 20px;">
+                    <form th:action="@{/factures/generer}" method="post">
+                        <div class="mb-4">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Location concernée</label>
+                            <select name="locationId" class="form-select py-3" required>
+                                <option value="">Choisir une réservation...</option>
+                                <option th:each="loc : ${locations}" 
+                                        th:value="${loc.id}" 
+                                        th:selected="${selectedLocationId != null and selectedLocationId == loc.id}"
+                                        th:text="'#' + ${loc.id} + ' - ' + ${loc.client.nomComplet} + ' (' + ${#numbers.formatDecimal(loc.montantTotal, 1, 'COMMA', 0, 'POINT')} + ' Ar)'">
+                                </option>
+                            </select>
+                            <p class="text-muted smaller mt-1"><i class="bi bi-info-circle me-1"></i> Seules les locations validées apparaissent dans cette liste.</p>
+                        </div>
+
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label text-main fw-bold small text-uppercase mb-2">Date d'émission</label>
+                                <input type="date" name="dateEmission" th:value="${today}" class="form-control py-2" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label text-main fw-bold small text-uppercase mb-2">État initial</label>
+                                <select name="statut" class="form-select py-2" required>
+                                    <option th:each="s : ${statuts}" 
+                                            th:value="${s}" 
+                                            th:selected="${s.name() == 'EN_ATTENTE'}"
+                                            th:text="${s.name() == 'BROUILLON' ? 'Brouillon' : (s.name() == 'EN_ATTENTE' ? 'En attente' : (s.name() == 'PAYEE' ? 'Payée' : 'Annulée'))}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <a href="/factures" class="btn btn-light px-4">Annuler</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                <i class="bi bi-file-earmark-plus me-2"></i> Créer la facture
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .smaller { font-size: 0.75rem; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

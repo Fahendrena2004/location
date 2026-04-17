@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Gestion des Factures - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+                <!-- Header Section -->
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2" style="font-size: 0.75rem; letter-spacing: 0.05rem; text-transform: uppercase;">
+                                <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-muted">Platform</a></li>
+                                <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Facturation</li>
+                            </ol>
+                        </nav>
+                        <h2 class="fw-bold text-main mb-0">Factures & Revenus</h2>
+                        <p class="text-muted small mb-0">Gestion des règlements et émission de documents</p>
+                    </div>
+                    <div class="d-flex gap-3" sec:authorize="hasRole('ADMIN')">
+                        <a href="/factures/generer" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                            <i class="bi bi-plus-lg"></i> Nouvelle Facture
+                        </a>
+                    </div>
+                </div>
+
+            <!-- Feedback Alerts -->
+            <div th:if="${success}" class="alert alert-success border-0 shadow-sm mb-4 d-flex align-items-center rounded-3">
+                <i class="bi bi-check-circle-fill me-2 fs-5"></i>
+                <div class="fw-medium" th:text="${success}">Succès!</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 d-flex align-items-center rounded-3">
+                <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                <div class="fw-medium" th:text="${error}">Erreur!</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Financial Summary -->
+            <div th:if="${totalPaid != null}" class="row g-4 mb-4" sec:authorize="hasRole('ADMIN')">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-4 bg-success-soft" style="border-left: 5px solid var(--success) !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted small mb-1 fw-bold text-uppercase" style="letter-spacing: 0.05rem;">Revenus Encaissés</p>
+                                <h3 class="fw-bold mb-0 text-success amount-convertible" 
+                                    th:data-mga="${totalPaid}" 
+                                    th:text="${#numbers.formatDecimal(totalPaid ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">0 Ar</h3>
+                            </div>
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px;">
+                                <i class="bi bi-cash-coin fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-4 bg-warning-soft" style="border-left: 5px solid var(--warning) !important;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted small mb-1 fw-bold text-uppercase" style="letter-spacing: 0.05rem;">Encaissements en Attente</p>
+                                <h3 class="fw-bold mb-0 text-warning amount-convertible" 
+                                    th:data-mga="${totalPending}" 
+                                    th:text="${#numbers.formatDecimal(totalPending ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">0 Ar</h3>
+                            </div>
+                            <div class="rounded-circle bg-warning text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px;">
+                                <i class="bi bi-clock-history fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="table-container shadow-sm border-0">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>N° Facture</th>
+                            <th>Client / Dossier</th>
+                            <th>Date d'Émission</th>
+                            <th>Montant TTC</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="facture : ${factures}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-info-soft d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; color: var(--info); font-weight: 800; font-size: 0.85rem;">
+                                        <i class="bi bi-file-earmark-text"></i>
+                                    </div>
+                                    <span class="fw-bold text-main font-monospace" th:text="${facture.numeroFacture}">FACT-001</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold text-main small" th:text="${facture.location.client.nomComplet}">Rakoto Jean</span>
+                                    <span class="text-muted smaller">Location #<span th:text="${facture.location.id}">-</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-main small fw-medium" th:text="${#temporals.format(facture.dateEmission, 'dd MMM yyyy')}">01 Jan 2024</span>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark fs-6" th:text="${#numbers.formatDecimal(facture.montantTTC, 0, 'COMMA', 0, 'POINT')} + ' Ar'">120,000 Ar</span>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill fw-bold" 
+                                      th:classappend="${facture.statut.name() == 'PAYEE' ? 'badge-soft-success' : (facture.statut.name() == 'ANNULEE' ? 'badge-soft-danger' : 'badge-soft-warning')}"
+                                      th:text="${facture.statut.name() == 'BROUILLON' ? 'Brouillon' : (facture.statut.name() == 'EN_ATTENTE' ? 'En attente' : (facture.statut.name() == 'PAYEE' ? 'Payée' : 'Annulée'))}">En attente</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn-action-square ms-auto" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <li>
+                                            <a class="dropdown-item py-2" th:href="@{'/factures/' + ${facture.id}}">
+                                                <i class="bi bi-eye me-2 text-primary"></i> Détails
+                                            </a>
+                                        </li>
+                                        <li th:if="${facture.statut.name() == 'EN_ATTENTE'}">
+                                            <a class="dropdown-item py-2 fw-bold stripe-btn" th:href="@{'/paiements/checkout/' + ${facture.location.id}}" style="color: #635bff;">
+                                                <i class="bi bi-credit-card me-2"></i> Payer via Stripe
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2" th:href="@{'/factures/telecharger/' + ${facture.id}}">
+                                                <i class="bi bi-cloud-download me-2 text-success"></i> PDF
+                                            </a>
+                                        </li>
+                                        <li sec:authorize="hasRole('ADMIN')">
+                                            <a class="dropdown-item py-2" th:href="@{'/factures/envoyer/' + ${facture.id}}">
+                                                <i class="bi bi-envelope me-2 text-info"></i> Envoyer par email
+                                            </a>
+                                        </li>
+                                        <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider opacity-10"></li>
+                                        <li sec:authorize="hasRole('ADMIN')">
+                                            <a class="dropdown-item py-2 text-danger" th:href="@{'/factures/supprimer/' + ${facture.id}}" onclick="return confirm('Confirmer la suppression ?')">
+                                                <i class="bi bi-trash me-2"></i> Supprimer
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item py-2" th:href="@{'/factures/imprimer/' + ${facture.id}}" target="_blank">
+                                                <i class="bi bi-printer me-2"></i> Imprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(factures)}">
+                            <td colspan="6" class="text-center py-5 text-muted opacity-50">
+                                <i class="bi bi-receipt fs-1 d-block mb-3"></i>
+                                <p class="mb-0">Aucune facture n'est disponible pour le moment.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+<style>
+    .bg-success-subtle { background-color: #ecfdf5 !important; color: #059669 !important; }
+    .bg-warning-subtle { background-color: #fffbeb !important; color: #d97706 !important; }
+    .bg-danger-subtle { background-color: #fef2f2 !important; color: #dc2626 !important; }
+</style>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

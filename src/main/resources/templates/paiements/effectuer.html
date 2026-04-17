@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Enregistrer un Paiement - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 900px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/paiements" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Enregistrer un Paiement</h2>
+                        <p class="text-muted small mb-0">Validez les encaissements et mettez à jour la balance client</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 mb-5">
+                    <form th:action="@{/paiements/effectuer}" th:object="${paiement}" method="post">
+                        <div class="row g-4">
+                            <div class="col-12 text-start">
+                                <label for="locationSelect" class="form-label text-main fw-bold small text-uppercase mb-2">Location concernée</label>
+                                <select class="form-select py-2" id="locationSelect" th:field="*{location}" required
+                                        onchange="remplirMontant(this)">
+                                    <option value="" data-montant="">Sélectionnez une réservation en attente</option>
+                                    <option th:each="location : ${locations}"
+                                            th:value="${location.id}"
+                                            th:attr="data-montant=${location.montantTotal}"
+                                            th:text="${'#' + location.id + (location.client != null ? ' - ' + location.client.nomComplet : '') + (location.montantTotal != null ? ' (' + #numbers.formatDecimal(location.montantTotal, 1, 'COMMA', 0, 'POINT') + ' Ar)' : '')}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="montantInput" class="form-label text-main fw-bold small text-uppercase mb-2">Montant du versement (Ar)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">Ar</span>
+                                    <input type="number" step="1000" class="form-control py-2 ps-0 border-start-0" id="montantInput" th:field="*{montant}" placeholder="0.00" required>
+                                </div>
+                                <p class="text-muted smaller mt-2"><i class="bi bi-info-circle me-1"></i> Le montant total suggéré est calculé automatiquement.</p>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="datePaiement" class="form-label text-main fw-bold small text-uppercase mb-2">Date du paiement</label>
+                                <input type="date" class="form-control py-2" th:field="*{datePaiement}" required>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="modePaiement" class="form-label text-main fw-bold small text-uppercase mb-2">Mode de règlement</label>
+                                <select class="form-select py-2" th:field="*{modePaiement}" required>
+                                    <option value="">Choisir un mode</option>
+                                    <option value="ESPECES">Espèces</option>
+                                    <option value="CARTE">Carte bancaire</option>
+                                    <option value="CHEQUE">Chèque</option>
+                                    <option value="VIREMENT">Virement</option>
+                                    <option value="MOBILE_MONEY">Mobile Money</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="reference" class="form-label text-main fw-bold small text-uppercase mb-2">Référence / Notes</label>
+                                <input type="text" class="form-control py-2" th:field="*{reference}" placeholder="Ex: Chèque n°123456">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                            <a href="/paiements" class="btn btn-light px-4">Annuler</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                <i class="bi bi-shield-check me-2"></i> Valider la transaction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #montantInput.auto-filled { border-color: #10b981; background-color: rgba(16, 185, 129, 0.05); color: #10b981; font-weight: 600; }
+        .text-start { text-align: left !important; }
+        .smaller { font-size: 0.75rem; }
+    </style>
+
+    <script>
+        function remplirMontant(select) {
+            const option = select.options[select.selectedIndex];
+            const montant = option.getAttribute('data-montant');
+            const montantInput = document.getElementById('montantInput');
+            if (montant && montant !== '') {
+                montantInput.value = Math.round(parseFloat(montant));
+                montantInput.classList.add('auto-filled');
+            } else {
+                montantInput.value = '';
+                montantInput.classList.remove('auto-filled');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const select = document.getElementById('locationSelect');
+            if (select && select.value) {
+                remplirMontant(select);
+            }
+        });
+    </script>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

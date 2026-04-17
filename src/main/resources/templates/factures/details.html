@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Détails Facture - Location Voitures</title>
+</head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="d-flex align-items-center mb-5">
+                <a href="/factures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-1">Détails de la Facture</h2>
+                    <p class="text-muted small mb-0">Visualisez le récapitulatif complet des services et règlements</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 20px;">
+                <div class="card-body p-5">
+                    <div class="row align-items-start mb-5 g-4">
+                        <div class="col-md-6 text-start">
+                            <div class="mb-4">
+                                <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block" style="letter-spacing:1px;">Facturé à</label>
+                                <div class="bg-light p-4 rounded-4 border-0">
+                                    <h5 class="fw-bold text-dark mb-2" th:text="${facture.location.client.nomComplet}">Rakoto Jean</h5>
+                                    <div class="text-muted small">
+                                        <div class="mb-1"><i class="bi bi-envelope me-2"></i><span th:text="${facture.location.client.email}">jean@email.com</span></div>
+                                        <div class="mb-1"><i class="bi bi-telephone me-2"></i><span th:text="${facture.location.client.telephone}">034 12 345 67</span></div>
+                                        <div><i class="bi bi-geo-alt me-2"></i><span th:text="${facture.location.client.adresse}">Antananarivo</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="mb-4">
+                                <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block" style="letter-spacing:1px;">Référence Document</label>
+                                <h3 class="fw-bold text-primary mb-2" th:text="${facture.numeroFacture}">FACT-001</h3>
+                                <p class="mb-3 text-muted small fw-medium">
+                                    Émis le <span class="text-dark" th:text="${#temporals.format(facture.dateEmission, 'dd MMM yyyy')}">01 Jan 2024</span>
+                                </p>
+                                <span class="badge rounded-pill px-4 py-2 fw-bold" 
+                                      th:classappend="${facture.statut.name() == 'PAYEE' ? 'badge-soft-success' : (facture.statut.name() == 'ANNULEE' ? 'badge-soft-danger' : 'badge-soft-warning')}"
+                                      th:text="${facture.statut.name() == 'BROUILLON' ? 'Brouillon' : (facture.statut.name() == 'EN_ATTENTE' ? 'En attente' : (facture.statut.name() == 'PAYEE' ? 'Facture Payée' : 'Annulée'))}">En attente</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block" style="letter-spacing:1px;">Services de Location</label>
+                        <div class="table-responsive rounded-4 border-0 shadow-sm" style="background: #fafafa;">
+                            <table class="table mb-0 align-middle">
+                                <thead>
+                                    <tr class="small text-muted text-uppercase fw-bold" style="letter-spacing:0.5px; border-bottom: 2px solid #eee;">
+                                        <th class="ps-4 py-3">Description du Véhicule</th>
+                                        <th class="py-3 text-center">Durée</th>
+                                        <th class="py-3 text-end">Prix Journalier</th>
+                                        <th class="pe-4 py-3 text-end">Total HT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="v : ${facture.location.voitures}">
+                                        <td class="ps-4 py-4">
+                                            <div class="fw-bold text-main d-flex align-items-center">
+                                                <i class="bi bi-car-front me-2 text-primary"></i>
+                                                <span th:text="${v.marque} + ' ' + ${v.modele}">Renault Clio</span>
+                                            </div>
+                                            <div class="text-muted smaller mt-1">Immatriculation: <span class="fw-bold text-uppercase" th:text="${v.plaqueImmatriculation}">1234 AB</span></div>
+                                        </td>
+                                        <td class="py-4 text-center small text-secondary fw-medium">
+                                            <span th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)}">1</span> jour(s)
+                                        </td>
+                                        <td class="py-4 text-end small fw-bold text-main" 
+                                            th:text="${#numbers.formatDecimal(v.prixPar_jour != null ? v.prixPar_jour : v.prixParJour, 0, 'COMMA', 0, 'POINT')} + ' Ar'">50,000 Ar</td>
+                                        <td class="pe-4 py-4 text-end fw-bold text-dark" 
+                                            th:text="${#numbers.formatDecimal((v.prixPar_jour != null ? v.prixPar_jour : v.prixParJour) * (T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)), 0, 'COMMA', 0, 'POINT')} + ' Ar'">200,000 Ar</td>
+                                    </tr>
+                                    <tr th:each="c : ${facture.location.chauffeurs}">
+                                        <td class="ps-4 py-4">
+                                            <div class="fw-bold text-main d-flex align-items-center">
+                                                <i class="bi bi-person-badge me-2 text-info"></i>
+                                                <span th:text="'Prestation: ' + ${c.nomComplet}">Jean Driver</span>
+                                            </div>
+                                            <div class="text-muted smaller mt-1">Assistance trajet et conduite</div>
+                                        </td>
+                                        <td class="py-4 text-center small text-secondary fw-medium">
+                                            <span th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)}">1</span> jour(s)
+                                        </td>
+                                        <td class="py-4 text-end small fw-bold text-main" 
+                                            th:text="${#numbers.formatDecimal(c.tarifJournalier, 0, 'COMMA', 0, 'POINT')} + ' Ar'">20,000 Ar</td>
+                                        <td class="pe-4 py-4 text-end fw-bold text-dark" 
+                                            th:text="${#numbers.formatDecimal(c.tarifJournalier * (T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)), 0, 'COMMA', 0, 'POINT')} + ' Ar'">80,000 Ar</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="bg-white p-4 border-top">
+                                <div class="row justify-content-end">
+                                    <div class="col-md-5">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="text-muted small fw-medium">Sous-total HT</span>
+                                            <span class="text-main fw-bold" th:text="${#numbers.formatDecimal(facture.montantHT, 0, 'COMMA', 0, 'POINT')} + ' Ar'">200,000 Ar</span>
+                                        </div>
+                                            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-1">
+                                                <span class="text-main fw-bold fs-5">Montant Total</span>
+                                                <span class="text-primary fw-bold fs-5" th:text="${#numbers.formatDecimal(facture.montantTTC, 0, 'COMMA', 0, 'POINT')} + ' Ar'">1,240,000 Ar</span>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+                        <a th:href="@{'/factures/modifier/' + ${facture.id}}" sec:authorize="hasRole('ADMIN')" class="btn btn-warning px-4 shadow-sm">
+                            <i class="bi bi-pencil me-2"></i> Modifier
+                        </a>
+                        <a th:href="@{'/factures/telecharger/' + ${facture.id}}" class="btn btn-light px-4 border shadow-sm">
+                            <i class="bi bi-download me-2 text-success"></i> Télécharger
+                        </a>
+                        <a th:href="@{'/factures/imprimer/' + ${facture.id}}" class="btn btn-light px-4 border shadow-sm" target="_blank">
+                            <i class="bi bi-printer me-2"></i> Imprimer
+                        </a>
+
+                        <div class="ms-md-auto d-flex gap-2">
+                            <!-- Online Payment for Client/Admin -->
+                            <a th:href="@{'/paiements/checkout/' + ${facture.location.id}}" 
+                               class="btn py-2 px-4 fw-bold rounded-pill shadow text-white d-flex align-items-center" 
+                               style="background-color: #635bff;"
+                               th:if="${facture.statut.name() == 'EN_ATTENTE'}">
+                                <i class="bi bi-credit-card me-2"></i> Payer via Stripe
+                            </a>
+
+                            <!-- Manual Settlement for Admin Only -->
+                            <a th:href="@{'/paiements/effectuer?location=' + ${facture.location.id}}" 
+                               class="btn btn-success px-4 shadow-sm d-flex align-items-center"
+                               sec:authorize="hasRole('ADMIN')"
+                               th:if="${facture.statut.name() == 'EN_ATTENTE'}">
+                                <i class="bi bi-cash-coin me-2"></i> Enregistrer Règlement
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <style>
+        .text-start { text-align: left !important; }
+        .smaller { font-size: 0.75rem; }
+    </style>
+    </div>
+</div>
+
+<style>
+    .bg-success-subtle { background-color: #ecfdf5 !important; color: #059669 !important; }
+    .bg-warning-subtle { background-color: #fffbeb !important; color: #d97706 !important; }
+</style>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

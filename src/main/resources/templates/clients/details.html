@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Détails du Client - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 1000px;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="/clients" class="btn btn-link link-dark text-decoration-none p-0 me-3">
+                        <i class="bi bi-chevron-left fs-4"></i>
+                    </a>
+                    <h2 class="fw-bold mb-0">Détails du Client</h2>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Basic Info -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 p-4 mb-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <div class="d-flex align-items-center mb-4">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width:64px; height:64px; color: #2563eb; font-size:1.5rem; font-weight:700; border: 2px solid #e5e7eb;">
+                                   <span th:text="${#strings.substring(client.nom, 0, 1)}">R</span>
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold mb-1" th:text="${client.nom} + ' ' + ${client.prenom}">Rakoto Jean</h3>
+                                    <span class="badge bg-light text-dark font-monospace" th:text="'ID: #' + ${client.id}">ID: #1</span>
+                                </div>
+                            </div>
+
+                            <hr class="my-4" style="opacity: 0.05;">
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <h6 class="text-uppercase small fw-bold text-muted mb-2" style="letter-spacing:1px;">Email</h6>
+                                    <p class="text-dark fw-medium" th:text="${client.email}">jean@email.com</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-uppercase small fw-bold text-muted mb-2" style="letter-spacing:1px;">Téléphone</h6>
+                                    <p class="text-dark fw-medium" th:text="${client.telephone}">034 12 345 67</p>
+                                </div>
+                                <div class="col-12">
+                                    <h6 class="text-uppercase small fw-bold text-muted mb-2" style="letter-spacing:1px;">Adresse</h6>
+                                    <p class="text-secondary" th:text="${client.adresse != null && !client.adresse.isEmpty() ? client.adresse : 'Non renseignée'}">Antananarivo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status and Actions -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 p-4 mb-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important;  height:100%;">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-4" style="letter-spacing:1px;">Status & Documents</h6>
+                            
+                            <div class="mb-4 p-3 rounded-3" style=" border:1px solid #f3f4f6;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-muted small fw-bold">PERMIS DE CONDUIRE</span>
+                                    <i class="bi bi-file-earmark-person ms-2" style="color: #2563eb;"></i>
+                                </div>
+                                <div th:if="${client.numeroPermis != null && !client.numeroPermis.isEmpty()}">
+                                    <div class="fw-bold text-dark mb-1" th:text="${client.numeroPermis}">PERMIS12345</div>
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1">Valide</span>
+                                </div>
+                                <div th:unless="${client.numeroPermis != null && !client.numeroPermis.isEmpty()}" class="text-muted small italic">
+                                    Non renseigné
+                                </div>
+                            </div>
+
+                            <div class="mb-4 p-3 rounded-3" style=" border:1px solid #f3f4f6;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-bold">PRÉFÉRENCE CHAUFFEUR</span>
+                                    <i class="bi bi-person-badge ms-2" style="color: #2563eb;"></i>
+                                </div>
+                                <span th:if="${client.avecChauffeur}" class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2 fw-bold">Besoin d'un chauffeur</span>
+                                <span th:unless="${client.avecChauffeur}" class="text-muted small">Autonome</span>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-auto pt-4 border-top">
+                                <a th:href="@{'/locations/ajouter?client=' + ${client.id}}" class="btn btn-primary py-3 rounded-pill fw-bold shadow-sm" style="background:#2563eb; border:none;">
+                                    <i class="bi bi-calendar-check me-2"></i> Nouvelle location
+                                </a>
+                                <a th:href="@{'/clients/modifier/' + ${client.id}}" class="btn btn-light border py-3 rounded-pill fw-bold" style=" color:#4b5563;">
+                                    <i class="bi bi-pencil me-2"></i> Modifier le profil
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

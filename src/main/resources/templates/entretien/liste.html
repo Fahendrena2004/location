@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Maintenance & Entretiens - AutoRent</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+            <!-- Header Section -->
+            <div class="d-flex justify-content-between align-items-end mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-2" style="font-size: 0.75rem; letter-spacing: 0.05rem; text-transform: uppercase;">
+                            <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-muted">Platform</a></li>
+                            <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Maintenance</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-bold text-main mb-1">Suivi de Maintenance</h2>
+                    <p class="text-muted small mb-0">Gestion technique et historique des interventions de la flotte</p>
+                </div>
+                <a sec:authorize="hasRole('ADMIN')" href="/entretien/planifier" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                    <i class="bi bi-plus-lg"></i> Planifier une Intervention
+                </a>
+            </div>
+
+            <!-- Dashboard de Maintenance Quick Stats -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 20px;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-primary-soft text-primary d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 1.5rem;">
+                                <i class="bi bi-tools"></i>
+                            </div>
+                            <div>
+                                <p class="text-muted small fw-bold text-uppercase mb-1" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Interventions Totales</p>
+                                <h3 class="fw-bold mb-0 text-main" th:text="${#lists.size(entretiens)}">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtre par véhicule -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px;">
+                <div class="card-body p-3">
+                    <form th:action="@{/entretien}" method="get" class="row g-3 align-items-center">
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0 text-muted" style="border-radius: 10px 0 0 10px;">
+                                    <i class="bi bi-car-front"></i>
+                                </span>
+                                <select name="voitureId" class="form-select border-0 bg-light py-2" style="border-radius: 0 10px 10px 0;">
+                                    <option value="">Toute la flotte (Historique global)</option>
+                                    <option th:each="v : ${voitures}" 
+                                            th:value="${v.id}" 
+                                            th:text="${v.marque} + ' ' + ${v.modele} + ' (' + ${v.plaqueImmatriculation} + ')'"
+                                            th:selected="${v.id == selectedVoitureId}">Véhicule</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-grow-1 shadow-sm rounded-pill">
+                                    <i class="bi bi-filter me-2"></i>Filtrer
+                                </button>
+                                <a th:if="${selectedVoitureId != null}" th:href="@{/entretien}" class="btn btn-light border rounded-pill px-3 shadow-sm">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light-subtle text-muted fw-bold small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05rem;">
+                            <tr>
+                                <th class="px-4 py-3 border-0">Véhicule</th>
+                                <th class="py-3 border-0">Type d'Intervention</th>
+                                <th class="py-3 border-0">Mécanicien</th>
+                                <th class="py-3 border-0">Kilométrage</th>
+                                <th class="py-3 border-0">Coût Estimé</th>
+                                <th class="py-3 border-0">État</th>
+                                <th class="py-3 border-0 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="border-top-0">
+                            <tr th:each="entretien : ${entretiens}">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-sm bg-light rounded-2 d-flex align-items-center justify-content-center text-primary" style="width: 40px; height: 32px;">
+                                            <i class="bi bi-car-front"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-main" th:text="${entretien.voiture.marque} + ' ' + ${entretien.voiture.modele}">Renault Clio</div>
+                                            <div class="text-muted smaller" th:text="${entretien.voiture.plaqueImmatriculation}">1234 AB</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3">
+                                    <div class="fw-bold text-main small" th:text="${entretien.typeEntretien}">Vidange</div>
+                                    <div class="text-muted smaller">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        <span th:text="${#temporals.format(entretien.dateEntretien, 'dd MMM yyyy')}">01 Jan 2024</span>
+                                    </div>
+                                </td>
+                                <td class="py-3 small text-muted" th:text="${entretien.mecanicien ?: 'N/A'}">Jean</td>
+                                <td class="py-3">
+                                    <span class="badge bg-light text-dark border-0 fw-medium p-2" th:text="${entretien.kilometrage != null ? (entretien.kilometrage + ' Km') : 'N/A'}">0 Km</span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="fw-bold text-primary amount-convertible" 
+                                          th:data-mga="${entretien.cout ?: 0}"
+                                          th:text="${#numbers.formatDecimal(entretien.cout ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">0 Ar</span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="badge rounded-pill px-3 py-2 fw-bold" 
+                                          th:classappend="${entretien.termine ? 'badge-soft-success' : 'badge-soft-warning'}"
+                                          th:text="${entretien.termine ? 'Terminé' : 'En plan'}">En cours</span>
+                                </td>
+                                 <td sec:authorize="hasRole('ADMIN')" class="py-3 text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <div class="dropdown">
+                                            <button class="btn-action-square" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="border-radius:12px;">
+                                                <li><a class="dropdown-item rounded-3 py-2" th:href="@{'/entretien/' + ${entretien.id}}"><i class="bi bi-eye me-2"></i>Détails</a></li>
+                                                <li><a class="dropdown-item rounded-3 py-2" th:href="@{'/entretien/modifier/' + ${entretien.id}}"><i class="bi bi-pencil me-2"></i>Modifier</a></li>
+                                                <li>
+                                                    <form th:action="@{'/entretien/' + ${entretien.id} + '/toggle'}" method="post" class="d-inline">
+                                                        <button type="submit" class="dropdown-item rounded-3 py-2" th:classappend="${entretien.termine ? 'text-warning' : 'text-success'}">
+                                                            <i class="bi" th:classappend="${entretien.termine ? 'bi-arrow-counterclockwise' : 'bi-check-circle'}"></i> 
+                                                            <span th:text="${entretien.termine ? 'Réouvrir' : 'Finaliser'}"></span>
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item rounded-3 py-2 text-danger" th:href="@{'/entretien/supprimer/' + ${entretien.id}}" onclick="return confirm('Supprimer cet entretien?')"><i class="bi bi-trash me-2"></i>Supprimer</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(entretiens)}">
+                                <td colspan="7" class="text-center py-5 text-muted">Aucun entretien enregistré pour le moment.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .icon-box { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .table th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .badge-soft-success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .badge-soft-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+
+</html>

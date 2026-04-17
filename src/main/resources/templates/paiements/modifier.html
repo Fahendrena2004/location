@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Modifier le Paiement - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 900px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/paiements" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Modifier le Paiement</h2>
+                        <p class="text-muted small mb-0">Ajustez les détails de la transaction ou mettez à jour le statut de règlement</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 mb-5">
+                    <form th:action="@{'/paiements/modifier/' + ${paiement.id}}" method="post">
+                        <div class="row g-4">
+                            <div class="col-12 text-start">
+                                <label for="locationSelect" class="form-label text-main fw-bold small text-uppercase mb-2">Location concernée</label>
+                                <select class="form-select py-2" id="locationSelect" name="locationId"
+                                        onchange="remplirMontant(this)" required>
+                                    <option value="">Sélectionner une location</option>
+                                    <option th:each="location : ${locations}"
+                                            th:value="${location.id}"
+                                            th:attr="data-montant=${location.montantTotal}"
+                                            th:selected="${paiement.location != null and paiement.location.id == location.id}"
+                                            th:text="${'#' + location.id + (location.client != null ? ' - ' + location.client.nomComplet : '') + (location.montantTotal != null ? ' (' + #numbers.formatDecimal(location.montantTotal, 1, 'COMMA', 0, 'POINT') + ' Ar)' : '')}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="montantInput" class="form-label text-main fw-bold small text-uppercase mb-2">Montant (Ar)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">Ar</span>
+                                    <input type="number" step="1000" class="form-control py-2 ps-0 border-start-0" id="montantInput"
+                                           name="montant" th:value="${#numbers.formatDecimal(paiement.montant, 0, '', 0, '')}" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="datePaiement" class="form-label text-main fw-bold small text-uppercase mb-2">Date du paiement</label>
+                                <input type="date" class="form-control py-2" name="datePaiement"
+                                       th:value="${paiement.datePaiement}" required>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="modePaiement" class="form-label text-main fw-bold small text-uppercase mb-2">Mode de paiement</label>
+                                <select class="form-select py-2" name="modePaiement" required>
+                                    <option value="ESPECES" th:selected="${paiement.modePaiement == 'ESPECES'}">Espèces</option>
+                                    <option value="CARTE"   th:selected="${paiement.modePaiement == 'CARTE'}">Carte bancaire</option>
+                                    <option value="CHEQUE"  th:selected="${paiement.modePaiement == 'CHEQUE'}">Chèque</option>
+                                    <option value="VIREMENT" th:selected="${paiement.modePaiement == 'VIREMENT'}">Virement</option>
+                                    <option value="MOBILE_MONEY" th:selected="${paiement.modePaiement == 'MOBILE_MONEY'}">Mobile Money</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="reference" class="form-label text-main fw-bold small text-uppercase mb-2">Référence</label>
+                                <input type="text" class="form-control py-2" name="reference" th:value="${paiement.reference}" placeholder="N° transaction / Note">
+                            </div>
+
+                            <div class="col-md-6 text-start">
+                                <label for="statut" class="form-label text-main fw-bold small text-uppercase mb-2">Statut de la transaction</label>
+                                <select class="form-select py-2 fw-bold" name="statut" th:classappend="'text-' + ${#strings.toLowerCase(paiement.statut)}">
+                                    <option value="EFFECTUE"   class="text-success" th:selected="${paiement.statut != null and paiement.statut.name() == 'EFFECTUE'}">Confirmé / Effectué</option>
+                                    <option value="EN_ATTENTE" class="text-warning" th:selected="${paiement.statut != null and paiement.statut.name() == 'EN_ATTENTE'}">En attente / Vérification</option>
+                                    <option value="ECHOUE"     class="text-danger"  th:selected="${paiement.statut != null and paiement.statut.name() == 'ECHOUE'}">Échoué / Annulé</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                            <a href="/paiements" class="btn btn-light px-4">Annuler</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                <i class="bi bi-check2-circle me-2"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #montantInput.auto-filled { border-color: #198754; background-color: rgba(25, 135, 84, 0.05); color: #198754; font-weight: 600; }
+        .text-start { text-align: left !important; }
+    </style>
+
+    <script>
+        function remplirMontant(select) {
+            const option = select.options[select.selectedIndex];
+            const montant = option.getAttribute('data-montant');
+            const montantInput = document.getElementById('montantInput');
+            if (montant && montant !== '') {
+                montantInput.value = Math.round(parseFloat(montant));
+                montantInput.classList.add('auto-filled');
+            } else {
+                montantInput.classList.remove('auto-filled');
+            }
+        }
+    </script>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

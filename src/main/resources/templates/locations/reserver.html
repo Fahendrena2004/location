@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Réserver un véhicule - Location Voitures</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 1000px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/voitures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Ma Réservation</h2>
+                        <p class="text-muted small mb-0">Sélectionnez vos options et planifiez votre voyage</p>
+                    </div>
+                </div>
+
+                <!-- Stepper UI -->
+                <div class="stepper-container mb-5">
+                    <div class="stepper">
+                        <div class="step active" id="stepIndicator1">
+                            <div class="step-icon">1</div>
+                            <div class="step-label">Configuration</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" id="stepIndicator2">
+                            <div class="step-icon">2</div>
+                            <div class="step-label">Options</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" id="stepIndicator3">
+                            <div class="step-icon">3</div>
+                            <div class="step-label">Confirmation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <form th:action="@{/locations/reserver}" th:object="${location}" method="post" id="reservationForm">
+                    <div th:if="${error}" class="alert alert-danger border-0 shadow-sm mb-4 d-flex align-items-center rounded-3">
+                        <i class="bi bi-exclamation-circle-fill me-2 fs-5"></i>
+                        <div class="fw-medium" th:text="${error}">Message d'erreur</div>
+                    </div>
+
+                    <!-- STEP 1: Dates & Vehicles -->
+                    <div class="reservation-step" id="reservationStep1">
+                        <h5 class="fw-bold mb-4 text-primary"><i class="bi bi-calendar-event me-2"></i> Étape 1 : Période & Véhicules</h5>
+                        
+                        <!-- Date Selection Section -->
+                        <div class="card border-0 shadow-sm p-4 mb-5">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label for="dateDebut" class="form-label text-main fw-bold small text-uppercase mb-2">Date de Départ</label>
+                                    <input type="date" class="form-control py-2" th:attr="min=${#temporals.format(today, 'yyyy-MM-dd')}" th:value="${#temporals.format(location.dateDebut, 'yyyy-MM-dd')}" name="dateDebut" id="dateDebut" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="dateFin" class="form-label text-main fw-bold small text-uppercase mb-2">Date de Retour</label>
+                                    <input type="date" class="form-control py-2" th:attr="min=${#temporals.format(today, 'yyyy-MM-dd')}" th:value="${#temporals.format(location.dateFin, 'yyyy-MM-dd')}" name="dateFin" id="dateFin" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Selection Section -->
+                        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                            <i class="bi bi-car-front text-primary"></i> 
+                            Choisir votre/vos véhicule(s) <span class="badge bg-primary-soft text-primary ms-2" style="font-size: 0.6rem;" id="countVoitures">0 sélectionnés</span>
+                        </h5>
+                        <div class="selectable-grid mb-4">
+                            <div th:each="voiture : ${voitures}" 
+                                 class="selectable-card voiture-selectable-card" 
+                                 th:classappend="${location.voitures != null and location.voitures.contains(voiture)} ? 'selected' : ''"
+                                 th:data-price="${voiture.prixParJour}"
+                                 th:data-voiture-id="${voiture.id}"
+                                 onclick="toggleSelection(this, 'voitureInput')">
+                                
+                                <div class="card-checkbox-indicator"></div>
+                                
+                                <div class="card-img-wrapper">
+                                    <img th:if="${voiture.images != null and !voiture.images.isEmpty()}" 
+                                         th:src="${voiture.images[0]}" alt="Vimage">
+                                    <i th:unless="${voiture.images != null and !voiture.images.isEmpty()}" class="bi bi-car-front card-img-placeholder"></i>
+                                    <div class="card-price-tag" th:text="${voiture.prixParJour != null ? #numbers.formatDecimal(voiture.prixParJour, 0, 'COMMA', 0, 'POINT') : '0'} + ' Ar/j'"></div>
+                                </div>
+                                
+                                <div class="card-body">
+                                    <p class="card-title mb-1" th:text="${voiture.marque} + ' ' + ${voiture.modele}"></p>
+                                    <div class="d-flex flex-wrap gap-1 mt-2">
+                                        <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.categorie}">SUV</span>
+                                        <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.transmission}">Auto</span>
+                                        <span class="badge bg-light text-muted border" style="font-size: 0.65rem;" th:text="${voiture.carburant}">Diesel</span>
+                                    </div>
+                                </div>
+                                
+                                <input type="checkbox" name="voitures" th:value="${voiture.id}" 
+                                       th:checked="${location.voitures != null and location.voitures.contains(voiture)}"
+                                       class="voitureInput d-none">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-primary px-5 py-2 shadow" onclick="nextStep(2)">Suivant <i class="bi bi-chevron-right ms-2"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Chauffeur -->
+                    <div class="reservation-step d-none" id="reservationStep2">
+                        <h5 class="fw-bold mb-4 text-primary"><i class="bi bi-person-badge me-2"></i> Étape 2 : Chauffeur & Options</h5>
+                        
+                        <div class="selectable-grid mb-5">
+                            <div th:each="chauffeur : ${chauffeurs}" 
+                                 class="selectable-card"
+                                 th:classappend="${location.chauffeurs != null and location.chauffeurs.contains(chauffeur)} ? 'selected' : ''"
+                                 th:data-price="${chauffeur.tarifJournalier}"
+                                 onclick="toggleSelection(this, 'chauffeurInput')">
+                                
+                                <div class="card-checkbox-indicator"></div>
+                                
+                                <div class="card-body pt-4">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        <div class="avatar bg-primary-soft text-primary d-flex align-items-center justify-content-center fw-bold" 
+                                             style="width: 48px; height: 48px; border-radius: 12px; font-size: 1.2rem;">
+                                            <span th:text="${chauffeur.prenom != null and !chauffeur.prenom.isEmpty() ? #strings.substring(chauffeur.prenom, 0, 1).toUpperCase() : 'C'}">C</span>
+                                        </div>
+                                        <div>
+                                            <p class="card-title mb-0" th:text="${chauffeur.prenom} + ' ' + ${chauffeur.nom}"></p>
+                                            <p class="card-subtitle mb-0">Chauffeur Professionnel</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                        <span class="text-muted small">Tarif journalier</span>
+                                        <span class="fw-bold text-primary" th:text="${#numbers.formatDecimal(chauffeur.tarifJournalier, 0, 'COMMA', 0, 'POINT')} + ' Ar'"></span>
+                                    </div>
+                                </div>
+                                
+                                <input type="checkbox" name="chauffeurs" th:value="${chauffeur.id}"
+                                       th:checked="${location.chauffeurs != null and location.chauffeurs.contains(chauffeur)}"
+                                       class="chauffeurInput d-none">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-light border px-4" onclick="prevStep(1)"><i class="bi bi-chevron-left me-2"></i> Précédent</button>
+                            <button type="button" class="btn btn-primary px-5 py-2 shadow" onclick="nextStep(3)">Suivant <i class="bi bi-chevron-right ms-2"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Summary & Signature -->
+                    <div class="reservation-step d-none" id="reservationStep3">
+                        <h5 class="fw-bold mb-4 text-primary"><i class="bi bi-check-circle me-2"></i> Étape 3 : Confirmation & Signature</h5>
+                        
+                        <!-- Résumé de la Location -->
+                        <div id="summaryCard" class="card border-0 shadow-sm p-4 mb-4 glass" style="border-left: 4px solid var(--primary) !important;">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-4" style="letter-spacing:1px;">Résumé de votre demande</h6>
+                            <div class="row g-4">
+                                <div class="col-md-7">
+                                    <div class="d-flex flex-column gap-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted"><i class="bi bi-calendar3 me-2"></i> Durée</span>
+                                            <span class="fw-bold" id="summaryDuration">0 jour</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted"><i class="bi bi-car-front me-2"></i> Véhicules</span>
+                                            <span class="fw-bold amount-convertible" id="summaryVoitures" data-mga="0">0 Ar</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-muted"><i class="bi bi-person-badge me-2"></i> Chauffeurs</span>
+                                            <span class="fw-bold amount-convertible" id="summaryChauffeurs" data-mga="0">0 Ar</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                            <span class="text-main fw-bold">Total Estimé</span>
+                                            <span class="fw-bold text-primary fs-5 amount-convertible" id="summaryTotal" data-mga="0">0 Ar</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 border-start ps-lg-4">
+                                    <div class="p-3 bg-primary-soft rounded-3">
+                                        <p class="mb-0 smaller text-primary fw-medium">
+                                            <i class="bi bi-info-circle me-1"></i> Cette estimation est basée sur les tarifs actuels et sera confirmée par l'administrateur.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="card border-0 shadow-sm p-4 mb-4">
+                            <h6 class="text-main fw-bold small text-uppercase mb-3">Signature digitale du contrat</h6>
+                            <p class="text-muted small mb-4">En signant ci-dessous, vous acceptez les conditions générales de location.</p>
+                            
+                            <div class="text-center">
+                                <canvas id="signatureCanvas" width="500" height="200" class="border rounded-4 shadow-sm bg-light" style="cursor: crosshair; touch-action: none; width: 100%; max-width: 500px; display: block; margin: 0 auto;"></canvas>
+                                <input type="hidden" th:field="*{signatureClient}" id="signatureClient">
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-sm btn-light border-0 text-muted rounded-pill px-3" id="clearSignature">
+                                        <i class="bi bi-eraser me-1"></i> Réinitialiser
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-light border px-4" onclick="prevStep(2)"><i class="bi bi-chevron-left me-2"></i> Précédent</button>
+                            <button type="button" class="btn btn-primary px-5 py-2 shadow-lg" id="submitBtn" onclick="validateAndSubmit()">
+                                <i class="bi bi-send me-2"></i> Envoyer ma demande
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Stepper UI Styles */
+        .stepper-container {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+        .stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            flex: 1;
+        }
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+        .step.active .step-icon {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 5px var(--primary-soft);
+        }
+        .step.completed .step-icon {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .step-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .step.active .step-label { color: var(--primary); }
+        
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            margin-bottom: 25px;
+            z-index: 1;
+        }
+        .step-line.active { background: var(--primary); }
+
+        .reservation-step {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bg-primary-soft { background-color: rgba(79, 70, 229, 0.1); }
+        .bg-warning-soft { background-color: rgba(245, 158, 11, 0.1); }
+    </style>
+
+    <script th:inline="javascript">
+        let currentStep = 1;
+        let canvas, ctx, drawing = false, lastPos = {x:0, y:0};
+
+        function showStep(step) {
+            document.querySelectorAll('.reservation-step').forEach(el => el.classList.add('d-none'));
+            document.getElementById('reservationStep' + step).classList.remove('d-none');
+            
+            // Update Indicators
+            for(let i=1; i<=3; i++) {
+                const indicator = document.getElementById('stepIndicator' + i);
+                if(i < step) {
+                    indicator.classList.add('completed');
+                    indicator.classList.remove('active');
+                } else if(i === step) {
+                    indicator.classList.add('active');
+                    indicator.classList.remove('completed');
+                } else {
+                    indicator.classList.remove('active', 'completed');
+                }
+            }
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (step === 3) {
+                initSignature();
+                updatePricePreview(); // Ensure summary is updated
+            }
+        }
+
+        function nextStep(step) {
+            // Basic validation
+            if (step === 2) {
+                const dateDebut = document.getElementById('dateDebut').value;
+                const dateFin = document.getElementById('dateFin').value;
+                const voitures = document.querySelectorAll('.voitureInput:checked');
+                
+                if (!dateDebut || !dateFin) { alert('Veuillez choisir les dates.'); return; }
+                if (voitures.length === 0) { alert('Veuillez choisir au moins un véhicule.'); return; }
+            }
+            showStep(step);
+        }
+
+        function prevStep(step) {
+            showStep(step);
+        }
+
+        function toggleSelection(card, inputClass) {
+            const checkbox = card.querySelector('.' + inputClass);
+            checkbox.checked = !checkbox.checked;
+            card.classList.toggle('selected', checkbox.checked);
+            updatePricePreview();
+        }
+
+        function updatePricePreview() {
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+            
+            const voitureCards = document.querySelectorAll('.voitureInput:checked');
+            const chauffeurCards = document.querySelectorAll('.chauffeurInput:checked');
+            
+            document.getElementById('countVoitures').textContent = voitureCards.length + ' sélectionné(s)';
+            
+            const chauffeurBadge = document.getElementById('countChauffeurs');
+            if (chauffeurBadge) chauffeurBadge.textContent = chauffeurCards.length + ' sélectionné(s)';
+
+            if (!dateDebut || !dateFin) return;
+
+            const start = new Date(dateDebut);
+            const end = new Date(dateFin);
+            const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) || 0;
+
+            if (diffDays <= 0) return;
+
+            document.getElementById('summaryDuration').textContent = diffDays + (diffDays > 1 ? ' jours' : ' jour');
+
+            let vTotal = 0;
+            voitureCards.forEach(input => {
+                vTotal += parseFloat(input.closest('.selectable-card').dataset.price || 0);
+            });
+            const vGrandTotal = vTotal * diffDays;
+            
+            let cTotal = 0;
+            chauffeurCards.forEach(input => {
+                cTotal += parseFloat(input.closest('.selectable-card').dataset.price || 0);
+            });
+            const cGrandTotal = cTotal * diffDays;
+
+            const finalTotal = vGrandTotal + cGrandTotal;
+
+            setAmount('summaryVoitures', vGrandTotal);
+            setAmount('summaryChauffeurs', cGrandTotal);
+            setAmount('summaryTotal', finalTotal);
+            
+            if (window.formatCurrency) { window.formatCurrency(); }
+        }
+
+        function setAmount(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.dataset.mga = value;
+            el.textContent = new Intl.NumberFormat('fr-FR').format(Math.round(value)) + ' Ar';
+        }
+
+        // Signature Logic
+        function initSignature() {
+            canvas = document.getElementById('signatureCanvas');
+            if(!canvas) return;
+            ctx = canvas.getContext('2d');
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#000000';
+            
+            canvas.onmousedown = (e) => { drawing = true; lastPos = getPos(canvas, e); };
+            canvas.onmouseup = () => drawing = false;
+            canvas.onmousemove = (e) => {
+                if(!drawing) return;
+                const mousePos = getPos(canvas, e);
+                ctx.beginPath();
+                ctx.moveTo(lastPos.x, lastPos.y);
+                ctx.lineTo(mousePos.x, mousePos.y);
+                ctx.stroke();
+                lastPos = mousePos;
+            };
+
+            // Touch support
+            canvas.addEventListener("touchstart", (e) => {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousedown", { clientX: touch.clientX, clientY: touch.clientY });
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+            canvas.addEventListener("touchend", () => {
+                canvas.dispatchEvent(new MouseEvent("mouseup", {}));
+            }, false);
+            canvas.addEventListener("touchmove", (e) => {
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent("mousemove", { clientX: touch.clientX, clientY: touch.clientY });
+                canvas.dispatchEvent(mouseEvent);
+            }, false);
+
+            document.getElementById('clearSignature').onclick = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function getPos(canvasDom, event) {
+            const rect = canvasDom.getBoundingClientRect();
+            return { x: (event.clientX || event.touches[0].clientX) - rect.left, y: (event.clientY || event.touches[0].clientY) - rect.top };
+        }
+
+        function validateAndSubmit() {
+            const blank = document.createElement('canvas');
+            blank.width = canvas.width;
+            blank.height = canvas.height;
+            if (canvas.toDataURL() === blank.toDataURL()) {
+                alert('Veuillez signer le contrat avant de valider.');
+                return;
+            }
+            document.getElementById('signatureClient').value = canvas.toDataURL();
+            document.getElementById('reservationForm').submit();
+        }
+
+        document.getElementById('dateDebut').addEventListener('change', onDateChange);
+        document.getElementById('dateFin').addEventListener('change', onDateChange);
+
+        function onDateChange() {
+            const dateDebut = document.getElementById('dateDebut').value;
+            const dateFin = document.getElementById('dateFin').value;
+            // Always recalculate price
+            updatePricePreview();
+            // If both dates picked, check availability
+            if (dateDebut && dateFin && dateFin >= dateDebut) {
+                checkVoitureAvailability(dateDebut, dateFin);
+            }
+        }
+
+        function checkVoitureAvailability(dateDebut, dateFin) {
+            fetch(`/api/locations/voitures/disponibles?dateDebut=${dateDebut}&dateFin=${dateFin}`)
+                .then(res => res.json())
+                .then(disponibles => {
+                    const disponibleIds = new Set(disponibles.map(v => String(v.id)));
+                    document.querySelectorAll('.voiture-selectable-card').forEach(card => {
+                        const voitureId = String(card.dataset.voitureId);
+                        const checkbox = card.querySelector('.voitureInput');
+                        if (!disponibleIds.has(voitureId)) {
+                            // Mark as unavailable
+                            card.classList.add('card-unavailable');
+                            card.classList.remove('selected');
+                            if (checkbox) checkbox.checked = false;
+                            // Show unavailability badge
+                            let badge = card.querySelector('.unavailable-badge');
+                            if (!badge) {
+                                badge = document.createElement('div');
+                                badge.className = 'unavailable-badge';
+                                badge.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Réservé';
+                                card.appendChild(badge);
+                            }
+                            card.onclick = null;
+                        } else {
+                            // Mark as available
+                            card.classList.remove('card-unavailable');
+                            const badge = card.querySelector('.unavailable-badge');
+                            if (badge) badge.remove();
+                            card.onclick = function() { toggleSelection(this, 'voitureInput'); };
+                        }
+                    });
+                    updatePricePreview();
+                })
+                .catch(err => console.warn('Availability check failed', err));
+        }
+    </script>
+
+    <style>
+        .card-unavailable {
+            opacity: 0.45;
+            filter: grayscale(60%);
+            cursor: not-allowed !important;
+            pointer-events: all;
+        }
+        .card-unavailable .card-checkbox-indicator { display: none; }
+        .unavailable-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .selectable-card { position: relative; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+
+

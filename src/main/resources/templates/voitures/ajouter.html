@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Nouvelle Voiture - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 900px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/voitures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Nouvelle Voiture</h2>
+                        <p class="text-muted small mb-0">Ajoutez un nouveau véhicule à votre catalogue</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 mb-5 glass">
+                    <form th:action="@{/voitures/ajouter}" th:object="${voiture}" method="post" enctype="multipart/form-data">
+                        <div class="row g-4">
+                                <label for="marque" class="form-label text-main fw-bold small text-uppercase mb-2">Marque</label>
+                                <input type="text" th:field="*{marque}" id="marque" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('marque')} ? 'is-invalid' : ''"
+                                       placeholder="ex: Toyota" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('marque')}" th:errors="*{marque}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modele" class="form-label text-main fw-bold small text-uppercase mb-2">Modèle</label>
+                                <input type="text" th:field="*{modele}" id="modele" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('modele')} ? 'is-invalid' : ''"
+                                       placeholder="ex: Corolla" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('modele')}" th:errors="*{modele}"></div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="annee" class="form-label text-main fw-bold small text-uppercase mb-2">Année</label>
+                                <input type="number" th:field="*{annee}" id="annee" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('annee')} ? 'is-invalid' : ''"
+                                       min="2000" max="2026" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('annee')}" th:errors="*{annee}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="prixParJour" class="form-label text-main fw-bold small text-uppercase mb-2">Tarif Journalier (Ar)</label>
+                                <input type="number" th:field="*{prixParJour}" id="prixParJour" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('prixParJour')} ? 'is-invalid' : ''"
+                                       required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('prixParJour')}" th:errors="*{prixParJour}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="plaqueImmatriculation" class="form-label text-main fw-bold small text-uppercase mb-2">Immatriculation</label>
+                                <input type="text" th:field="*{plaqueImmatriculation}" id="plaqueImmatriculation" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('plaqueImmatriculation')} ? 'is-invalid' : ''"
+                                       placeholder="ex: 1234 TAB" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('plaqueImmatriculation')}" th:errors="*{plaqueImmatriculation}"></div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="categorie" class="form-label text-main fw-bold small text-uppercase mb-2">Catégorie</label>
+                                <select th:field="*{categorie}" id="categorie" class="form-select py-2" required>
+                                    <option value="Berline">Berline</option>
+                                    <option value="SUV">SUV</option>
+                                    <option value="Citadine">Citadine</option>
+                                    <option value="Luxe">Luxe</option>
+                                    <option value="Utilitaire">Utilitaire</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="places" class="form-label text-main fw-bold small text-uppercase mb-2">Places</label>
+                                <select th:field="*{places}" id="places" class="form-select py-2" required>
+                                    <option value="2">2 places</option>
+                                    <option value="4">4 places</option>
+                                    <option value="5" selected>5 places</option>
+                                    <option value="7">7+ places</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="transmission" class="form-label text-main fw-bold small text-uppercase mb-2">Transmission</label>
+                                <select th:field="*{transmission}" id="transmission" class="form-select py-2" required>
+                                    <option value="Manuelle">Manuelle</option>
+                                    <option value="Automatique">Automatique</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="carburant" class="form-label text-main fw-bold small text-uppercase mb-2">Carburant</label>
+                                <select th:field="*{carburant}" id="carburant" class="form-select py-2" required>
+                                    <option value="Essence">Essence</option>
+                                    <option value="Diesel">Diesel</option>
+                                    <option value="Hybride">Hybride</option>
+                                    <option value="Electrique">Electrique</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="couleur" class="form-label text-main fw-bold small text-uppercase mb-2">Couleur</label>
+                                <input type="text" th:field="*{couleur}" id="couleur" class="form-control py-2" placeholder="ex: Blanc Cristal" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="description" class="form-label text-main fw-bold small text-uppercase mb-2">Description</label>
+                                <textarea th:field="*{description}" id="description" class="form-control" rows="4" placeholder="Détails supplémentaires..."></textarea>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="bg-light p-4 rounded-3 border-dashed">
+                                    <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block">Médias du véhicule</label>
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <label for="imageFiles" class="form-label opacity-75 small text-muted">Sélectionnez une ou plusieurs images</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white border-end-0"><i class="bi bi-images text-primary"></i></span>
+                                                <input type="file" name="imageFiles" id="imageFiles" class="form-control border-start-0" accept="image/*" multiple>
+                                            </div>
+                                            <div class="form-text mt-2 small">Formats acceptés : JPG, PNG, WEBP. Taille max : 10Mo.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                            <a href="/voitures" class="btn btn-light px-4">Annuler</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                Enregistrer la voiture
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-label { color: #4b5563; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .form-control { border-radius: 10px; padding: 12px; border: 1px solid #f3f4f6;  transition: all 0.2s; font-size: 0.9rem; }
+        .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); outline: none; background-color: #fff; }
+        .btn-link:hover { color: #2563eb !important; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header}">
+    <title>Chauffeurs - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Personnel Chauffeur</h2>
+                    <p class="text-muted small mb-0">Gérez votre équipe de chauffeurs et leur disponibilité</p>
+                </div>
+                <a sec:authorize="hasRole('ADMIN')" href="/chauffeurs/ajouter" class="btn btn-primary px-4 shadow-sm">
+                    <i class="bi bi-person-plus me-2"></i> Ajouter un chauffeur
+                </a>
+            </div>
+
+            <div class="table-container shadow-sm border-0">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Identité</th>
+                            <th>Coordonnées</th>
+                            <th>N° Permis</th>
+                            <th>Taux Jour / Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="chauffeur : ${chauffeurs}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary-soft d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; color: var(--primary); font-weight: 800; font-size: 0.9rem;">
+                                        <span th:text="${#strings.substring(chauffeur.nom, 0, 1)}">J</span>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-main" th:text="${chauffeur.prenom} + ' ' + ${chauffeur.nom}">Jean Rakoto</div>
+                                        <div class="text-muted smaller">ID: <span th:text="'#' + ${chauffeur.id}">#1</span></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column small">
+                                    <span class="text-main fw-medium"><i class="bi bi-telephone me-1 opacity-50"></i><span th:text="${chauffeur.telephone}">-</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark font-monospace" th:text="${chauffeur.numeroPermis}">-</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-main fw-bold" th:text="${#numbers.formatDecimal(chauffeur.tarifJournalier ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">-</span>
+                                    <span class="badge rounded-pill fw-bold" 
+                                          th:classappend="${chauffeur.disponible ? 'badge-soft-success' : 'badge-soft-danger'}"
+                                          th:text="${chauffeur.disponible ? 'Disponible' : 'Occupé'}">Disponible</span>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn-action-square ms-auto" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                     <ul sec:authorize="hasRole('ADMIN')" class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <li>
+                                            <a class="dropdown-item py-2" th:href="@{'/chauffeurs/modifier/' + ${chauffeur.id}}">
+                                                <i class="bi bi-pencil me-2 text-primary"></i> Modifier
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider opacity-10"></li>
+                                        <li>
+                                            <a class="dropdown-item py-2 text-danger" th:href="@{'/chauffeurs/supprimer/' + ${chauffeur.id}}" 
+                                               onclick="return confirm('Supprimer ce chauffeur ?')">
+                                                <i class="bi bi-trash me-2"></i> Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(chauffeurs)}">
+                            <td colspan="5" class="text-center py-5 text-muted opacity-50">
+                                <i class="bi bi-people fs-1 d-block mb-3"></i>
+                                <p class="mb-0">Aucun chauffeur n'est enregistré pour le moment.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

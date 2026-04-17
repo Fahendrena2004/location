@@ -1,0 +1,51 @@
+LISTE DES FONCTIONNALITÉS DU PROJET - LOCATION DE VOITURE
+
+1. Gestion de la Flotte (Véhicules)
+   - Ajout, modification, suppression et consultation des véhicules.
+   - Suivi en temps réel du statut (Disponible, Louée, En Maintenance).
+   - Définition des tarifs journaliers par type de véhicule.
+   - Algorithme de détection de chevauchement pour éviter les doubles réservations.
+   - Restriction automatique de location pour les véhicules en maintenance.
+
+2. Gestion des Clients
+   - Registre complet des clients (Nom, Adresse, Email, Téléphone).
+   - Distinction entre clients physiques (Particuliers) et moraux (Entreprises).
+   - Suivi des données administratives (CIN, Date de naissance).
+
+3. Gestion des Chauffeurs
+   - Gestion du personnel de conduite.
+   - Suivi de la disponibilité et gestion des tarifs journaliers des chauffeurs.
+
+4. Gestion des Locations & Réservations
+   - Création de sessions de location multi-véhicules et multi-chauffeurs.
+   - Calcul automatisé de la durée et du montant total de la location.
+   - Cycle de vie d'une réservation : En attente -> Approuvée -> En cours -> Terminée/Annulée.
+   - Système de validation administrative pour chaque nouvelle demande.
+   - Calcul automatique des pénalités de retard (Majoration de 50%).
+
+5. Facturation & Devises
+   - Génération automatique de factures pour chaque location.
+   - Support multi-devises avec application de taux de change.
+   - Calcul automatique de la TVA (20%) et du montant TTC.
+   - Exportation professionnelle des factures en format PDF.
+
+6. Paiements & Finances
+   - Suivi des encaissements liés aux locations.
+   - Intégration de comptes de paiement pour le suivi financier.
+
+7. Tableau de Bord (Dashboard) & Analytique
+   - Statistiques globales (nombre de locations par statut).
+   - Visualisation graphique des locations par mois (tendances mensuelles).
+   - Liste chronologique des dernières activités et réservations.
+
+8. Maintenance Technique
+   - Planification et suivi des entretiens par véhicule.
+   - Historique des maintenances.
+
+9. Système de Notifications
+   - Alertes internes pour l'administrateur lors de nouvelles réservations ou événements clés.
+
+10. Sécurité & Gestion des Comptes
+    - Inscription et authentification des utilisateurs (Login/Logout).
+    - Gestion sécurisée des profils utilisateurs.
+    - Système de récupération de mot de passe par email via jeton (Token) de sécurité.

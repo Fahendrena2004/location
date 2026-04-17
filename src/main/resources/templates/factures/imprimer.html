@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture [[${facture.numeroFacture}]]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #fff; font-family: 'Inter', sans-serif; color: #333; }
+        .invoice-box { padding: 40px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); border-radius: 10px; margin: 20px auto; max-width: 900px; }
+        .invoice-header { border-bottom: 2px solid #0d6efd; padding-bottom: 20px; margin-bottom: 30px; }
+        .logo { font-size: 24px; font-weight: 800; color: #0d6efd; text-transform: uppercase; letter-spacing: 1px; }
+        .table thead { background-color: #f8f9fa; border-top: 2px solid #dee2e6; }
+        .total-section { background-color: #f8f9fa; padding: 20px; border-radius: 10px; }
+        .bank-details { border-left: 4px solid #0d6efd; padding-left: 15px; background-color: #f8f9fa; border-radius: 0 10px 10px 0; }
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .invoice-box { border: none; box-shadow: none; padding: 0; margin: 0; }
+            body { padding: 0; margin: 0; }
+            
+            /* Reduce vertical spaces to fit single page */
+            .mb-5 { margin-bottom: 2rem !important; }
+            .mt-5 { margin-top: 2rem !important; }
+            .py-3 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+            .invoice-header { margin-bottom: 15px; padding-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container no-print mt-4 mb-4 text-center">
+        <div class="card border-0 shadow-sm p-3 d-inline-block rounded-4 bg-light">
+            <button onclick="window.print()" class="btn btn-primary px-5 py-2 fw-bold shadow-sm rounded-pill">
+                <i class="bi bi-printer me-2"></i> Lancer l'impression
+            </button>
+            <a href="/factures" class="btn btn-outline-secondary px-4 py-2 ms-2 rounded-pill">Retour au tableau de bord</a>
+        </div>
+    </div>
+
+    <div class="invoice-box">
+        <div class="invoice-header d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <div class="logo mb-2">
+                    <i class="bi bi-car-front-fill me-2"></i> LOCATION VOITURE
+                </div>
+                <div class="text-muted smaller fw-medium">
+                    Antananarivo, Madagascar<br>
+                    Contact: +261 34 00 000 00<br>
+                    Email: contact@location-voiture.mg
+                </div>
+            </div>
+            <div class="text-end">
+                <h1 class="h1 fw-bold text-uppercase mb-1 text-primary" style="letter-spacing: 2px;">Facture</h1>
+                <p class="text-muted mb-0 fw-bold">Réf: [[${facture.numeroFacture}]]</p>
+                <div class="mt-2">
+                    <span class="badge rounded-pill px-3 py-1 fw-bold" 
+                          th:classappend="${facture.statut.name() == 'PAYEE' ? 'bg-success text-white' : 'bg-warning text-dark'}"
+                          th:text="${facture.statut.name() == 'PAYEE' ? 'PAYÉE' : 'EN ATTENTE'}">PAYÉE</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-5 py-4 bg-light rounded-4 mx-0">
+            <div class="col-6 border-end">
+                <label class="text-muted smaller text-uppercase fw-bold mb-3 d-block" style="letter-spacing: 1px;">Destinataire</label>
+                <h5 class="fw-bold text-dark mb-1" th:text="${facture.location.client.nomComplet}">Jean Rakoto</h5>
+                <p class="text-muted mb-1 small text-truncate" th:text="${facture.location.client.email}">jean@email.com</p>
+                <p class="text-muted mb-0 small" th:text="${facture.location.client.telephone}">034 00 000 00</p>
+                <p class="text-muted mb-0 small" th:text="${facture.location.client.adresse}">Antananarivo</p>
+            </div>
+            <div class="col-6 text-end">
+                <div class="mb-3">
+                    <label class="text-muted smaller text-uppercase fw-bold mb-1 d-block" style="letter-spacing: 1px;">Date de facturation</label>
+                    <span class="fw-bold text-dark" th:text="${#temporals.format(facture.dateEmission, 'dd MMMM yyyy')}">01 Janvier 2024</span>
+                </div>
+                <div>
+                    <label class="text-muted smaller text-uppercase fw-bold mb-1 d-block" style="letter-spacing: 1px;">Location associée</label>
+                    <span class="fw-bold text-dark">Dossier #[[${facture.location.id}]]</span><br>
+                    <span class="smaller text-muted">Du [[${facture.location.dateDebut}]] au [[${facture.location.dateFin}]]</span>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-borderless mb-5">
+            <thead>
+                <tr class="border-bottom">
+                    <th class="ps-0 py-3 text-uppercase smaller fw-bold text-muted">Description des prestations</th>
+                    <th class="text-center py-3 text-uppercase smaller fw-bold text-muted">Unité/Durée</th>
+                    <th class="text-end py-3 text-uppercase smaller fw-bold text-muted">Prix Unit.</th>
+                    <th class="pe-0 py-3 text-end text-uppercase smaller fw-bold text-muted">Total ([[${facture.devise != null ? facture.devise : 'Ar'}]])</th>
+                </tr>
+            </thead>
+            <tbody class="border-bottom">
+                <!-- Véhicules -->
+                <tr th:each="v : ${facture.location.voitures}">
+                    <td class="ps-0 py-4">
+                        <div class="fw-bold text-dark mb-1">Location Véhicule: [[${v.marque}]] [[${v.modele}]]</div>
+                        <div class="smaller text-muted">Immatriculation: <span class="fw-bold">[[${v.plaqueImmatriculation}]]</span></div>
+                    </td>
+                    <td class="text-center py-4 text-dark fw-medium">
+                        [[${T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)}]] jr(s)
+                    </td>
+                    <td class="text-end py-4 text-dark" th:text="${#numbers.formatDecimal(v.prixParJour, 0, 'COMMA', 0, 'POINT')}">100.00</td>
+                    <td class="text-end pe-0 py-4 fw-bold text-dark" th:text="${#numbers.formatDecimal(v.prixParJour * (T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)), 0, 'COMMA', 0, 'POINT')}">500.00</td>
+                </tr>
+                <!-- Chauffeurs -->
+                <tr th:each="c : ${facture.location.chauffeurs}">
+                    <td class="ps-0 py-4">
+                        <div class="fw-bold text-dark mb-1">Prestation Chauffeur: [[${c.nomComplet}]]</div>
+                        <div class="smaller text-muted">Assistance conduite et trajets</div>
+                    </td>
+                    <td class="text-center py-4 text-dark fw-medium">
+                        [[${T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)}]] jr(s)
+                    </td>
+                    <td class="text-end py-4 text-dark" th:text="${#numbers.formatDecimal(c.tarifJournalier, 0, 'COMMA', 0, 'POINT')}">20.00</td>
+                    <td class="text-end pe-0 py-4 fw-bold text-dark" th:text="${#numbers.formatDecimal(c.tarifJournalier * (T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin) <= 0 ? 1 : T(java.time.temporal.ChronoUnit).DAYS.between(facture.location.dateDebut, facture.location.dateFin)), 0, 'COMMA', 0, 'POINT')}">100.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="row align-items-start">
+            <div class="col-7">
+                <div class="bank-details p-4 bg-light rounded-4">
+                    <label class="smaller text-uppercase fw-bold mb-3 d-block text-muted" style="letter-spacing: 1px;">Informations de Paiement</label>
+                    <p class="mb-2 fw-bold text-dark">Règlement par Espèces / Virement / Mobile Money</p>
+                    <p class="mb-1 smaller text-muted">Merci de mentionner la référence <span class="fw-bold text-primary">[[${facture.numeroFacture}]]</span> lors de votre transaction pour un traitement rapide.</p>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="total-section p-4 bg-dark text-white rounded-4 shadow-sm">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="smaller opacity-75">Sous-total HT</span>
+                        <span class="fw-bold" th:text="${#numbers.formatDecimal(facture.montantHT, 0, 'COMMA', 0, 'POINT')} + ' Ar'">500.00 Ar</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <span class="fw-bold">Montant Total</span>
+                        <span class="fw-bold" th:text="${#numbers.formatDecimal(facture.montantTTC, 0, 'COMMA', 0, 'POINT')} + ' Ar'">1,200,000.00 Ar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 pt-5 border-top text-center text-muted smaller">
+            <p class="mb-1 fw-bold text-dark">Location Voiture - Modern Rental Solutions</p>
+            <p class="mb-0">Merci pour votre confiance. Document généré le [[${#temporals.format(T(java.time.LocalDateTime).now(), 'dd/MM/yyyy HH:mm')}]]</p>
+        </div>
+    </div> </div>
+    </div>
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</body>
+</html>

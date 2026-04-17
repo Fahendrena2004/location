@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Détails du Paiement - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 1000px;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="/paiements" class="btn btn-link link-dark text-decoration-none p-0 me-3">
+                        <i class="bi bi-chevron-left fs-4"></i>
+                    </a>
+                    <h2 class="fw-bold mb-0">Détails du Paiement</h2>
+                </div>
+
+                <div class="row g-4 text-secondary">
+                    <!-- Column 1: Payment Details -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 p-4 mb-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="text-uppercase small fw-bold text-muted mb-0" style="letter-spacing:1px;">Informations Paiement</h6>
+                                <span class="badge rounded-pill px-3 py-2 fw-bold" 
+                                      th:classappend="${paiement.statut == 'EFFECTUE' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'}"
+                                      th:text="${paiement.statut}">EFFECTUE</span>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="d-block small text-muted mb-1">Montant</label>
+                                    <h4 class="fw-bold text-primary mb-0 amount-convertible" 
+                                        th:data-mga="${paiement.montant ?: 0}"
+                                        th:text="${#numbers.formatDecimal(paiement.montant ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">100,000 Ar</h4>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="d-block small text-muted mb-1">Date</label>
+                                    <p class="fw-bold text-dark mb-0" th:text="${#temporals.format(paiement.datePaiement, 'dd MMMM yyyy')}">01 Jan 2024</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="d-block small text-muted mb-1">Mode</label>
+                                    <p class="fw-bold text-dark mb-0" th:text="${paiement.modePaiement}">Espèces</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="d-block small text-muted mb-1">Référence</label>
+                                    <p class="fw-bold text-dark mb-0" th:text="${paiement.reference != null ? paiement.reference : 'Aucune'}">REF001</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Related Location card -->
+                        <div class="card border-0 p-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-4" style="letter-spacing:1px;">Location Associée #<span th:text="${paiement.location.id}">1</span></h6>
+                            
+                            <div class="mb-3">
+                                <label class="d-block small text-muted mb-1">Véhicules</label>
+                                <div th:each="v : ${paiement.location.voitures}" class="fw-bold text-dark small mb-1">
+                                    <i class="bi bi-car-front me-2 opacity-50"></i><span th:text="${v.marque} + ' ' + ${v.modele}">Toyota</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <label class="d-block small text-muted mb-1">Total Location</label>
+                                    <p class="fw-bold text-dark small mb-0 amount-convertible" 
+                                       th:data-mga="${paiement.location.montantTotal ?: 0}"
+                                       th:text="${#numbers.formatDecimal(paiement.location.montantTotal ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">200,000 Ar</p>
+                                </div>
+                                <div class="col-6">
+                                    <label class="d-block small text-muted mb-1">Période</label>
+                                    <p class="fw-bold text-dark small mb-0" th:text="'Du ' + ${paiement.location.dateDebut} + ' au ' + ${paiement.location.dateFin}">01-05 Jan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Client & Actions -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 p-4 mb-4 shadow-sm text-center" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-3" style="width:60px; height:60px; color: #2563eb; font-weight:700; border: 1px solid #e5e7eb; font-size:1.5rem;">
+                               <span th:text="${#strings.substring(paiement.location.client.nom, 0, 1)}">C</span>
+                            </div>
+                            <h5 class="fw-bold mb-1" th:text="${paiement.location.client.nom} + ' ' + ${paiement.location.client.prenom}">Rakoto Jean</h5>
+                            <p class="text-muted small mb-0" th:text="${paiement.location.client.email}">jean@email.com</p>
+                            <p class="text-muted small" th:text="${paiement.location.client.telephone}">034 00 000 00</p>
+
+                            <hr class="my-3 opacity-5">
+
+                            <div class="d-grid gap-2" sec:authorize="hasRole('ADMIN')">
+                                <a th:href="@{'/paiements/modifier/' + ${paiement.id}}" class="btn btn-light border py-2 rounded-pill fw-bold small">
+                                    <i class="bi bi-pencil me-2"></i> Modifier
+                                </a>
+                                <a th:href="@{'/factures/generer/' + ${paiement.location.id}}" class="btn btn-outline-primary py-2 rounded-pill fw-bold small">
+                                    <i class="bi bi-file-earmark-text me-2"></i> Modifier la Facture
+                                </a>
+                            </div>
+                            <div class="d-grid gap-2 mt-2" sec:authorize="hasRole('CLIENT')">
+                                <a th:href="@{'/factures'}" class="btn btn-outline-primary py-2 rounded-pill fw-bold small">
+                                    <i class="bi bi-receipt me-2"></i> Voir mes Factures
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script th:if="${celebrate}">
+        window.addEventListener('load', () => {
+            const duration = 3 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+              const timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              const particleCount = 50 * (timeLeft / duration);
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        });
+    </script>
+</body>
+</html>

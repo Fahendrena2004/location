@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Paramètres</title>
+</head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="flex-grow-1 p-4" style="margin-left: 280px;">
+        <h1><i class="bi bi-gear text-primary"></i> Paramètres</h1>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Paramètres généraux</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Nom de l'entreprise</label>
+                                <input type="text" class="form-control" value="Location Voitures">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email contact</label>
+                                <input type="email" class="form-control" value="contact@locationvoiture.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Téléphone</label>
+                                <input type="text" class="form-control" value="+261 34 12 345 67">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Adresse</label>
+                                <textarea class="form-control">Antananarivo, Madagascar</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Paramètres de location</h5>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Devise</label>
+                                <select class="form-select">
+                                    <option>Ariary (Ar)</option>
+                                    <option>Euro (€)</option>
+                                    <option>Dollar ($)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Délai d'avance (jours)</label>
+                                <input type="number" class="form-control" value="1">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Nouvel Utilisateur - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh; font-family: 'Inter', sans-serif;">
+            <div class="container" style="max-width: 650px;">
+
+                <!-- Header -->
+                <div class="d-flex align-items-center mb-5 mt-2">
+                    <a href="/users" class="btn btn-action-round me-3">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">Accès Collaborateur</h2>
+                        <p class="text-muted small mb-0">Définissez un nouvel utilisateur pour la plateforme</p>
+                    </div>
+                </div>
+
+                <!-- Form Card -->
+                <div class="card border-0 glass-card">
+                    <div class="card-body p-5">
+                        <form th:action="@{/users/ajouter}" th:object="${user}" method="post">
+                            <div class="row g-4">
+
+                                <!-- Nom Complet -->
+                                <div class="col-12">
+                                    <label class="premium-label">Identité Complète</label>
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text-premium"><i class="bi bi-person-badge"></i></span>
+                                        <input type="text" th:field="*{nomComplet}" 
+                                               class="form-control premium-input" 
+                                               th:classappend="${#fields.hasErrors('nomComplet')} ? 'is-invalid' : ''"
+                                               placeholder="Ex: Jean Rakoto" required>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nomComplet')}" th:errors="*{nomComplet}"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="col-12">
+                                    <label class="premium-label">Email Professionnel</label>
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text-premium"><i class="bi bi-envelope-at"></i></span>
+                                        <input type="email" th:field="*{email}" 
+                                               class="form-control premium-input" 
+                                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                               placeholder="admin@premium.mg" required>
+                                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Rôle Selection -->
+                                <div class="col-12 py-2">
+                                    <label class="premium-label mb-3 d-block">Privilèges & Autorisations</label>
+                                    <div class="d-flex gap-4">
+                                        <div class="role-selector">
+                                            <input type="radio" th:field="*{role}" id="roleClient" value="CLIENT" class="btn-check">
+                                            <label class="btn btn-outline-role w-100" for="roleClient">
+                                                <i class="bi bi-person me-2"></i> Client / Utilisateur
+                                            </label>
+                                        </div>
+                                        <div class="role-selector">
+                                            <input type="radio" th:field="*{role}" id="roleAdmin" value="ADMIN" class="btn-check">
+                                            <label class="btn btn-outline-role w-100" for="roleAdmin">
+                                                <i class="bi bi-shield-check me-2"></i> Administrateur
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Passwords -->
+                                <div class="col-md-6">
+                                    <label class="premium-label">Code Secret</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text-premium"><i class="bi bi-key-fill"></i></span>
+                                        <input type="password" th:field="*{password}" id="password" class="form-control premium-input" placeholder="••••••••" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="premium-label text-muted">Vérification</label>
+                                    <input type="password" id="confirmPassword" class="form-control premium-input" placeholder="••••••••" required>
+                                </div>
+
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex align-items-center justify-content-between mt-5 pt-4 border-top">
+                                <a href="/users" class="fw-bold text-muted text-decoration-none small hover-opacity">
+                                    <i class="bi bi-x-circle me-1"></i> ANNULER
+                                </a>
+                                <button type="submit" class="btn btn-primary-premium px-5">
+                                    Enregistrer l'Accès <i class="bi bi-check-lg ms-2"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+        .premium-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+        .premium-input {
+            border-radius: 0 15px 15px 0 !important;
+            padding: 14px 18px;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .premium-input:focus {
+            background: #fff;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            outline: none;
+        }
+        .input-group-text-premium {
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            border-right: none;
+            border-radius: 15px 0 0 15px;
+            padding-left: 20px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .btn-outline-role {
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-weight: 700;
+            color: #64748b;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-check:checked + .btn-outline-role {
+            border-color: #2563eb;
+            background: #eff6ff;
+            color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+        .btn-action-round {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-action-round:hover {
+            background: #f8fafc;
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+        .btn-primary-premium {
+            background: #2563eb;
+            color: white;
+            border-radius: 15px;
+            padding: 14px 30px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            border: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-primary-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+        .hover-opacity:hover { opacity: 0.7; }
+        .role-selector { flex: 1; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            if (password !== confirm) {
+                e.preventDefault();
+                alert('Attention: Les codes secret ne correspondent pas.');
+            }
+        });
+    </script>
+</body>
+</html>
+

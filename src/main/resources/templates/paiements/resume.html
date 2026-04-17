@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Résumé de Paiement - Location Voitures</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+            <div class="container" style="max-width: 800px;">
+                
+                <!-- Stepper Header -->
+                <div class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+                        <div class="progress-line position-absolute w-100" style="height: 2px; background: #e2e8f0; top: 18px; z-index: 1;"></div>
+                        <div class="progress-line position-absolute w-50" style="height: 2px; background: var(--primary); top: 18px; z-index: 2;"></div>
+                        
+                        <div class="step-item text-center position-relative" style="z-index: 3;">
+                            <div class="step-icon bg-primary text-white rounded-circle shadow-sm mx-auto mb-2" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: 700;">1</div>
+                            <span class="small fw-bold text-primary">Résumé</span>
+                        </div>
+                        
+                        <div class="step-item text-center position-relative" style="z-index: 3;">
+                            <div class="step-icon bg-white text-muted border rounded-circle mx-auto mb-2" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-weight: 700;">2</div>
+                            <span class="small text-muted">Paiement Sécurisé</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center mb-4">
+                    <a href="/locations" class="btn btn-link link-dark text-decoration-none p-0 me-3">
+                        <i class="bi bi-chevron-left fs-4"></i>
+                    </a>
+                    <h2 class="fw-bold mb-0">Résumé avant Paiement</h2>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 20px;">
+                    <h5 class="fw-bold mb-4 text-main">Détails de votre Réservation</h5>
+                    
+                    <div class="row g-4">
+                        <!-- Car Details -->
+                        <div class="col-12">
+                            <div class="bg-primary-soft p-4 rounded-4">
+                                <h6 class="text-uppercase small fw-bold text-primary mb-3" style="letter-spacing: 1px;">Véhicule(s)</h6>
+                                <div th:each="v : ${location.voitures}" class="d-flex align-items-center mb-2">
+                                    <div class="icon-box bg-white rounded-circle me-3 shadow-sm" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-car-front text-primary"></i>
+                                    </div>
+                                    <div>
+                                        <p class="fw-bold mb-0 text-dark" th:text="${v.marque} + ' ' + ${v.modele}">Toyota Corolla</p>
+                                        <p class="text-muted small mb-0" th:text="${v.plaqueImmatriculation}">AB-123 TAE</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Date Details -->
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-3 h-100">
+                                <label class="text-muted small text-uppercase fw-bold mb-2">Période de Location</label>
+                                <p class="fw-bold mb-0 text-main">
+                                    <span th:text="${#temporals.format(location.dateDebut, 'dd MMM yyyy')}">01 Jan 2024</span>
+                                    <i class="bi bi-arrow-right mx-2 text-primary"></i>
+                                    <span th:text="${#temporals.format(location.dateFin, 'dd MMM yyyy')}">05 Jan 2024</span>
+                                </p>
+                                <p class="text-muted small mb-0 mt-1" th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(location.dateDebut, location.dateFin)} + ' Jours de location'"></p>
+                            </div>
+                        </div>
+
+                        <!-- Amount Details -->
+                        <div class="col-md-6">
+                            <div class="p-3 border rounded-3 h-100 bg-light">
+                                <label class="text-muted small text-uppercase fw-bold mb-2">Montant à Régler</label>
+                                <h3 class="fw-bold text-primary mb-0 amount-convertible" 
+                                    th:data-mga="${location.montantTotal}"
+                                    th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'">120,000 Ar</h3>
+                                <p class="text-muted smaller mb-0">TVA incluse et frais de service.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Choix de mode de paiement -->
+                <div class="card border-0 shadow-sm p-4 mb-4 bg-white" style="border-radius: 20px;">
+                    <h5 class="fw-bold mb-4 text-main">Choisissez un mode de paiement</h5>
+                    <form id="paymentForm" th:action="@{'/paiements/process/' + ${location.id}}" method="POST">
+                        <div class="row g-3 mb-4">
+                            <!-- Stripe -->
+                            <div class="col-md-4">
+                                <input type="radio" class="btn-check payment-radio" name="modePaiement" id="modeStripe" value="STRIPE" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary payment-label w-100 p-3 h-100 text-start" for="modeStripe">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="icon-box bg-primary-soft text-primary rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-credit-card-fill"></i>
+                                        </div>
+                                        <i class="bi bi-check-circle-fill check-icon text-primary fs-5"></i>
+                                    </div>
+                                    <span class="fw-bold d-block text-dark">Carte Bancaire</span>
+                                    <small class="text-muted" style="font-size:0.75rem;">Paiement sécurisé via Stripe</small>
+                                </label>
+                            </div>
+
+                            <!-- Mobile Money -->
+                            <div class="col-md-4">
+                                <input type="radio" class="btn-check payment-radio" name="modePaiement" id="modeMobile" value="MOBILE_MONEY" autocomplete="off">
+                                <label class="btn btn-outline-primary payment-label w-100 p-3 h-100 text-start" for="modeMobile">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="icon-box bg-warning-soft text-warning rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-phone-fill"></i>
+                                        </div>
+                                        <i class="bi bi-check-circle-fill check-icon text-primary fs-5"></i>
+                                    </div>
+                                    <span class="fw-bold d-block text-dark">Mobile Money</span>
+                                    <small class="text-muted" style="font-size:0.75rem;">MVola, Orange Money...</small>
+                                </label>
+                            </div>
+
+                            <!-- Paiement sur place -->
+                            <div class="col-md-4">
+                                <input type="radio" class="btn-check payment-radio" name="modePaiement" id="modeCash" value="CASH" autocomplete="off">
+                                <label class="btn btn-outline-primary payment-label w-100 p-3 h-100 text-start" for="modeCash">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="icon-box bg-success-soft text-success rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-cash-stack"></i>
+                                        </div>
+                                        <i class="bi bi-check-circle-fill check-icon text-primary fs-5"></i>
+                                    </div>
+                                    <span class="fw-bold d-block text-dark">Paiement sur place</span>
+                                    <small class="text-muted" style="font-size:0.75rem;">Espèces ou chèque en agence</small>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Bar inside Form -->
+                        <div class="card border-0 shadow-lg p-4 bg-white" style="border-radius: 20px;">
+                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                <div class="d-none d-md-block">
+                                    <p class="text-muted small mb-0 font-italic" id="paymentInstructionText">En continuant, vous allez être redirigé vers l'interface de paiement sécurisé Stripe.</p>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a href="/locations" class="btn btn-light px-4 py-3 rounded-pill fw-bold">Annuler</a>
+                                    <button type="submit" class="btn btn-primary px-5 py-3 rounded-pill fw-bold shadow-lg d-flex align-items-center gap-2">
+                                        Continuer <i class="bi bi-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Reassuring Badges -->
+                <div class="mt-4 d-flex justify-content-center gap-4 text-muted small">
+                    <span><i class="bi bi-shield-check text-success me-1"></i> Paiement 100% Sécurisé</span>
+                    <span><i class="bi bi-credit-card me-1"></i> Stripe Partner</span>
+                    <span><i class="bi bi-award me-1"></i> Support 24/7</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <style>
+        .payment-radio:checked + .payment-label {
+            background-color: var(--primary-soft, #f0f7ff);
+            border-color: var(--primary, #0d6efd) !important;
+            box-shadow: 0 4px 6px -1px rgba(13, 110, 253, 0.15) !important;
+        }
+        .payment-radio:not(:checked) + .payment-label .check-icon {
+            display: none !important;
+        }
+        .payment-label {
+            transition: all 0.2s ease-in-out;
+            border-color: #e2e8f0;
+        }
+        .payment-label:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const instructionText = document.getElementById('paymentInstructionText');
+            const radios = document.querySelectorAll('.payment-radio');
+            
+            const messages = {
+                'STRIPE': 'En continuant, vous allez être redirigé vers l\'interface de paiement sécurisé Stripe.',
+                'MOBILE_MONEY': 'Vous recevrez les instructions de transfert sur le prochain écran.',
+                'CASH': 'Votre location sera pré-reservée en attendant votre paiement à l\'agence.'
+            };
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if(this.checked) {
+                        instructionText.textContent = messages[this.value];
+                        
+                        // Add fade animation
+                        instructionText.style.opacity = 0;
+                        setTimeout(() => {
+                            instructionText.style.opacity = 1;
+                        }, 100);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

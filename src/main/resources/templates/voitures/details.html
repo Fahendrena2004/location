@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Détails du Véhicule - Location Voitures</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 1100px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/voitures" class="btn btn-light rounded-3 p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1 text-main">Détails du Véhicule</h2>
+                        <p class="text-muted small mb-0">Visualisez les caractéristiques complètes et l'état du véhicule</p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <!-- Galerie Photo -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm overflow-hidden mb-4" style="border-radius: 16px;">
+                            <div class="position-relative" style="aspect-ratio: 16/10; background: var(--bg-surface);">
+                                <img id="mainImage" 
+                                     th:src="${not #lists.isEmpty(voiture.images) ? voiture.images[0] : ''}" 
+                                     class="img-fluid w-100 h-100" 
+                                     style="object-fit: cover; transition: all 0.3s ease-in-out;"
+                                     th:if="${not #lists.isEmpty(voiture.images)}">
+                                <div th:unless="${not #lists.isEmpty(voiture.images)}" 
+                                     class="h-100 d-flex flex-column align-items-center justify-content-center opacity-25">
+                                    <i class="bi bi-camera fs-1 mb-2"></i>
+                                    <span>Aucune image disponible</span>
+                                </div>
+                                <span class="position-absolute top-0 end-0 m-3 badge rounded-pill px-3 py-2 fw-bold shadow-sm"
+                                      th:classappend="${voiture.statut.name() == 'DISPONIBLE' ? 'badge-soft-success' : 'badge-soft-danger'}"
+                                      th:text="${voiture.statut}">DISPONIBLE</span>
+                            </div>
+                            
+                            <div class="card-body p-3 bg-white" th:if="${#lists.size(voiture.images) > 1}">
+                                <div class="d-flex gap-2 overflow-auto pb-1 gallery-scroll">
+                                    <div th:each="img, iter : ${voiture.images}" 
+                                         class="thumbnail-item"
+                                         th:classappend="${iter.first ? 'active' : ''}"
+                                         th:onclick="'switchImage(this, \'' + ${img} + '\')'">
+                                        <img th:src="${img}" class="img-fluid">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm p-4" style="border-radius: 16px;">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div>
+                                    <h3 class="fw-bold text-main mb-1" th:text="${voiture.marque} + ' ' + ${voiture.modele}">Toyota Corolla</h3>
+                                    <div class="d-flex align-items-center text-muted gap-3">
+                                        <span class="small"><i class="bi bi-upc-scan me-1"></i> <span th:text="${voiture.plaqueImmatriculation}">AB-123-CD</span></span>
+                                        <span class="small"><i class="bi bi-tag me-1"></i> <span th:text="${voiture.categorie}">SUV</span></span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <p class="text-muted small mb-0 fw-bold text-uppercase">Prix / Jour</p>
+                                    <h3 class="text-primary fw-bold mb-0 amount-convertible" 
+                                        th:data-mga="${voiture.prixParJour ?: 0}"
+                                        th:text="${#numbers.formatDecimal(voiture.prixParJour ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">100,000 Ar</h3>
+                                </div>
+                            </div>
+                            <h6 class="text-main fw-bold small text-uppercase mb-3">Description</h6>
+                            <p class="text-secondary mb-0" style="line-height: 1.8; font-size: 0.95rem;" th:text="${voiture.description ?: 'Aucune description disponible pour ce véhicule.'}">Description...</p>
+                        </div>
+                    </div>
+
+                    <!-- Fiche Technique & Actions -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: 16px;">
+                            <h6 class="text-main fw-bold small text-uppercase mb-4">Fiche Technique</h6>
+                            
+                            <div class="spec-list">
+                                <div class="spec-item">
+                                    <div class="icon-box"><i class="bi bi-calendar-event"></i></div>
+                                    <div class="flex-grow-1">
+                                        <p class="label">Année</p>
+                                        <p class="value" th:text="${voiture.annee}">2024</p>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <div class="icon-box"><i class="bi bi-people"></i></div>
+                                    <div class="flex-grow-1">
+                                        <p class="label">Capacité</p>
+                                        <p class="value" th:text="${voiture.places} + ' places'">5 places</p>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <div class="icon-box"><i class="bi bi-gear"></i></div>
+                                    <div class="flex-grow-1">
+                                        <p class="label">Transmission</p>
+                                        <p class="value" th:text="${voiture.transmission}">Automatique</p>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <div class="icon-box"><i class="bi bi-fuel-pump"></i></div>
+                                    <div class="flex-grow-1">
+                                        <p class="label">Carburant</p>
+                                        <p class="value" th:text="${voiture.carburant}">Hybride</p>
+                                    </div>
+                                </div>
+                                <div class="spec-item">
+                                    <div class="icon-box"><i class="bi bi-palette"></i></div>
+                                    <div class="flex-grow-1">
+                                        <p class="label">Couleur</p>
+                                        <p class="value" th:text="${voiture.couleur}">Gris Anthracite</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-5">
+                                <!-- Lien pour Admin -->
+                                <a sec:authorize="hasRole('ADMIN')" th:href="@{'/locations/ajouter?voitureId=' + ${voiture.id}}" 
+                                   class="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow mb-3"
+                                   th:if="${voiture.statut.name() == 'DISPONIBLE'}">
+                                    <i class="bi bi-calendar-check me-2"></i> Ajouter une location
+                                </a>
+                                <!-- Lien pour Client -->
+                                <a sec:authorize="hasRole('CLIENT')" th:href="@{'/locations/reserver?voitureId=' + ${voiture.id}}" 
+                                   class="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow mb-3"
+                                   th:if="${voiture.statut.name() == 'DISPONIBLE'}">
+                                    <i class="bi bi-calendar-check me-2"></i> Réserver maintenant
+                                </a>
+                                <div class="d-flex gap-2">
+                                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/voitures/modifier/' + ${voiture.id}}" class="btn btn-light border flex-grow-1 py-2 rounded-3 fw-bold">
+                                        <i class="bi bi-pencil me-1"></i> Modifier
+                                    </a>
+                                    <button class="btn btn-light border py-2 px-3 rounded-3">
+                                        <i class="bi bi-share"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .thumbnail-item { flex: 0 0 90px; height: 65px; cursor: pointer; overflow: hidden; border: 2px solid transparent; transition: all 0.3s; border-radius: 8px; }
+        .thumbnail-item img { width: 100%; height: 100%; object-fit: cover; }
+        .thumbnail-item.active { border-color: var(--primary); transform: translateY(-2px); }
+        .thumbnail-item:hover:not(.active) { opacity: 0.8; }
+        .gallery-scroll::-webkit-scrollbar { height: 4px; }
+        .gallery-scroll::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+        
+        .spec-list { display: flex; flex-direction: column; gap: 1.25rem; }
+        .spec-item { display: flex; align-items: center; gap: 1rem; }
+        .spec-item .icon-box { width: 40px; height: 40px; background: var(--bg-body); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.1rem; border: 1px solid var(--border); }
+        .spec-item .label { margin-bottom: 0; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.5px; }
+        .spec-item .value { margin-bottom: 0; font-weight: 600; color: var(--text-main); font-size: 0.9rem; }
+    </style>
+
+    <script>
+        function switchImage(element, imageUrl) {
+            const mainImg = document.getElementById('mainImage');
+            mainImg.style.opacity = '0.4';
+            setTimeout(() => {
+                mainImg.src = imageUrl;
+                mainImg.style.opacity = '1';
+            }, 200);
+            
+            document.querySelectorAll('.thumbnail-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

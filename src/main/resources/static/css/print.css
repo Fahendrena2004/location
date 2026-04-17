@@ -1,0 +1,20 @@
+@media print {
+    .sidebar, .btn, .navbar, footer {
+        display: none !important;
+    }
+
+    body {
+        margin: 0;
+        padding: 20px;
+        background: white;
+    }
+
+    .card {
+        border: none;
+        box-shadow: none;
+    }
+
+    .facture {
+        font-size: 12pt;
+    }
+}

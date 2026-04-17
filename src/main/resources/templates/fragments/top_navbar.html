@@ -1,0 +1,69 @@
+<div th:fragment="top-navbar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="top-navbar">
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <!-- Left Side: Breadcrumb -->
+            <div class="d-flex align-items-center">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0" style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05rem;">
+                        <li class="breadcrumb-item"><a href="/" class="text-muted text-decoration-none"><i class="bi bi-house-door"></i> AutoRent</a></li>
+                        <li class="breadcrumb-item active text-primary" aria-current="page" th:text="${titrePage} ?: 'Dashboard'">Dashboard</li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Right Side: Actions -->
+            <div class="d-flex align-items-center gap-3">
+                <!-- Notifications Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-link p-0 text-muted fs-5 position-relative dropdown-toggle no-caret" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span th:if="${unreadNotificationsCount > 0}" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 10px; height: 10px;"></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2" style="min-width: 300px; border-radius: 12px;">
+                        <h6 class="dropdown-header text-uppercase fw-bold pb-2" style="font-size: 0.65rem;">Notifications Recentes</h6>
+                        <div class="notification-list" style="max-height: 300px; overflow-y: auto;">
+                            <div th:each="n : ${recentNotifications}" class="dropdown-item py-2 px-3 border-bottom-0" th:classappend="${!n.lu ? 'bg-light fw-bold' : ''}">
+                                <div class="d-flex align-items-start gap-2">
+                                    <div class="rounded-circle bg-primary-soft p-1" style="font-size: 0.75rem;"><i class="bi bi-info-circle"></i></div>
+                                    <div class="overflow-hidden">
+                                        <p class="mb-0 text-main smaller text-truncate" th:text="${n.titre}">Notification</p>
+                                        <p class="mb-0 text-muted xx-small" th:text="${n.description}" style="font-size: 0.6rem;">Message...</p>
+                                        <p class="mb-0 text-primary" style="font-size: 0.55rem;" th:text="${#temporals.format(n.dateCreation, 'dd/MM HH:mm')}">Date</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${#lists.isEmpty(recentNotifications)}" class="py-4 text-center text-muted small">
+                                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
+                                Aucune notification
+                            </div>
+                        </div>
+                        <a href="/notifications" class="dropdown-item py-2 small text-muted text-center border-top mt-1">Voir tout</a>
+                    </div>
+                </div>
+
+                <!-- User Profile Dropdown -->
+                <div class="dropdown">
+                    <div class="d-flex align-items-center gap-2 cursor-pointer dropdown-toggle no-caret" data-bs-toggle="dropdown">
+                        <div class="text-end d-none d-sm-block">
+                            <p class="small fw-bold mb-0 text-main" sec:authentication="name">User</p>
+                            <p class="x-small text-muted mb-0" style="font-size: 0.65rem;" sec:authentication="principal.authorities[0].authority">Client</p>
+                        </div>
+                        <div class="bg-primary-soft rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border: 2px solid white; box-shadow: var(--shadow-sm);">
+                            <img src="https://ui-avatars.com/api/?name=U&background=2563eb&color=fff" class="rounded-circle w-100" alt="Avatar">
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2" style="border-radius: 12px;">
+                        <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person me-2"></i> Mon Profil</a></li>
+                        <li><a class="dropdown-item py-2" href="/locations"><i class="bi bi-clock-history me-2"></i> Historique</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="dropdown-item py-2 text-danger fw-bold"><i class="bi bi-box-arrow-right me-2"></i> Déconnexion</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Ajouter un Compte - Admin</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 280px; background-color: #fbf9f4; min-height: 100vh;">
+            <div class="container" style="max-width: 700px;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="/admin/comptes" class="btn btn-link link-dark text-decoration-none p-0 me-3">
+                        <i class="bi bi-chevron-left fs-4"></i>
+                    </a>
+                    <h2 class="fw-bold mb-0">Ajouter un Compte de Paiement</h2>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4" style="border-radius: 20px;">
+                    <form th:action="@{/admin/comptes/ajouter}" th:object="${compte}" method="post">
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="nomBanque" class="form-label fw-semibold">Nom de la Banque / Service</label>
+                                <input type="text" th:field="*{nomBanque}" id="nomBanque" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nomTitulaire" class="form-label fw-semibold">Nom du Titulaire</label>
+                                <input type="text" th:field="*{nomTitulaire}" id="nomTitulaire" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="numeroCompte" class="form-label fw-semibold">Numéro de Compte</label>
+                                <input type="text" th:field="*{numeroCompte}" id="numeroCompte" class="form-control" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="iban" class="form-label fw-semibold">IBAN (Optionnel)</label>
+                                <input type="text" th:field="*{iban}" id="iban" class="form-control">
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" th:field="*{actif}" id="actif" checked>
+                                    <label class="form-check-label fw-medium" for="actif">Compte acté et visible pour les factures</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center mt-5">
+                            <a href="/admin/comptes" class="text-decoration-none text-muted me-4 fw-medium">Annuler</a>
+                            <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold" style="border-radius: 12px;">
+                                Enregistrer le Compte
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-label { color: #555; font-size: 0.95rem; }
+        .form-control { border-radius: 12px; padding: 12px; border: 1px solid #e0e0e0; background-color: #fcfcfc; }
+        .form-control:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1); }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

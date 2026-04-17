@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <div class="sidebar-wrapper d-flex flex-column flex-shrink-0">
+
+        <!-- Logo -->
+        <div class="sidebar-logo">
+            <p class="h5 mb-0" style="text-transform: uppercase;">Location Voiture</p>
+        </div>
+
+        <!-- Menu Principal -->
+        <div class="px-3 mb-2">
+            <p class="text-uppercase text-muted fw-bold x-small mb-0 opacity-50 px-3" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Main Navigation</p>
+        </div>
+        <ul class="nav flex-column mb-auto gap-1">
+            <li class="nav-item">
+                <a href="/dashboard" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/dashboard')} ? 'active' : ''">
+                    <i class="bi bi-grid-fill"></i> Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/profile" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/profile')} ? 'active' : ''">
+                    <i class="bi bi-person-fill"></i> Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/notifications" class="sidebar-link d-flex align-items-center justify-content-between" th:classappend="${requestURI != null and requestURI.startsWith('/notifications')} ? 'active' : ''">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-bell-fill"></i> Notifications
+                    </div>
+                    <span th:if="${unreadNotificationsCount > 0}" class="badge rounded-pill bg-danger border border-white d-flex align-items-center justify-content-center" 
+                          style="font-size: 0.6rem; min-width: 18px; height: 18px; padding: 2px 4px;" 
+                          th:text="${unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}">
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/voitures" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/voitures')} ? 'active' : ''">
+                    <i class="bi bi-car-front-fill"></i> Vehicles
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/locations" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/locations') and !requestURI.contains('calendrier')} ? 'active' : ''">
+                    <i class="bi bi-geo-alt-fill"></i> Locations
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/locations/calendrier" class="sidebar-link" th:classappend="${requestURI != null and requestURI.contains('calendrier')} ? 'active' : ''">
+                    <i class="bi bi-calendar-event-fill"></i> Calendar
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/paiements" class="sidebar-link d-flex align-items-center justify-content-between" th:classappend="${requestURI != null and requestURI.startsWith('/paiements')} ? 'active' : ''">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-credit-card-fill"></i>
+                        <span sec:authorize="hasRole('ADMIN')">Payments</span>
+                        <span sec:authorize="hasRole('CLIENT')">Mes Paiements</span>
+                    </div>
+                    <span sec:authorize="hasRole('CLIENT')" th:if="${pendingPaymentsCount > 0}" 
+                          class="badge rounded-pill bg-warning text-dark border border-white d-flex align-items-center justify-content-center" 
+                          style="font-size: 0.6rem; min-width: 18px; height: 18px; padding: 2px 4px;" 
+                          th:text="${pendingPaymentsCount}">
+                    </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/factures" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/factures')} ? 'active' : ''">
+                    <i class="bi bi-file-earmark-text-fill"></i> Invoices
+                </a>
+            </li>
+
+            <!-- Admin Specific -->
+            <li sec:authorize="hasRole('ADMIN')">
+                <div class="mt-4 px-4 small text-muted text-uppercase fw-bold mb-2" style="font-size: 0.6rem; opacity: 0.6; letter-spacing: 1px;">Admin Space</div>
+                <a href="/clients" class="sidebar-link py-2" th:classappend="${requestURI != null and requestURI.startsWith('/clients')} ? 'active' : ''">
+                    <i class="bi bi-people-fill" style="font-size: 1rem;"></i> Clients
+                </a>
+                <a href="/entretien" class="sidebar-link py-2" th:classappend="${requestURI != null and requestURI.startsWith('/entretien')} ? 'active' : ''">
+                    <i class="bi bi-tools" style="font-size: 1rem;"></i> Maintenance
+                </a>
+                <a href="/users" class="sidebar-link py-2" th:classappend="${requestURI != null and requestURI.startsWith('/users')} ? 'active' : ''">
+                    <i class="bi bi-shield-lock-fill" style="font-size: 1rem;"></i> Security
+                </a>
+            </li>
+        </ul>
+
+        <!-- Bottom Section: User Profile -->
+        <div class="mt-auto border-top p-3 bg-light-subtle">
+            <!-- Currency Toggle -->
+            <div class="d-flex align-items-center justify-content-between mb-3 p-2 bg-white rounded-3 shadow-sm border border-opacity-50">
+                <span class="fw-bold text-muted ms-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Devise</span>
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="currencyToggle" id="currMGA" value="MGA" autocomplete="off">
+                    <label class="btn btn-outline-primary btn-sm py-0 mb-0" style="font-size: 0.75rem; padding-top: 3px !important; padding-bottom: 3px !important;" for="currMGA">Ar</label>
+                  
+                    <input type="radio" class="btn-check" name="currencyToggle" id="currEUR" value="EUR" autocomplete="off">
+                    <label class="btn btn-outline-primary btn-sm py-0 mb-0" style="font-size: 0.75rem; padding-top: 3px !important; padding-bottom: 3px !important;" for="currEUR">€</label>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 p-2 mb-3">
+                <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 40px; height: 40px; font-size: 0.9rem;">
+                    <span th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">U</span>
+                </div>
+                <div class="overflow-hidden">
+                    <p class="mb-0 fw-bold text-main small text-truncate" th:text="${#authentication.name}">Username</p>
+                    <p class="mb-0 text-muted x-small text-truncate" style="font-size: 0.7rem;">Active Session</p>
+                </div>
+            </div>
+             <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-light w-100 text-danger fw-bold d-flex align-items-center justify-content-center gap-2 py-2 border-0" style="border-radius: 10px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.05);">
+                    <i class="bi bi-power"></i> Déconnexion
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Keep hidden scripts/styles for logic -->
+    <script th:inline="javascript">
+        // Keep theme/currency logic here if needed, or move to a separate JS file
+    </script>
+</div>
+</html>

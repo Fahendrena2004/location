@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Détails de l'Entretien - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 900px;">
+                <div class="d-flex align-items-center mb-4">
+                    <a href="/entretien" class="btn btn-link link-dark text-decoration-none p-0 me-3">
+                        <i class="bi bi-chevron-left fs-4"></i>
+                    </a>
+                    <h2 class="fw-bold mb-0">Détails de l'Entretien</h2>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <!-- Main Details Card -->
+                        <div class="card border-0 p-4 mb-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <div class="d-flex justify-content-between align-items-start mb-4">
+                                <div>
+                                    <span class="badge rounded-pill px-3 py-2 fw-bold mb-2" 
+                                          th:classappend="${entretien.termine ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'}"
+                                          th:text="${entretien.termine ? 'Terminé' : 'En cours'}">Statut</span>
+                                    <h3 class="fw-bold mb-0" th:text="${entretien.typeEntretien}">Vidange</h3>
+                                </div>
+                                <div class="text-end">
+                                    <h4 class="fw-bold text-primary mb-0 amount-convertible" 
+                                        th:data-mga="${entretien.cout ?: 0}"
+                                        th:text="${#numbers.formatDecimal(entretien.cout ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">100,000 Ar</h4>
+                                    <span class="text-muted small">Coût Total</span>
+                                </div>
+                            </div>
+
+                            <hr class="my-4" style="opacity: 0.05;">
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label class="d-block small text-muted text-uppercase fw-bold mb-1" style="letter-spacing:0.5px;">Date</label>
+                                    <p class="fw-bold text-dark mb-0" th:text="${#temporals.format(entretien.dateEntretien, 'dd MMMM yyyy')}">01 Jan 2024</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="d-block small text-muted text-uppercase fw-bold mb-1" style="letter-spacing:0.5px;">Mécanicien / Garage</label>
+                                    <p class="fw-bold text-dark mb-0" th:text="${entretien.mecanicien}">Garage Central</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="d-block small text-muted text-uppercase fw-bold mb-1" style="letter-spacing:0.5px;">Description des Travaux</label>
+                                <div class="p-3 bg-light rounded-3 small text-secondary" style="min-height: 80px;" th:text="${entretien.description}">
+                                    Détails de l'intervention...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <!-- Vehicle Card -->
+                        <div class="card border-0 p-4 mb-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-4" style="letter-spacing:1px;">Véhicule Concerné</h6>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width:50px; height:50px; color: #2563eb; border: 1px solid #e5e7eb;">
+                                   <i class="bi bi-car-front fs-4"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark" th:text="${entretien.voiture.marque} + ' ' + ${entretien.voiture.modele}">Renault Clio</div>
+                                    <div class="text-muted small text-uppercase" th:text="${entretien.voiture.plaqueImmatriculation}">1234 AB</div>
+                                </div>
+                            </div>
+                            <a th:href="@{'/voitures/' + ${entretien.voiture.id}}" class="btn btn-outline-secondary btn-sm w-100 rounded-pill fw-bold">Voir le véhicule</a>
+                        </div>
+
+                        <!-- Actions Card -->
+                        <div class="card border-0 p-4 shadow-sm" style="border-radius:16px; border:1px solid #fdf5e6!important; ">
+                            <h6 class="text-uppercase small fw-bold text-muted mb-4" style="letter-spacing:1px;">Actions</h6>
+                            <div class="d-grid gap-2">
+                                <a th:href="@{'/entretien/modifier/' + ${entretien.id}}" class="btn btn-light border py-2 rounded-pill fw-bold small">
+                                    <i class="bi bi-pencil me-2 text-warning"></i> Modifier
+                                </a>
+                                <a th:href="@{'/entretien/supprimer/' + ${entretien.id}}" class="btn btn-light border py-2 rounded-pill fw-bold small text-danger" onclick="return confirm('Supprimer cet entretien?')">
+                                    <i class="bi bi-trash me-2"></i> Supprimer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

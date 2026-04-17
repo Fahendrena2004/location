@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Modifier l'Entretien - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 900px;">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center mb-5">
+                <a href="/entretien" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-1" style="font-size: 0.7rem; letter-spacing: 0.05rem; text-transform: uppercase;">
+                            <li class="breadcrumb-item"><a href="/entretien" class="text-decoration-none text-muted">Maintenance</a></li>
+                            <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Modification</li>
+                        </ol>
+                    </nav>
+                    <h2 class="fw-bold mb-0 text-main">Modifier l'Intervention</h2>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-4 mb-5" style="border-radius: 20px;">
+                <form th:action="@{'/entretien/modifier/' + ${entretien.id}}" th:object="${entretien}" method="post">
+                    <div class="row g-4">
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Véhicule concerné</label>
+                            <select class="form-select py-2 bg-light border-0" th:field="*{voiture}" required>
+                                <option th:each="voiture : ${voitures}" th:value="${voiture.id}"
+                                    th:text="${voiture.marque} + ' ' + ${voiture.modele} + ' - ' + ${voiture.plaqueImmatriculation}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Date de l'intervention</label>
+                            <input type="date" class="form-control py-2" th:field="*{dateEntretien}" required>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Type de maintenance</label>
+                            <select class="form-select py-2" th:field="*{typeEntretien}" required>
+                                <option value="VIDANGE">Vidange</option>
+                                <option value="FREINS">Freins</option>
+                                <option value="PNEUS">Pneus</option>
+                                <option value="MOTEUR">Moteur</option>
+                                <option value="CLIMATISATION">Climatisation</option>
+                                <option value="AUTRE">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Prestataire / Mécanicien</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-gear"></i></span>
+                                <input type="text" class="form-control py-2 ps-0 border-start-0" th:field="*{mecanicien}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Détails de l'intervention</label>
+                            <textarea class="form-control py-3" th:field="*{description}" rows="3" required></textarea>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Coût final (Ariary)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">Ar</span>
+                                <input type="number" step="1000" class="form-control py-2 ps-0 border-start-0" th:field="*{cout}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Relevé Kilométrique</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-speedometer2"></i></span>
+                                <input type="number" class="form-control py-2 ps-0 border-start-0" th:field="*{kilometrage}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Statut de l'intervention</label>
+                            <select class="form-select py-2" th:field="*{termine}">
+                                <option value="false">En cours / Planifié</option>
+                                <option value="true">Terminé & Validé</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                        <a href="/entretien" class="btn btn-light px-4">Annuler</a>
+                        <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                            <i class="bi bi-save me-2"></i> Mettre à jour l'intervention
+                        </button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-label { color: #4b5563; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #f3f4f6;  transition: all 0.2s; font-size: 0.9rem; }
+        .form-control:focus, .form-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); outline: none; }
+        .btn-link:hover { color: #2563eb !important; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Mon Espace - Location Voitures</title>
+</head>
+<body class="bg-body">
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left:260px; min-height:100vh;">
+
+            <!-- Header -->
+            <div class="header-section mb-5 animate__animated animate__fadeIn">
+                <div class="d-flex justify-content-between align-items-end">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2" style="font-size: 0.7rem;">
+                                <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-muted opacity-75">AutoRent</a></li>
+                                <li class="breadcrumb-item active text-primary" aria-current="page">Dashboard Client</li>
+                            </ol>
+                        </nav>
+                        <h2 class="fw-bold mb-1 text-main">Mon Espace Client</h2>
+                        <p class="text-muted small mb-0">Ravi de vous revoir, <a th:href="@{/profile}" class="text-primary text-decoration-none fw-bold" th:text="${user.nomComplet}">Client</a>. Voici un aperçu de vos activités.</p>
+                    </div>
+                    <a th:href="@{/locations/reserver}" class="btn btn-primary px-4 py-2 rounded-3 fw-bold shadow-sm d-flex align-items-center gap-2">
+                        <i class="bi bi-car-front-fill"></i> Réserver une voiture
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="row g-4 mb-5">
+                <!-- Locations Actives -->
+                <div class="col-md-4">
+                    <div class="card border-0 glass h-100 p-4 stats-card">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div class="icon-shape bg-primary-soft text-primary shadow-soft">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
+                            <span class="badge badge-soft-primary rounded-3">Actif</span>
+                        </div>
+                        <h3 class="fw-bold mb-1 text-main" style="font-size: 2rem;" th:text="${locationsActives}">0</h3>
+                        <p class="text-muted small fw-bold text-uppercase mb-0 ls-1">Locations Actives</p>
+                    </div>
+                </div>
+                
+                <!-- Total Dépensé -->
+                <div class="col-md-4">
+                    <div class="card border-0 glass h-100 p-4 stats-card">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div class="icon-shape bg-warning-soft text-warning shadow-soft">
+                                <i class="bi bi-wallet2"></i>
+                            </div>
+                            <span class="badge badge-soft-warning rounded-3">Total</span>
+                        </div>
+                        <h3 class="fw-bold mb-1 text-main amount-convertible ls-neg-1" 
+                            style="font-size: 1.6rem;"
+                            th:data-mga="${totalDepense ?: 0}"
+                            th:text="${#numbers.formatDecimal(totalDepense ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">0 Ar</h3>
+                        <p class="text-muted small fw-bold text-uppercase mb-0 ls-1">Total Dépensé</p>
+                    </div>
+                </div>
+                
+                <!-- Points Fidélité -->
+                <div class="col-md-4">
+                    <div class="card border-0 glass h-100 p-4 stats-card">
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div class="icon-shape bg-info-soft text-info shadow-soft">
+                                <i class="bi bi-star-fill"></i>
+                            </div>
+                            <span class="badge badge-soft-info rounded-3">VIP</span>
+                        </div>
+                        <h3 class="fw-bold mb-1 text-main ls-neg-1" style="font-size: 2rem;">1,250 <small class="fs-6 fw-normal text-muted">pts</small></h3>
+                        <p class="text-muted small fw-bold text-uppercase mb-0 ls-1">Points Fidélité</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Locations History -->
+            <div class="card border-0 shadow-sm glass overflow-hidden">
+                <div class="card-header bg-transparent border-0 p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-main">Historique de mes Locations</h5>
+                        <p class="text-muted smaller mb-0">Retrouvez toutes vos réservations passées et en cours</p>
+                    </div>
+                    <a th:href="@{/voitures}" class="btn btn-sm btn-outline-primary rounded-3 px-3">
+                        Voir tout
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light-subtle">
+                            <tr class="text-uppercase" style="font-size:0.65rem; letter-spacing: 1px;">
+                                <th class="ps-4 py-3 border-0">Véhicule</th>
+                                <th class="py-3 border-0 text-center">Période</th>
+                                <th class="py-3 border-0 text-center">Montant</th>
+                                <th class="py-3 border-0 text-center">Statut</th>
+                                <th class="pe-4 py-3 border-0 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="loc : ${mesLocations}" class="border-light">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="vehicle-thumb" th:if="${!#lists.isEmpty(loc.voitures)}">
+                                            <img th:src="${!#lists.isEmpty(loc.voitures[0].images) ? loc.voitures[0].images[0] : '/images/car-placeholder.png'}" 
+                                                 alt="Voiture" class="rounded-3 shadow-sm border" style="width:60px; height:40px; object-fit:cover;">
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-main" style="font-size:0.85rem;">
+                                                <span th:each="v, iterStat : ${loc.voitures}">
+                                                    [[${v.marque}]] [[${v.modele}]][[${!iterStat.last ? ', ' : ''}]]
+                                                </span>
+                                            </div>
+                                            <small class="text-muted smaller" th:if="${!#lists.isEmpty(loc.chauffeurs)}">
+                                                <i class="bi bi-person-badge me-1"></i>Inclus Chauffeur
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 text-center">
+                                    <div class="small fw-medium text-main" th:if="${loc.dateDebut != null and loc.dateFin != null}"
+                                         th:text="${#temporals.format(loc.dateDebut, 'dd MMM')} + ' → ' + ${#temporals.format(loc.dateFin, 'dd MMM yyyy')}">Date</div>
+                                    <div class="small fw-medium text-main" th:if="${loc.dateDebut == null or loc.dateFin == null}">Dates non définies</div>
+                                </td>
+                                <td class="py-3 text-center">
+                                    <span class="amount-convertible fw-bold text-main"
+                                          th:data-mga="${loc.montantTotal ?: 0}"
+                                          th:text="${#numbers.formatDecimal(loc.montantTotal ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'"
+                                          style="font-size:0.9rem;">0 Ar</span>
+                                </td>
+                                <td class="py-3 text-center">
+                                    <span class="badge rounded-3 px-3 py-2 fw-bold"
+                                          th:classappend="${loc.statut != null ? (loc.statut.name() == 'EN_ATTENTE' ? 'badge-soft-warning' : (loc.statut.name() == 'EN_COURS' ? 'badge-soft-primary' : (loc.statut.name() == 'TERMINEE' ? 'badge-soft-success' : 'badge-soft-danger'))) : 'badge-soft-secondary'}"
+                                          th:text="${loc.statut ?: 'INCONNU'}">Statut</span>
+                                </td>
+                                <td class="pe-4 py-3 text-center">
+                                     <div class="dropdown">
+                                         <button class="btn-action-square ms-auto" type="button" data-bs-toggle="dropdown">
+                                             <i class="bi bi-three-dots-vertical"></i>
+                                         </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius:12px;">
+                                            <li><a class="dropdown-item rounded-3 py-2" th:href="@{'/locations/' + ${loc.id}}"><i class="bi bi-eye me-2"></i>Détails</a></li>
+                                            <li th:if="${loc.statut.name() == 'EN_COURS' or loc.statut.name() == 'TERMINEE'}">
+                                                <a class="dropdown-item rounded-3 py-2 fw-bold stripe-btn" th:href="@{'/paiements/checkout/' + ${loc.id}}" style="color: #635bff;">
+                                                    <i class="bi bi-credit-card me-2"></i> Payer via Stripe
+                                                </a>
+                                            </li>
+                                            <li th:if="${loc.facture != null}"><a class="dropdown-item rounded-3 py-2 text-success" th:href="@{'/factures/telecharger/' + ${loc.facture.id}}"><i class="bi bi-file-earmark-pdf me-2"></i>Facture</a></li>
+                                            <li th:if="${loc.statut.name() == 'EN_ATTENTE'}">
+                                                <a class="dropdown-item rounded-3 py-2 text-danger" th:href="@{'/locations/annuler/' + ${loc.id}}" onclick="return confirm('Annuler cette réservation?')">
+                                                    <i class="bi bi-x-circle me-2"></i>Annuler
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(mesLocations)}">
+                                <td colspan="5" class="text-center py-5">
+                                    <img src="https://illustrations.popsy.co/gray/calendar.svg" alt="Vide" style="width:120px; opacity:0.6;" class="mb-3">
+                                    <p class="text-muted small mb-3">Vous n'avez pas encore effectué de location.</p>
+                                    <a th:href="@{/voitures}" class="btn btn-primary btn-sm px-4 rounded-pill">Parcourir la flotte</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .currency-btn { background:transparent; color:#555; border:none; transition:all .15s; }
+        .active-currency { background:#2d2d2d !important; color:white !important; }
+        .currency-btn:not(.active-currency):hover { background:#fef9c3; color:#b45309; }
+    </style>
+
+    <!-- Global Currency Logic is now in fragments/sidebar.html -->
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

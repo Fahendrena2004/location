@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header}">
+    <title>Planning des Locations - AutoRent</title>
+</head>
+<body class="bg-body">
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Planning &amp; Disponibilité</h2>
+                    <p class="text-muted small mb-0">Vue d'ensemble calendaire de l'activité de la flotte</p>
+                </div>
+                <div class="d-flex gap-3">
+                    <a href="/locations" class="btn btn-light px-4 shadow-sm border">
+                        <i class="bi bi-list-task me-2"></i>Liste
+                    </a>
+                    <a sec:authorize="hasRole('ADMIN')" href="/locations/ajouter" class="btn btn-primary px-4 shadow-sm">
+                        <i class="bi bi-plus-lg me-2"></i>Nouvelle Location
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm p-3 h-100" style="border-left: 4px solid #f59e0b !important; border-radius: 14px;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:42px; height:42px; background:rgba(245,158,11,0.12);">
+                                <i class="bi bi-hourglass-split text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="smaller text-muted fw-bold text-uppercase" style="letter-spacing:.05rem;">En Attente</div>
+                                <div class="h4 fw-bold mb-0 text-warning" th:text="${#lists.size(locations.?[statut.name() == 'EN_ATTENTE'])}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm p-3 h-100" style="border-left: 4px solid #2563eb !important; border-radius: 14px;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:42px; height:42px; background:rgba(37,99,235,0.12);">
+                                <i class="bi bi-car-front text-primary"></i>
+                            </div>
+                            <div>
+                                <div class="smaller text-muted fw-bold text-uppercase" style="letter-spacing:.05rem;">En Cours</div>
+                                <div class="h4 fw-bold mb-0 text-primary" th:text="${#lists.size(locations.?[statut.name() == 'EN_COURS'])}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm p-3 h-100" style="border-left: 4px solid #10b981 !important; border-radius: 14px;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:42px; height:42px; background:rgba(16,185,129,0.12);">
+                                <i class="bi bi-check-circle text-success"></i>
+                            </div>
+                            <div>
+                                <div class="smaller text-muted fw-bold text-uppercase" style="letter-spacing:.05rem;">Terminées</div>
+                                <div class="h4 fw-bold mb-0 text-success" th:text="${#lists.size(locations.?[statut.name() == 'TERMINEE'])}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-0 shadow-sm p-3 h-100" style="border-left: 4px solid #ef4444 !important; border-radius: 14px;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:42px; height:42px; background:rgba(239,68,68,0.12);">
+                                <i class="bi bi-x-circle" style="color:#ef4444;"></i>
+                            </div>
+                            <div>
+                                <div class="smaller text-muted fw-bold text-uppercase" style="letter-spacing:.05rem;">Annulées</div>
+                                <div class="h4 fw-bold mb-0" style="color:#ef4444;" th:text="${#lists.size(locations.?[statut.name() == 'ANNULEE'])}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Card -->
+            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 20px; min-height: 680px;">
+                <div class="p-4" style="min-height: 680px;">
+                    <div id='calendar'></div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="mt-4 d-flex gap-4 justify-content-center align-items-center flex-wrap">
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:12px; height:12px; background:#f59e0b; border-radius:3px;"></div>
+                    <span class="small text-muted">En Attente</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:12px; height:12px; background:#2563eb; border-radius:3px;"></div>
+                    <span class="small text-muted">En Cours</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:12px; height:12px; background:#10b981; border-radius:3px;"></div>
+                    <span class="small text-muted">Terminée</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:12px; height:12px; background:#34d399; border-radius:3px;"></div>
+                    <span class="small text-muted">Payée</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <div style="width:12px; height:12px; background:#ef4444; border-radius:3px;"></div>
+                    <span class="small text-muted">Annulée</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Detail Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0 pb-0" id="eventModalHeader" style="padding: 24px 28px 10px;">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-1" id="modalTitle">Titre</h5>
+                        <span class="badge rounded-pill fw-bold" id="modalBadge">Statut</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="padding: 16px 28px 24px;">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-primary-soft d-flex align-items-center justify-content-center" style="width:36px;height:36px;flex-shrink:0;">
+                                <i class="bi bi-calendar3 text-primary small"></i>
+                            </div>
+                            <div>
+                                <div class="smaller text-muted">Période</div>
+                                <div class="fw-bold small" id="modalDates">-</div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle bg-success-soft d-flex align-items-center justify-content-center" style="width:36px;height:36px;flex-shrink:0;">
+                                <i class="bi bi-cash-stack text-success small"></i>
+                            </div>
+                            <div>
+                                <div class="smaller text-muted">Montant</div>
+                                <div class="fw-bold small" id="modalMontant">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0" style="padding: 0 28px 24px;">
+                    <a href="#" id="modalLink" class="btn btn-primary px-4 rounded-pill">
+                        <i class="bi bi-eye me-2"></i>Voir Détails
+                    </a>
+                    <button type="button" class="btn btn-light px-4 rounded-pill" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js'></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+
+            const statusLabels = {
+                'EN_ATTENTE': { label: 'En Attente', cls: 'badge-soft-warning' },
+                'EN_COURS':   { label: 'En Cours',   cls: 'badge-soft-primary' },
+                'TERMINEE':   { label: 'Terminée',   cls: 'badge-soft-success' },
+                'PAYEE':      { label: 'Payée',      cls: 'bg-success text-white' },
+                'ANNULEE':    { label: 'Annulée',    cls: 'badge-soft-danger' },
+            };
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'fr',
+                height: 'auto',
+                firstDay: 1,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listMonth'
+                },
+                events: '/api/locations/all-events',
+                eventDisplay: 'block',
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault();
+                    const ev = info.event;
+                    const props = ev.extendedProps;
+                    const statut = props.statut;
+                    const meta = statusLabels[statut] || { label: statut, cls: 'bg-secondary' };
+
+                    document.getElementById('modalTitle').textContent = ev.title;
+
+                    const badge = document.getElementById('modalBadge');
+                    badge.textContent = meta.label;
+                    badge.className = 'badge rounded-pill fw-bold ' + meta.cls;
+
+                    const start = ev.start ? ev.start.toLocaleDateString('fr-FR') : '-';
+                    const end = ev.end ? new Date(ev.end.getTime() - 86400000).toLocaleDateString('fr-FR') : '-';
+                    document.getElementById('modalDates').textContent = start + ' → ' + end;
+
+                    const montant = props.montant;
+                    document.getElementById('modalMontant').textContent = montant
+                        ? new Intl.NumberFormat('fr-FR').format(Math.round(montant)) + ' Ar'
+                        : '-';
+
+                    const locationId = props.locationId;
+                    document.getElementById('modalLink').href = '/locations/' + locationId;
+
+                    eventModal.show();
+                },
+                eventContent: function(arg) {
+                    const icon = arg.event.extendedProps.statut === 'EN_ATTENTE' ? '⏳'
+                               : arg.event.extendedProps.statut === 'EN_COURS' ? '🚗'
+                               : arg.event.extendedProps.statut === 'TERMINEE' ? '✅'
+                               : arg.event.extendedProps.statut === 'PAYEE' ? '💳'
+                               : arg.event.extendedProps.statut === 'ANNULEE' ? '❌' : '📋';
+                    return {
+                        html: `<div class="fc-event-inner" title="${arg.event.title}">
+                                 <span class="fc-event-icon">${icon}</span>
+                                 <span class="fc-event-label">${arg.event.title}</span>
+                               </div>`
+                    };
+                }
+            });
+            calendar.render();
+        });
+    </script>
+
+    <style>
+        .smaller { font-size: 0.75rem; }
+
+        /* Calendar Core */
+        .fc { font-family: 'Inter', sans-serif; }
+        .fc-toolbar-title { font-weight: 800 !important; font-size: 1.2rem !important; color: var(--text-main); }
+
+        /* Toolbar Buttons */
+        .fc .fc-button-primary {
+            background: var(--bg-surface) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-main) !important;
+            font-weight: 600 !important;
+            border-radius: 10px !important;
+            padding: 6px 14px !important;
+            box-shadow: none !important;
+            text-transform: capitalize !important;
+        }
+        .fc .fc-button-primary:hover {
+            background: var(--bg-body) !important;
+            color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+        .fc .fc-button-active, .fc .fc-button-primary:not(:disabled):active {
+            background: var(--primary-soft) !important;
+            border-color: var(--primary) !important;
+            color: var(--primary) !important;
+        }
+
+        /* Table */
+        .fc th { padding: 12px 0 !important; font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); border: none !important; letter-spacing: .04rem; }
+        .fc td, .fc th { border-color: var(--border) !important; }
+        .fc .fc-day-today { background: var(--primary-soft) !important; }
+        .fc .fc-col-header-cell { background: transparent; }
+
+        /* Events */
+        .fc .fc-daygrid-event {
+            border-radius: 8px !important;
+            border-width: 1px !important;
+            margin: 2px 3px !important;
+            padding: 0 !important;
+            font-size: 0.72rem !important;
+            cursor: pointer;
+        }
+        .fc-event-inner {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 7px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .fc-event-icon { flex-shrink: 0; font-size: 0.7rem; }
+        .fc-event-label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        /* List view */
+        .fc .fc-list-event { cursor: pointer; }
+        .fc .fc-list-event:hover td { background: var(--bg-body); }
+        .fc .fc-list-event-dot { border-radius: 50%; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

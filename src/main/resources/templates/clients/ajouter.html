@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Nouveau Client - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 800px;">
+                <div class="d-flex align-items-center mb-5">
+                    <a href="/clients" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-arrow-left fs-5"></i>
+                    </a>
+                    <div>
+                        <h2 class="fw-bold mb-1">Nouveau Client</h2>
+                        <p class="text-muted small mb-0">Ajoutez un nouveau client à votre base de données</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm p-4 mb-5 glass">
+                    <form th:action="@{/clients/ajouter}" th:object="${client}" method="post">
+                        <div class="row g-4">
+                            <!-- Type de client -->
+                            <div class="col-12 mb-2">
+                                <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block">Type de Client</label>
+                                <div class="d-flex gap-4">
+                                    <div class="form-check custom-radio">
+                                        <input class="form-check-input" type="radio" th:field="*{typeClient}"
+                                               id="typePers" value="PERSONNE" checked>
+                                        <label class="form-check-label fw-medium" for="typePers">
+                                            Particulier
+                                        </label>
+                                    </div>
+                                    <div class="form-check custom-radio">
+                                        <input class="form-check-input" type="radio" th:field="*{typeClient}"
+                                               id="typeAssoc" value="ASSOCIATION">
+                                        <label class="form-check-label fw-medium" for="typeAssoc">
+                                            Association / Société
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <label for="nom" class="form-label text-main fw-bold small text-uppercase mb-2">Nom / Raison Sociale</label>
+                                <input type="text" th:field="*{nom}" id="nom" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid' : ''"
+                                       placeholder="ex: Rakoto ou SARL ..." required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+                            </div>
+                            <div class="col-md-6" id="prenom-container">
+                                <label for="prenom" class="form-label text-main fw-bold small text-uppercase mb-2">Prénom</label>
+                                <input type="text" th:field="*{prenom}" id="prenom" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid' : ''"
+                                       placeholder="ex: Jean">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="dateNaissance" class="form-label text-main fw-bold small text-uppercase mb-2">Date de naissance</label>
+                                <input type="date" th:field="*{dateNaissance}" id="dateNaissance" class="form-control py-2">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cin" class="form-label text-main fw-bold small text-uppercase mb-2">Numéro CIN</label>
+                                <input type="text" th:field="*{cin}" id="cin" 
+                                       class="form-control py-2" 
+                                       th:classappend="${#fields.hasErrors('cin')} ? 'is-invalid' : ''"
+                                       placeholder="12 chiffres...">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('cin')}" th:errors="*{cin}"></div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label for="telephone" class="form-label text-main fw-bold small text-uppercase mb-2">Téléphone</label>
+                                <div class="input-group has-validation">
+                                    <span class="input-group-text bg-light border-end-0 px-3"><i class="bi bi-telephone opacity-50"></i></span>
+                                    <input type="tel" th:field="*{telephone}" id="telephone" 
+                                           class="form-control border-start-0 py-2" 
+                                           th:classappend="${#fields.hasErrors('telephone')} ? 'is-invalid' : ''"
+                                           placeholder="034 00 000 00">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="adresse" class="form-label text-main fw-bold small text-uppercase mb-2">Adresse complète</label>
+                                <textarea th:field="*{adresse}" id="adresse" class="form-control" rows="3" placeholder="Lot..."></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="bg-light p-4 rounded-3 border">
+                                    <label for="userId" class="form-label text-main fw-bold small text-uppercase mb-2">Associer à un compte utilisateur</label>
+                                    <select name="userId" id="userId" class="form-select py-2">
+                                        <option value="">-- Aucun compte associé --</option>
+                                        <option th:each="u : ${users}"
+                                                th:value="${u.id}"
+                                                th:text="${u.nomComplet + ' (' + u.email + ')'}">Utilisateur</option>
+                                    </select>
+                                    <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i> Permet au client de se connecter pour suivre ses locations.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                            <a href="/clients" class="btn btn-light px-4">Annuler</a>
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                                Enregistrer le client
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .custom-radio .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+        .custom-radio .form-check-label { color: var(--text-main); }
+        [data-bs-theme="dark"] .bg-white { background-color: var(--bg-surface) !important; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typePers = document.getElementById('typePers');
+            const typeAssoc = document.getElementById('typeAssoc');
+            const prenomContainer = document.getElementById('prenom-container');
+            const prenomInput = document.getElementById('prenom');
+
+            function toggleFields() {
+                if (typeAssoc.checked) {
+                    prenomContainer.classList.add('opacity-50');
+                    prenomInput.disabled = true;
+                    prenomInput.value = '';
+                } else {
+                    prenomContainer.classList.remove('opacity-50');
+                    prenomInput.disabled = false;
+                }
+            }
+
+            typePers.addEventListener('change', toggleFields);
+            typeAssoc.addEventListener('change', toggleFields);
+            toggleFields();
+        });
+    </script>
+    </div>
+
+    <style>
+        .form-label-sm {
+            color: #374151;
+            font-size: 0.88rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .client-input {
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .client-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+            
+            outline: none;
+        }
+        .form-select.client-input {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        }
+        .form-check-input:checked {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+        }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

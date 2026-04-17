@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header}">
+    <title>Utilisateurs - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold text-dark mb-1" style="font-family: 'Outfit', sans-serif;">Équipe & Administration</h2>
+                    <p class="text-muted small mb-0">Gérez les accès et les privilèges de vos collaborateurs</p>
+                </div>
+                <a href="/users/ajouter" class="btn btn-primary-premium d-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus-fill"></i> Nouvel Utilisateur
+                </a>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card border-0 glass-card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="px-4">Collaborateur</th>
+                                    <th>Identifiant</th>
+                                    <th>Niveau d'Accès</th>
+                                    <th>Lien Client</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${users}">
+                                    <td class="px-4">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <div class="avatar-soft" th:text="${user.nomComplet != null and !user.nomComplet.isEmpty() ? (user.nomComplet.contains(' ') ? #strings.substring(user.nomComplet, 0, 1) + #strings.substring(user.nomComplet, user.nomComplet.indexOf(' ') + 1, user.nomComplet.indexOf(' ') + 2) : #strings.substring(user.nomComplet, 0, 1)) : 'U'}">JD</div>
+                                            <span class="fw-bold text-dark" th:text="${user.nomComplet}">Jean Dupont</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <code class="text-primary fw-medium" th:text="${user.email}">jean@example.com</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge-soft"
+                                              th:classappend="${user.role.name() == 'ADMIN'} ? 'badge-soft-danger' : 'badge-soft-primary'"
+                                              th:text="${user.role.name() == 'ADMIN'} ? 'Administrateur' : 'Client'">Client</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${user.client != null}">
+                                            <a th:href="@{'/clients/' + ${user.client.id}}"
+                                               class="btn btn-sm btn-link-premium">
+                                                <i class="bi bi-person-fill"></i> Profil lié
+                                            </a>
+                                        </span>
+                                        <span th:unless="${user.client != null}" class="text-muted small opacity-50">&mdash;</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn-action-square mx-auto" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                                                <li>
+                                                    <a class="dropdown-item py-2" th:href="@{'/users/modifier/' + ${user.id}}">
+                                                        <i class="bi bi-pencil-square text-warning me-2"></i> Éditer l'accès
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider opacity-50"></li>
+                                                <li>
+                                                    <a class="dropdown-item py-2 text-danger" th:href="@{'/users/supprimer/' + ${user.id}}"
+                                                       onclick="return confirm('Révoquer cet accès utilisateur ?')">
+                                                        <i class="bi bi-trash-fill me-2"></i> Supprimer
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.7);
+        }
+        .avatar-soft {
+            width: 38px;
+            height: 38px;
+            background: #f1f5f9;
+            color: #64748b;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+        .btn-primary-premium {
+            background: #2563eb;
+            color: white;
+            border-radius: 14px;
+            padding: 12px 24px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-premium:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+        .badge-soft {
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-soft-danger { background: #fef2f2; color: #dc2626; }
+        .badge-soft-primary { background: #eff6ff; color: #2563eb; }
+        
+        .btn-link-premium {
+            color: #2563eb;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .btn-link-premium:hover { background: #f1f5f9; }
+        
+        .btn-action-round {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            transition: all 0.2s;
+        }
+        .btn-action-round:hover { background: #f8fafc; color: #2563eb; }
+        
+        thead th {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #64748b;
+            font-weight: 800;
+            padding: 20px 15px !important;
+            border-bottom: 2px solid #f1f5f9 !important;
+        }
+        .table tbody tr td { padding: 18px 15px; }
+    </style>le>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

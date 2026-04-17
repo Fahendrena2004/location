@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Planifier Entretien - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+            <div class="container" style="max-width: 900px;">
+            <!-- Header Section -->
+            <div class="d-flex align-items-center mb-5">
+                <a href="/entretien" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-1 text-main">Planifier une Intervention</h2>
+                    <p class="text-muted small mb-0">Enregistrez un nouvel événement de maintenance technique</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-4 mb-5" style="border-radius: 20px;">
+                <form th:action="@{/entretien/planifier}" th:object="${entretien}" method="post">
+                    <div class="row g-4">
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Véhicule à immobiliser</label>
+                            <select class="form-select py-2" th:field="*{voiture}" required>
+                                <option value="">Sélectionner une voiture...</option>
+                                <option th:each="voiture : ${voitures}" th:value="${voiture.id}"
+                                    th:text="${voiture.marque} + ' ' + ${voiture.modele} + ' - ' + ${voiture.plaqueImmatriculation}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Date de l'intervention</label>
+                            <input type="date" class="form-control py-2" th:field="*{dateEntretien}" required>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Catégorie d'entretien</label>
+                            <select class="form-select py-2" th:field="*{typeEntretien}" required>
+                                <option value="">Choisir un type...</option>
+                                <option value="VIDANGE">Vidange</option>
+                                <option value="FREINS">Freins</option>
+                                <option value="PNEUS">Pneus</option>
+                                <option value="MOTEUR">Moteur</option>
+                                <option value="CLIMATISATION">Climatisation</option>
+                                <option value="AUTRE">Autre</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Intervenant / Mécanicien</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-gear"></i></span>
+                                <input type="text" class="form-control py-2 ps-0 border-start-0" th:field="*{mecanicien}" placeholder="Nom du garage ou technicien" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Description des travaux prévus</label>
+                            <textarea class="form-control py-3" th:field="*{description}" rows="3" placeholder="Détaillez les points à vérifier ou les pièces à remplacer" required></textarea>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Coût estimé (Ariary)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">Ar</span>
+                                <input type="number" step="1000" class="form-control py-2 ps-0 border-start-0" th:field="*{cout}" placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Index Kilométrique actuel</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-speedometer2"></i></span>
+                                <input type="number" class="form-control py-2 ps-0 border-start-0" th:field="*{kilometrage}" placeholder="Km au compteur" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                        <a href="/entretien" class="btn btn-light px-4">Annuler</a>
+                        <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                            <i class="bi bi-calendar-check me-2"></i> Enregistrer l'intervention
+                        </button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-label { color: #4b5563; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #f3f4f6;  transition: all 0.2s; font-size: 0.9rem; }
+        .form-control:focus, .form-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); outline: none; }
+        .btn-link:hover { color: #2563eb !important; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

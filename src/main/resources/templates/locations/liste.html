@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/header :: header}">
+    <title>Locations - Location Voitures</title>
+</head>
+
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="main-content-layout">
+                <!-- Header Section -->
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2" style="font-size: 0.75rem; letter-spacing: 0.05rem; text-transform: uppercase;">
+                                <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-muted">Platform</a></li>
+                                <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Locations</li>
+                            </ol>
+                        </nav>
+                        <h2 class="fw-bold text-main mb-0" th:text="${titrePage} ?: 'Historique des Locations'">Locations</h2>
+                        <p class="text-muted small mb-0">Suivi des réservations et contrats en cours</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button sec:authorize="hasRole('ADMIN')" type="button" class="btn btn-action-square me-2" data-bs-toggle="modal" data-bs-target="#modalExport">
+                            <i class="bi bi-download"></i>
+                        </button>
+                        <a sec:authorize="hasRole('ADMIN')" href="/locations/ajouter" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                            <i class="bi bi-plus-lg"></i> Nouvelle Location
+                        </a>
+                        <a sec:authorize="hasRole('CLIENT')" href="/locations/reserver" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                            <i class="bi bi-calendar-plus"></i> Réserver
+                        </a>
+                    </div>
+                </div>
+            
+            <!-- Recherche et Filtres Avancés -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <form th:action="@{/locations}" method="get" class="row g-4 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Recherche Client</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-0 text-muted" style="border-radius: 10px 0 0 10px;">
+                                    <i class="bi bi-person-search"></i>
+                                </span>
+                                <input type="text" name="query" class="form-control bg-light border-0 py-2" 
+                                       placeholder="Nom ou prénom..." th:value="${query}" style="border-radius: 0 10px 10px 0;">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Statut</label>
+                            <select name="statut" class="form-select border-0 bg-light rounded-3 py-2">
+                                <option value="">Tous</option>
+                                <option th:each="st : ${allStatuts}" 
+                                        th:value="${st}" 
+                                        th:text="${st.name() == 'EN_ATTENTE' ? 'En attente' : (st.name() == 'EN_COURS' ? 'En cours' : (st.name() == 'TERMINEE' ? 'Terminée' : 'Annulée'))}"
+                                        th:selected="${st.name() == statut}">Statut</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Du</label>
+                            <input type="date" name="dateDebut" class="form-control border-0 bg-light py-2" th:value="${dateDebut}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2" style="font-size: 0.65rem; letter-spacing: 0.05rem;">Au</label>
+                            <input type="date" name="dateFin" class="form-control border-0 bg-light py-2" th:value="${dateFin}">
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary flex-grow-1 shadow-sm rounded-pill">
+                                    <i class="bi bi-filter me-2"></i>Filtrer
+                                </button>
+                                <a th:href="@{/locations}" class="btn btn-light border rounded-pill px-3 shadow-sm" title="Réinitialiser">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Flash messages -->
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4 p-3" role="alert">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill fs-5"></i>
+                    <span th:text="${success}">Succès !</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4 p-3" role="alert">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                    <span th:text="${error}">Erreur !</span>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div class="table-container shadow-sm border-0">
+                <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Véhicules</th>
+                                <th>Période</th>
+                                <th>Fin</th>
+                                <th>Total</th>
+                                <th class="text-center">Chauffeurs</th>
+                                <th>Statut & Progression</th>
+                                <th class="text-end px-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="location : ${locations}">
+                                <td class="py-4">
+                                    <div class="fw-bold text-main" th:text="${location.client.nom} + ' ' + ${location.client.prenom}">Doe John</div>
+                                    <div class="text-muted small" th:text="${location.client.telephone}">034...</div>
+                                </td>
+                                <td>
+                                    <div th:each="v : ${location.voitures}" class="small mb-1">
+                                        <span class="fw-medium text-main" th:text="${v.marque} + ' ' + ${v.modele}">Corolla</span>
+                                        <span class="text-muted" th:text="' - ' + ${v.plaqueImmatriculation}">AB-123</span>
+                                    </div>
+                                </td>
+                                <td class="small text-muted" th:text="${#temporals.format(location.dateDebut, 'dd MMM yyyy')}">18 Mars 2026</td>
+                                <td class="small text-muted" th:text="${#temporals.format(location.dateFin, 'dd MMM yyyy')}">21 Mars 2026</td>
+                                <td class="fw-bold text-primary amount-convertible" th:data-mga="${location.montantTotal}"
+                                    th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'">260,000 Ar</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <div th:each="c : ${location.chauffeurs}"
+                                            class="avatar bg-primary-soft text-primary fw-bold"
+                                            style="width:28px; height:28px; border-radius: 6px; font-size: 0.65rem; display: flex; align-items: center; justify-content: center;"
+                                            th:title="${c.prenom} + ' ' + ${c.nom}">
+                                            <span th:text="${c.prenom.substring(0,1).toUpperCase() + c.nom.substring(0,1).toUpperCase()}">RJ</span>
+                                        </div>
+                                        <span th:if="${#lists.isEmpty(location.chauffeurs)}"
+                                            class="text-muted small italic">Aucun</span>
+                                    </div>
+                                </td>
+                                <td style="min-width: 180px;">
+                                    <div class="mb-2 d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <span sec:authorize="hasRole('ADMIN')" th:if="${location.paiementDeclare and !location.payee}" class="badge bg-danger rounded-pill px-2 me-1 shadow-sm" style="animation: pulse 2s infinite;">
+                                                <i class="bi bi-exclamation-circle"></i> Vérifier Paiement
+                                            </span>
+                                            <span class="badge"
+                                                th:classappend="${location.payee ? 'badge-soft-success' : (location.statut.name() == 'EN_ATTENTE' ? 'badge-soft-warning' : (location.statut.name() == 'EN_COURS' ? 'badge-soft-primary' : (location.statut.name() == 'TERMINEE' ? 'badge-soft-success' : 'badge-soft-danger')))}"
+                                                th:text="${location.payee ? 'Payée' : (location.statut.name() == 'EN_ATTENTE' ? 'En attente' : (location.statut.name() == 'EN_COURS' ? 'En cours' : (location.statut.name() == 'TERMINEE' ? 'Terminée' : 'Annulée')))}">Statut</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Progress Bar -->
+                                    <div th:if="${location.statut != null && location.dateDebut != null && location.dateFin != null}"
+                                        th:with="
+                                        totalDays=${T(java.time.temporal.ChronoUnit).DAYS.between(location.dateDebut, location.dateFin)},
+                                        elapsedDays=${T(java.time.temporal.ChronoUnit).DAYS.between(location.dateDebut, today)},
+                                        rawPercent=${location.statut.name() == 'TERMINEE' || location.statut.name() == 'PAYEE' ? 100 : (location.statut.name() == 'EN_COURS' ? (totalDays > 0 ? (elapsedDays * 100 / totalDays) : 100) : 0)},
+                                        percent=${rawPercent > 100 ? 100 : (rawPercent < 0 ? 0 : rawPercent)}">
+
+                                        <div class="progress" style="height: 5px; background: var(--bg-body);">
+                                            <div class="progress-bar rounded-pill" role="progressbar"
+                                                th:style="'width: ' + ${percent} + '%;'"
+                                                th:classappend="${location.statut.name() == 'TERMINEE' || location.statut.name() == 'PAYEE' ? 'bg-success' : 'bg-primary'}"></div>
+                                        </div>
+                                        <div class="mt-1 small text-muted" style="font-size: 0.7rem;">
+                                            <span th:text="${percent} + '%'">0%</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end px-4">
+                                    <div class="d-flex justify-content-end align-items-center gap-2">
+                                        <div class="d-flex gap-1">
+                                            <a sec:authorize="hasRole('CLIENT')" 
+                                               th:if="${!location.payee and !location.paiementDeclare and (location.statut.name() == 'EN_COURS' or location.statut.name() == 'TERMINEE')}"
+                                               th:href="@{'/paiements/resume/' + ${location.id}}" 
+                                               class="btn btn-sm btn-primary rounded-pill px-3 py-1 shadow-sm d-flex align-items-center gap-1"
+                                               style="font-size: 0.75rem;">
+                                                <i class="bi bi-credit-card"></i> Payer
+                                            </a>
+                                            <span th:if="${location.paiementDeclare and !location.payee}" sec:authorize="hasRole('CLIENT')" class="badge bg-warning text-dark px-2 py-1 rounded-pill d-flex align-items-center gap-1" style="font-size: 0.70rem;">
+                                                <i class="bi bi-clock-history"></i> Vérification
+                                            </span>
+                                            <!-- Admin Approve/Reject -->
+                                            <div th:if="${location.statut.name() == 'EN_ATTENTE'}" class="d-flex gap-1" sec:authorize="hasRole('ADMIN')">
+                                                <form th:action="@{'/locations/' + ${location.id} + '/approuver'}" method="post">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success border-0 rounded-3 p-1" title="Approuver">
+                                                        <i class="bi bi-check-circle fs-5"></i>
+                                                    </button>
+                                                </form>
+                                                <form th:action="@{'/locations/' + ${location.id} + '/rejeter'}" method="post">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0 rounded-3 p-1" title="Rejeter">
+                                                        <i class="bi bi-x-circle fs-5"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                        <div class="dropdown">
+                                            <button class="btn-action-square" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 12px; min-width: 160px;">
+                                                 <li><a class="dropdown-item rounded-3 py-2" th:href="@{'/locations/' + ${location.id}}">
+                                                    <i class="bi bi-info-circle me-2"></i>Détails
+                                                </a></li>
+                                                <li><a class="dropdown-item rounded-3 py-2 text-primary" th:href="@{'/locations/' + ${location.id} + '/contrat'}" target="_blank">
+                                                    <i class="bi bi-file-earmark-pdf me-2"></i>Contrat PDF
+                                                </a></li>
+                                                <li th:if="${location.statut.name() == 'EN_ATTENTE'}" sec:authorize="hasRole('CLIENT')">
+                                                    <a class="dropdown-item rounded-3 py-2 text-danger" th:href="@{'/locations/annuler/' + ${location.id}}"
+                                                       onclick="return confirm('Voulez-vous vraiment annuler votre réservation ?')">
+                                                        <i class="bi bi-x-circle me-2"></i>Annuler ma demande
+                                                    </a>
+                                                </li>
+                                                <li th:if="${location.statut.name() == 'EN_COURS'}" sec:authorize="hasRole('ADMIN')">
+                                                    <a class="dropdown-item rounded-3 py-2" href="#" th:onclick="'ouvrirModalTerminer(' + ${location.id} + ')'">
+                                                        <i class="bi bi-check2-square me-2 text-success"></i>Terminer
+                                                    </a>
+                                                </li>
+                                                <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
+                                                <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item rounded-3 py-2 text-danger" th:href="@{'/locations/supprimer/' + ${location.id}}"
+                                                       onclick="return confirm('Confirmer la suppression ?')">
+                                                    <i class="bi bi-trash me-2"></i>Supprimer
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(locations)}">
+                                <td colspan="8" class="text-center py-5 text-muted opacity-50">
+                                    <i class="bi bi-inbox fs-1 mb-3 d-block"></i>
+                                    Aucune location enregistrée.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Terminer with date feedback -->
+    <div class="modal fade" id="modalTerminer" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <form id="formTerminer" method="post">
+                    <div class="modal-header border-0 pb-0 pt-4 px-4">
+                        <h5 class="modal-title fw-bold">Clôturer la Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <p class="text-muted small mb-4">Veuillez indiquer la date de retour effective pour enregistrer d'éventuels retards.</p>
+                        <div class="mb-3">
+                            <label class="form-label text-main fw-bold small">Date de Retour Réelle</label>
+                            <input type="date" name="dateRetour" id="inputDateRetour" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold">Valider & Clôturer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Export par mois -->
+    <div class="modal fade" id="modalExport" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Exporter les locations</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form th:action="@{/locations/export}" method="get">
+                    <div class="modal-body">
+                        <p class="text-muted small">Sélectionnez le mois et l'année pour générer le rapport CSV.</p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Mois</label>
+                                <select name="mois" class="form-select rounded-3">
+                                    <option value="1">Janvier</option>
+                                    <option value="2">Février</option>
+                                    <option value="3">Mars</option>
+                                    <option value="4">Avril</option>
+                                    <option value="5">Mai</option>
+                                    <option value="6">Juin</option>
+                                    <option value="7">Juillet</option>
+                                    <option value="8">Août</option>
+                                    <option value="9">Septembre</option>
+                                    <option value="10">Octobre</option>
+                                    <option value="11">Novembre</option>
+                                    <option value="12">Décembre</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Année</label>
+                                <input type="number" name="annee" class="form-control rounded-3"
+                                    th:value="${today.year}" required>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <label class="form-label fw-semibold d-block mb-2">Format d'exportation</label>
+                            <div class="d-flex gap-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="format" id="formatCsv"
+                                        value="csv" checked>
+                                    <label class="form-check-label small" for="formatCsv">
+                                        <i class="bi bi-file-earmark-spreadsheet me-1 text-success"></i> Excel (CSV)
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="format" id="formatPdf"
+                                        value="pdf">
+                                    <label class="form-check-label small" for="formatPdf">
+                                        <i class="bi bi-file-earmark-pdf me-1 text-danger"></i> Document PDF
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary rounded-3 fw-bold px-4">Télécharger</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .table thead th {
+            font-size: 0.72rem;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #f0e6c0;
+        }
+
+        .table tbody tr {
+            border-color: #f9f5e8;
+        }
+    </style>
+
+    <script>
+        function ouvrirModalTerminer(locationId) {
+            document.getElementById('formTerminer').action = '/locations/' + locationId + '/terminer';
+            // Default to today's date
+            document.getElementById('inputDateRetour').value = new Date().toISOString().split('T')[0];
+            new bootstrap.Modal(document.getElementById('modalTerminer')).show();
+        }
+    </script>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+
+</html>

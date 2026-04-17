@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Gestion des Paiements - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold mb-1">Historique des Paiements</h2>
+                    <p class="text-muted small mb-0">Suivez les transactions financières et générez les factures clients</p>
+                </div>
+                
+                <!-- Alertes Toast/Banner -->
+                <div th:if="${success}" class="alert alert-success border-0 shadow-sm rounded-3 alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <span th:text="${success}">Succès!</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <div th:if="${error}" class="alert alert-danger border-0 shadow-sm rounded-3 alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <span th:text="${error}">Erreur!</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <a href="/paiements/effectuer" class="btn btn-primary px-4 rounded-pill shadow-sm" sec:authorize="hasRole('ADMIN')">
+                    <i class="bi bi-plus-lg me-2"></i> Enregistrer un paiement
+                </a>
+            </div>
+
+            <!-- Section: Paiements en Attente (Pour Clients) -->
+            <div th:if="${pendingLocations != null and !#lists.isEmpty(pendingLocations)}" class="mb-5 animate__animated animate__fadeIn">
+                <div class="d-flex align-items-center mb-3">
+                    <h5 class="fw-bold mb-0 text-main">
+                        <i class="bi bi-clock-history text-warning me-2"></i> À Régler
+                    </h5>
+                    <span class="badge rounded-pill bg-warning text-dark ms-2" th:text="${#lists.size(pendingLocations)}">0</span>
+                </div>
+                
+                <div class="row g-3">
+                    <div th:each="loc : ${pendingLocations}" class="col-md-6 col-lg-4">
+                        <div class="card border-0 shadow-sm p-3 h-100" style="border-radius: 16px; background: rgba(255, 193, 7, 0.03); border: 1px dashed rgba(255, 193, 7, 0.3) !important;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box bg-warning-soft text-warning rounded-pill me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-receipt"></i>
+                                    </div>
+                                    <span class="small fw-bold text-main" th:text="'Réservation #' + ${loc.id}">#123</span>
+                                </div>
+                                <span class="badge rounded-pill badge-soft-warning small" th:text="${loc.statut}">EN_COURS</span>
+                            </div>
+                            
+                            <p class="text-muted smaller mb-2 text-truncate" th:each="v, iter : ${loc.voitures}" th:if="${iter.index == 0}">
+                                <i class="bi bi-car-front me-1"></i> <span th:text="${v.marque} + ' ' + ${v.modele}">Toyota</span>
+                            </p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2">
+                                <div class="fw-bold text-primary" th:text="${#numbers.formatDecimal(loc.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'">100,000 Ar</div>
+                                <a th:if="${!loc.paiementDeclare}" th:href="@{'/paiements/resume/' + ${loc.id}}" class="btn btn-sm btn-primary rounded-pill px-3">Payer <i class="bi bi-arrow-right small"></i></a>
+                                <span th:if="${loc.paiementDeclare}" class="badge bg-warning text-dark px-2 py-1 rounded-pill"><i class="bi bi-clock-history"></i> Vérification</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container shadow-sm border-0">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Transaction / Client</th>
+                            <th>Montant</th>
+                            <th>Date & Mode</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="paiement : ${paiements}">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-success-soft d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; color: var(--success); font-weight: 800; font-size: 0.9rem;">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-main" th:text="${paiement.location.client.nom} + ' ' + ${paiement.location.client.prenom}">Rakoto Jean</div>
+                                        <div class="text-muted smaller">Ref: <span class="font-monospace" th:text="${paiement.reference != null ? paiement.reference : 'REF-#' + paiement.id}">REF001</span></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark fs-6" th:text="${#numbers.formatDecimal(paiement.montant, 0, 'COMMA', 0, 'POINT')} + ' Ar'">100,000 Ar</span>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="text-main small fw-medium" th:text="${#temporals.format(paiement.datePaiement, 'dd MMM yyyy')}">01 Jan 2024</span>
+                                    <span class="text-muted smaller"><i class="bi bi-wallet2 me-1 opacity-50"></i><span th:text="${paiement.modePaiement}">Espèces</span></span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill fw-bold" 
+                                      th:classappend="${paiement.statut == 'EFFECTUE' ? 'badge-soft-success' : 'badge-soft-warning'}"
+                                      th:text="${paiement.statut}">EFFECTUE</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn-action-square ms-auto" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                        <li>
+                                            <a class="dropdown-item py-2" th:href="@{'/paiements/' + ${paiement.id}}">
+                                                <i class="bi bi-eye me-2 text-primary"></i> Détails
+                                            </a>
+                                        </li>
+                                        <li sec:authorize="hasRole('ADMIN')">
+                                            <a class="dropdown-item py-2" th:href="@{'/paiements/modifier/' + ${paiement.id}}">
+                                                <i class="bi bi-pencil me-2 text-warning"></i> Modifier
+                                            </a>
+                                        </li>
+                                        <li th:if="${paiement.statut.name() != 'EFFECTUE'}">
+                                            <a class="dropdown-item py-2 text-primary fw-bold stripe-btn" th:href="@{'/paiements/checkout/' + ${paiement.location.id}}">
+                                                <i class="bi bi-credit-card me-2"></i> Payer via Stripe
+                                            </a>
+                                        </li>
+                                        <li sec:authorize="hasRole('ADMIN')">
+                                            <a class="dropdown-item py-2" th:href="@{'/factures/generer/' + ${paiement.location.id}}">
+                                                <i class="bi bi-file-earmark-plus me-2 text-success"></i> Générer Facture
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider opacity-10"></li>
+                                        <li sec:authorize="hasRole('ADMIN')">
+                                            <a class="dropdown-item py-2 text-danger" th:href="@{'/paiements/supprimer/' + ${paiement.id}}" 
+                                               onclick="return confirm('Supprimer ce paiement ?')">
+                                                <i class="bi bi-trash me-2"></i> Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(paiements)}">
+                            <td colspan="5" class="text-center py-5 text-muted opacity-50">
+                                <i class="bi bi-credit-card fs-1 d-block mb-3"></i>
+                                <p class="mb-0">Aucun paiement n'a été enregistré pour le moment.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Clients - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+                <!-- Header Section -->
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-2" style="font-size: 0.75rem; letter-spacing: 0.05rem; text-transform: uppercase;">
+                                <li class="breadcrumb-item"><a href="/dashboard" class="text-decoration-none text-muted">Platform</a></li>
+                                <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Clients</li>
+                            </ol>
+                        </nav>
+                        <h2 class="fw-bold text-main mb-0">Base Clients</h2>
+                        <p class="text-muted small mb-0">Gérez les informations et le suivi de vos clients</p>
+                    </div>
+                    <a sec:authorize="hasRole('ADMIN')" href="/clients/ajouter" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                        <i class="bi bi-plus-lg"></i> Nouveau Client
+                    </a>
+                </div>
+
+            <!-- Search Bar -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-2 px-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 text-muted" style="border-radius: 10px 0 0 10px;">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control bg-light border-0 py-2" id="searchClient" placeholder="Rechercher un client (nom, email, téléphone...)" style="border-radius: 0 10px 10px 0;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container shadow-sm border-0">
+                <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="px-4">Type</th>
+                                <th>Client</th>
+                                <th>Contact</th>
+                                <th class="text-end px-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="client : ${clients}">
+                                <td class="px-4">
+                                    <span class="badge"
+                                          th:classappend="${client.typeClient == 'ASSOCIATION'} ? 'badge-soft-warning' : 'badge-soft-primary'"
+                                          th:text="${client.typeClient == 'ASSOCIATION'} ? 'Association' : 'Particulier'">Pers.</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-main" th:text="${client.nom} + (${client.typeClient == 'PERSO' ? ' ' + client.prenom : ''})">Doe John</div>
+                                    <div class="text-muted small" th:if="${client.typeClient == 'PERSO'}" th:text="'Né(e) le ' + ${#temporals.format(client.dateNaissance, 'dd/MM/yyyy')}">01/01/1990</div>
+                                </td>
+                                <td>
+                                    <div class="text-main"><i class="bi bi-telephone me-2 opacity-50"></i><span th:text="${client.telephone}">034...</span></div>
+                                    <div class="text-muted small" th:if="${client.cin}"><i class="bi bi-card-text me-2 opacity-50"></i>CIN: <span th:text="${client.cin}">...</span></div>
+                                </td>
+                                <td class="text-end px-4">
+                                    <div class="d-flex justify-content-end align-items-center gap-2">
+                                        <a th:href="@{'/clients/' + ${client.id}}" class="btn btn-sm btn-light border-0 rounded-3 p-2" title="Détails">
+                                            <i class="bi bi-eye text-primary"></i>
+                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn-action-square ms-auto" type="button" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                             <ul sec:authorize="hasRole('ADMIN')" class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 12px; min-width: 160px;">
+                                                <li><a class="dropdown-item rounded-3 py-2" th:href="@{'/clients/modifier/' + ${client.id}}">
+                                                    <i class="bi bi-pencil me-2 text-warning"></i>Modifier
+                                                </a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item rounded-3 py-2 text-danger" th:href="@{'/clients/supprimer/' + ${client.id}}"
+                                                       onclick="return confirm('Supprimer ce client ?')">
+                                                    <i class="bi bi-trash me-2"></i>Supprimer
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(clients)}">
+                                <td colspan="4" class="text-center py-5 text-muted opacity-50">
+                                    <i class="bi bi-people fs-1 mb-3 d-block"></i>
+                                    Aucun client dans la base.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .dropdown-item:hover { background-color: var(--primary-soft); color: var(--primary); }
+        [data-bs-theme="dark"] .bg-white { background-color: var(--bg-surface) !important; }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchClient');
+            const rows = document.querySelectorAll('tbody tr');
+            
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                rows.forEach(row => {
+                    if (row.children.length === 1) return; // Skip empty fallback row
+                    const text = row.textContent.toLowerCase();
+                    row.style.setProperty('display', text.includes(term) ? '' : 'none', 'important');
+                });
+            });
+        });
+    </script>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

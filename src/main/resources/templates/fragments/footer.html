@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="footer">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom JS -->
+    <script src="/js/script.js"></script>
+    <script src="/js/validation.js"></script>
+    <script src="/js/offline-drafts.js"></script>
+
+    <!-- Global Stripe Loading Handler -->
+    <script>
+        document.addEventListener('click', function(e) {
+            const stripeBtn = e.target.closest('.stripe-btn');
+            if (stripeBtn) {
+                // Prevent multiple clicks
+                if (stripeBtn.classList.contains('loading')) return;
+                
+                stripeBtn.classList.add('loading');
+                const originalContent = stripeBtn.innerHTML;
+                stripeBtn.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Redirection...
+                `;
+                
+                // Save original content in case of error (though we redirect)
+                stripeBtn.dataset.original = originalContent;
+            }
+        });
+    </script>
+</div>
+
+</body>
+
+</html>

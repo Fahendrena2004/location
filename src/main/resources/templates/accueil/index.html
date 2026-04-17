@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Bienvenue - Location Voitures</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 main-content-layout">
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-sm mb-5 overflow-hidden" style="border-radius: 24px; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);">
+        <div class="card-body p-5 position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-7 text-white py-4">
+                    <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px;">Propulsez votre gestion de flotte</h1>
+                    <p class="lead opacity-75 mb-4" style="max-width: 500px;">Optimisez vos opérations de location avec notre plateforme premium, conçue pour l'efficacité et la performance.</p>
+                    <div class="d-flex gap-3">
+                        <a href="/dashboard" class="btn btn-white btn-lg px-4 rounded-pill fw-bold shadow-sm" style=" color:#2563eb; border:none;">
+                            <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        </a>
+                        <a href="/locations/ajouter" class="btn btn-outline-light btn-lg px-4 rounded-pill fw-bold">
+                            Nouvelle Location
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Decorative circle -->
+            <div class="position-absolute rounded-circle opacity-10" style="width: 400px; height: 400px;  bottom: -200px; right: -100px;"></div>
+        </div>
+    </div>
+
+    <!-- Quick Actions / Features -->
+    <h4 class="fw-bold mb-4 px-2" style="color: #111827;">Accès Rapide</h4>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-3 transition-hover" style="border-radius:16px;  border: 1px solid #fdf5e6!important;">
+                <div class="card-body text-center d-flex flex-column align-items-center">
+                    <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center mb-4 border shadow-sm" style="width:80px; height:80px;">
+                        <i class="bi bi-car-front fs-1 text-primary"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Flotte Automobile</h5>
+                    <p class="small text-muted mb-4 px-3 text-secondary">Suivez la disponibilité et l'état de vos véhicules en temps réel.</p>
+                    <a href="/voitures" class="btn btn-light w-100 py-2 rounded-3 border fw-bold text-dark small bg-white shadow-sm mt-auto">Gérer les Voitures</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-3 transition-hover" style="border-radius:16px;  border: 1px solid #fdf5e6!important;">
+                <div class="card-body text-center d-flex flex-column align-items-center">
+                    <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center mb-4 border shadow-sm" style="width:80px; height:80px;">
+                        <i class="bi bi-people fs-1 text-success"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Base Clients</h5>
+                    <p class="small text-muted mb-4 px-3 text-secondary">Consultez l'historique et gérez les profils de vos clients fidèles.</p>
+                    <a href="/clients" class="btn btn-light w-100 py-2 rounded-3 border fw-bold text-dark small bg-white shadow-sm mt-auto">Gérer les Clients</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm p-3 transition-hover" style="border-radius:16px;  border: 1px solid #fdf5e6!important;">
+                <div class="card-body text-center d-flex flex-column align-items-center">
+                    <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center mb-4 border shadow-sm" style="width:80px; height:80px;">
+                        <i class="bi bi-calendar-check fs-1 text-warning"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Location Active</h5>
+                    <p class="small text-muted mb-4 px-3 text-secondary">Supervisez les contrats en cours et planifiez les retours.</p>
+                    <a href="/locations" class="btn btn-light w-100 py-2 rounded-3 border fw-bold text-dark small bg-white shadow-sm mt-auto">Gérer les Locations</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important; }
+    .bg-primary-subtle { background-color: #eff6ff !important; color: #3b82f6 !important; }
+    .bg-success-subtle { background-color: #ecfdf5 !important; color: #10b981 !important; }
+    .bg-warning-subtle { background-color: #fffbeb !important; color: #f59e0b !important; }
+</style>
+
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

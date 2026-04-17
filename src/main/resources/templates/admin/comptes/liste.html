@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Comptes de Paiement - Admin</title>
+</head>
+<body>
+    <div class="d-flex">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+        <div class="flex-grow-1 p-4" style="margin-left: 280px; background-color: #fbf9f4; min-height: 100vh;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0">Comptes de Paiement</h2>
+                <a href="/admin/comptes/ajouter" class="btn btn-primary px-4 py-2" style="border-radius: 12px;">
+                    <i class="bi bi-plus-lg me-2"></i> Ajouter un Compte
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div th:each="compte : ${comptes}" class="col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 20px; transition: transform 0.2s;">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="bi bi-bank fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-0" th:text="${compte.nomBanque}">BNC</h5>
+                                    <span class="badge" th:classappend="${compte.actif ? 'bg-success bg-opacity-10 text-success' : 'bg-secondary bg-opacity-10 text-secondary'}"
+                                          th:text="${compte.actif ? 'Actif' : 'Inactif'}">Actif</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small text-muted d-block">Titulaire</label>
+                                <span class="fw-medium" th:text="${compte.nomTitulaire}">RAKOTO Jean</span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="small text-muted d-block">N° de Compte</label>
+                                <code class="text-dark bg-light px-2 py-1 rounded" th:text="${compte.numeroCompte}">00001 0234 5678 90</code>
+                            </div>
+                            <div th:if="${compte.iban}" class="mb-4">
+                                <label class="small text-muted d-block">IBAN</label>
+                                <span class="small" th:text="${compte.iban}">MG12 3456 7890 ...</span>
+                            </div>
+
+                            <div class="d-flex justify-content-end pt-3 border-top mt-auto">
+                                <div class="dropdown d-inline-block">
+                                    <button class="btn-action-square" type="button"
+                                            th:id="'dropdownCompte' + ${compte.id}"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical text-secondary"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm"
+                                        th:attr="aria-labelledby='dropdownCompte' + ${compte.id}"
+                                        style="border-radius:10px; border:1px solid var(--border-color); min-width:150px; padding:6px;">
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2"
+                                               th:href="@{'/admin/comptes/modifier/' + ${compte.id}}" style="font-size:0.88rem;">
+                                                <i class="bi bi-pencil text-warning"></i> Modifier
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger"
+                                               th:href="@{'/admin/comptes/supprimer/' + ${compte.id}}"
+                                               style="font-size:0.88rem;"
+                                               onclick="return confirm('Supprimer ce compte ?')">
+                                                <i class="bi bi-trash"></i> Supprimer
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${#lists.isEmpty(comptes)}" class="col-12 text-center py-5 text-muted">
+                    <i class="bi bi-credit-card-2-back fs-1 d-block mb-3 opacity-25"></i>
+                    Aucun compte de paiement configuré.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card:hover { transform: translateY(-5px); }
+        .badge { font-weight: 500; font-size: 0.75rem; }
+    </style>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
+

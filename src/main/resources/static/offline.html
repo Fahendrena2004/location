@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hors ligne - AutoRent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .offline-card { text-align: center; padding: 2rem; border-radius: 1rem; background: white; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1); max-width: 400px; }
+        .icon { font-size: 4rem; color: #6c757d; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="offline-card">
+        <div class="icon"><i class="bi bi-wifi-off"></i></div>
+        <h2 class="fw-bold mb-3">Vous êtes hors ligne</h2>
+        <p class="text-muted mb-4">Il semble que vous n'ayez pas de connexion Internet. Cette page n'a pas pu être chargée.</p>
+        <button onclick="window.location.reload()" class="btn btn-primary px-4 py-2 rounded-pill">Réessayer</button>
+    </div>
+</body>
+</html>

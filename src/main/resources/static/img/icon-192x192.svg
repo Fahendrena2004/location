@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1f2e"/>
+      <stop offset="100%" style="stop-color:#111827"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e6b800"/>
+      <stop offset="100%" style="stop-color:#cca000"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="32" fill="url(#bg)"/>
+  <!-- Car body -->
+  <g transform="translate(96,100)" fill="url(#gold)">
+    <!-- Main body -->
+    <path d="M-52,0 C-52,-8 -48,-12 -40,-12 L-30,-12 L-22,-30 C-20,-34 -16,-36 -12,-36 L12,-36 C16,-36 20,-34 22,-30 L30,-12 L40,-12 C48,-12 52,-8 52,0 L52,10 C52,14 48,18 44,18 L-44,18 C-48,18 -52,14 -52,10 Z"/>
+    <!-- Windshield -->
+    <path d="M-18,-30 L-10,-12 L10,-12 L18,-30 Z" fill="#2a3040" opacity="0.7"/>
+    <!-- Front wheel -->
+    <circle cx="-32" cy="18" r="10" fill="#2a3040"/>
+    <circle cx="-32" cy="18" r="5" fill="url(#gold)" opacity="0.6"/>
+    <!-- Rear wheel -->
+    <circle cx="32" cy="18" r="10" fill="#2a3040"/>
+    <circle cx="32" cy="18" r="5" fill="url(#gold)" opacity="0.6"/>
+    <!-- Headlight -->
+    <rect x="-48" y="-4" width="8" height="5" rx="2" fill="#fff" opacity="0.9"/>
+    <!-- Taillight -->
+    <rect x="40" y="-4" width="8" height="5" rx="2" fill="#ff4444" opacity="0.8"/>
+  </g>
+  <!-- Text "AR" -->
+  <text x="96" y="68" text-anchor="middle" font-family="Arial,sans-serif" font-weight="bold" font-size="28" fill="url(#gold)" opacity="0.9">AR</text>
+</svg>

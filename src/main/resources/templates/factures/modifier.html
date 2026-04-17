@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}">
+    <title>Modifier Facture - Location Voitures</title>
+</head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+        <div class="container" style="max-width: 800px;">
+            <div class="d-flex align-items-center mb-5">
+                <a href="/factures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-arrow-left fs-5"></i>
+                </a>
+                <div>
+                    <h2 class="fw-bold mb-1">Modifier la Facture</h2>
+                    <p class="text-muted small mb-0">Régularisez les montants ou mettez à jour l'état de facturation</p>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-5 mb-5" style="border-radius: 20px;">
+                <form th:action="@{'/factures/modifier/' + ${facture.id}}" th:object="${facture}" method="post">
+                    <div class="row g-4">
+                        <div class="col-md-6 text-start">
+                            <label for="numeroFacture" class="form-label text-main fw-bold small text-uppercase mb-2">Référence Facture</label>
+                            <input type="text" class="form-control bg-light py-2 fw-bold" th:field="*{numeroFacture}" readonly>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label for="dateEmission" class="form-label text-main fw-bold small text-uppercase mb-2">Date d'émission</label>
+                            <input type="date" class="form-control py-2" th:field="*{dateEmission}" required>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label for="montantHT" class="form-label text-main fw-bold small text-uppercase mb-2">Sous-total HT</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">Ar</span>
+                                <input type="number" step="0.01" class="form-control py-2 ps-0 border-start-0" th:field="*{montantHT}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 text-start">
+                            <label for="montantTTC" class="form-label text-main fw-bold small text-uppercase mb-2">Montant Global</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary-soft text-primary border-primary color-primary border-end-0">Ar</span>
+                                <input type="number" step="0.01" class="form-control py-2 ps-0 border-primary bg-primary-soft fw-bold text-primary border-start-0" th:field="*{montantTTC}" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 text-start pt-3">
+                            <div class="form-check form-switch p-3 bg-light rounded-4 border d-flex align-items-center">
+                                <input class="form-check-input ms-0 me-3" type="checkbox" th:field="*{payee}" id="payeeCheck" style="width: 3rem; height: 1.5rem;">
+                                <label class="form-check-label fw-bold text-success mb-0" for="payeeCheck">
+                                    <i class="bi bi-shield-check me-2"></i> Marquer comme payée par le client
+                                </label>
+                            </div>
+                            <p class="text-muted smaller mt-2"><i class="bi bi-info-circle me-1"></i> Cocher cette case validera l'encaissement définitif de cette facture.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
+                        <a href="/factures" class="btn btn-light px-4">Annuler</a>
+                        <button type="submit" class="btn btn-warning px-5 shadow-sm text-white fw-bold">
+                            <i class="bi bi-arrow-repeat me-2"></i> Mettre à jour la facture
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-label { color: #4b5563; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    .form-control { border-radius: 10px; padding: 12px; border: 1px solid #f3f4f6;  transition: all 0.2s; font-size: 0.9rem; }
+    .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); outline: none; }
+    .bg-primary-subtle { background-color: #eff6ff !important; }
+    .border-primary { border-color: #3b82f6 !important; }
+    .custom-checkbox .form-check-input:checked { background-color: #10b981; border-color: #10b981; }
+    .input-group-text { border-radius: 0 10px 10px 0; border: 1px solid #f3f4f6; color: #6b7280; font-weight: 600; }
+</style>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
