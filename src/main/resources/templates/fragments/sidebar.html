@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="sidebar" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <!-- Desktop Sidebar (Hidden on mobile) -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Main Sidebar Container -->
+<div th:fragment="sidebar">
+    <!-- Desktop Sidebar Hull -->
     <div class="sidebar-main d-none d-lg-flex flex-column flex-shrink-0 shadow-sm">
-        <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
+        <div th:replace="~{:: sidebar-content}"></div>
     </div>
 
-    <!-- Mobile Sidebar (Offcanvas) -->
+    <!-- Mobile Sidebar Hull (Offcanvas) -->
     <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-header border-bottom py-3">
             <p class="h5 mb-0 fw-bold text-primary" id="sidebarOffcanvasLabel">AUTORENT</p>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-0">
-            <div th:replace="~{fragments/sidebar :: sidebar-content}"></div>
+            <div th:replace="~{:: sidebar-content}"></div>
         </div>
     </div>
 </div>
 
-<!-- Sidebar Content Fragment (Separate to avoid duplication) -->
-<div th:fragment="sidebar-content" class="sidebar-content-inner h-100 d-flex flex-column" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-    <!-- Logo Area -->
+<!-- Reusable Sidebar Content -->
+<div th:fragment="sidebar-content" class="sidebar-content-inner h-100 d-flex flex-column">
+    <!-- Logo -->
     <div class="sidebar-logo px-4 py-4 mb-2">
         <div class="d-flex align-items-center gap-3">
             <div class="logo-icon bg-primary rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
@@ -36,18 +38,18 @@
         </div>
     </div>
     
-    <!-- User Context (Top) -->
+    <!-- User Context Card -->
     <div class="px-4 mb-4">
         <div class="bg-light-subtle rounded-4 p-3 border border-white border-opacity-10 d-flex align-items-center gap-3 shadow-sm">
              <div class="avatar-circle" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</div>
              <div class="overflow-hidden">
-                <p class="small fw-bold mb-0 text-main text-truncate">[[${#authentication.name}]]</p>
-                <p class="xx-small text-muted mb-0 text-uppercase fw-bold" style="font-size: 0.55rem; letter-spacing: 0.5px;">[[${#authentication.authorities[0]}]]</p>
+                <p class="small fw-bold mb-0 text-main text-truncate" th:text="${#authentication.name}">Username</p>
+                <p class="xx-small text-muted mb-0 text-uppercase fw-bold" style="font-size: 0.55rem; letter-spacing: 0.5px;" th:text="${#authentication.authorities[0]}">Role</p>
              </div>
         </div>
     </div>
 
-    <!-- Navigation Links -->
+    <!-- Scrollable Menu Area -->
     <div class="flex-grow-1 overflow-y-auto px-2 custom-scrollbar">
         <div class="px-3 mb-2">
             <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none" style="font-size: 0.6rem; letter-spacing: 0.1rem;">Général</p>
@@ -100,7 +102,7 @@
             <span>Facturation</span>
         </a>
 
-        <!-- ADMIN SECTION -->
+        <!-- ADMIN SPACE -->
         <div sec:authorize="hasRole('ADMIN')">
             <div class="px-3 mt-4 mb-2">
                 <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none" style="font-size: 0.6rem; letter-spacing: 0.1rem;">Administration</p>
@@ -123,9 +125,9 @@
         </div>
     </div>
 
-    <!-- Footer / User Area -->
+    <!-- Sidebar Footer -->
     <div class="sidebar-footer mt-auto p-4 border-top bg-light-subtle">
-         <!-- Premium Currency Toggle -->
+         <!-- Currency Toggle -->
          <div class="currency-glass p-1 mb-4">
             <div class="d-flex align-items-center">
                 <button class="flex-grow-1 btn btn-sm rounded-pill currency-btn active-currency px-3" data-currency="MGA">MGA</button>
@@ -141,11 +143,5 @@
         </form>
     </div>
 </div>
-</div>
 
-    <!-- Keep hidden scripts/styles for logic -->
-    <script th:inline="javascript">
-        // Keep theme/currency logic here if needed, or move to a separate JS file
-    </script>
-</div>
 </html>
