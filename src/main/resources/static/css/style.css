@@ -23,10 +23,10 @@
     --text-light: #94a3b8;
     
     /* Spacing & Radii */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 20px;
-    --padding-page: 2.5rem; /* Spacious premium padding */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --padding-page: 1.5rem; /* More compact premium padding */
     
     /* Layered Shadows */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -63,6 +63,10 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     color: var(--text-main);
 }
 
+h2, .h2 { font-size: 1.5rem; }
+h3, .h3 { font-size: 1.25rem; }
+h4, .h4 { font-size: 1.1rem; }
+
 /* Premium Cards */
 .card {
     background-color: var(--bg-surface);
@@ -80,18 +84,19 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 .card-header {
     background-color: transparent;
     border-bottom: 1px solid var(--border);
-    padding: 1.25rem 1.5rem;
+    padding: 1rem 1.25rem;
     font-weight: 600;
 }
 
 /* Forms */
 .form-control, .form-select {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.85rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
     background-color: var(--bg-surface);
     color: var(--text-main);
     transition: var(--transition);
+    font-size: 0.9rem;
 }
 
 .form-control:focus, .form-select:focus {
@@ -103,9 +108,10 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 /* Buttons */
 .btn {
     font-weight: 600;
-    padding: 0.625rem 1.25rem;
+    padding: 0.5rem 1.1rem;
     border-radius: var(--radius-md);
     transition: var(--transition);
+    font-size: 0.85rem;
 }
 
 .btn-primary { 
@@ -125,7 +131,7 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     top: 0;
     bottom: 0;
     left: 0;
-    width: 280px;
+    width: 260px; /* Slimmer sidebar */
     background-color: var(--bg-sidebar);
     border-right: 1px solid var(--border);
     display: flex;
@@ -135,12 +141,12 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 }
 
 .main-content-layout {
-    margin-left: 280px;
-    padding-top: 76px; /* Offset for fixed navbar */
+    margin-left: 260px;
+    padding-top: 64px; /* Reduced offset */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    width: calc(100% - 280px);
+    width: calc(100% - 260px);
     background-color: var(--bg-body);
 }
 
@@ -298,8 +304,8 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     position: fixed;
     top: 0;
     right: 0;
-    left: 280px; /* Aligned with sidebar */
-    height: 76px;
+    left: 260px; /* Aligned with slimmer sidebar */
+    height: 64px; /* Slimmer navbar */
     background: rgba(var(--bg-surface-rgb), 0.7);
     backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
