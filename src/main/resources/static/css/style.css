@@ -1,3 +1,5 @@
+html { font-size: 14px; }
+
 :root {
     /* Refined Premium Palette - "Modern Clean" */
     --primary: #4f46e5;
@@ -25,8 +27,8 @@
     /* Spacing & Radii */
     --radius-sm: 6px;
     --radius-md: 10px;
-    --radius-lg: 16px;
-    --padding-page: 1.5rem; /* More compact premium padding */
+    --radius-lg: 14px;
+    --padding-page: 1.25rem; /* Minimized premium padding */
     
     /* Layered Shadows */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -63,9 +65,9 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     color: var(--text-main);
 }
 
-h2, .h2 { font-size: 1.5rem; }
-h3, .h3 { font-size: 1.25rem; }
-h4, .h4 { font-size: 1.1rem; }
+h2, .h2 { font-size: 1.35rem; }
+h3, .h3 { font-size: 1.15rem; }
+h4, .h4 { font-size: 1rem; }
 
 /* Premium Cards */
 .card {
@@ -131,7 +133,7 @@ h4, .h4 { font-size: 1.1rem; }
     top: 0;
     bottom: 0;
     left: 0;
-    width: 260px; /* Slimmer sidebar */
+    width: 240px; /* Further minimized sidebar */
     background-color: var(--bg-sidebar);
     border-right: 1px solid var(--border);
     display: flex;
@@ -141,12 +143,12 @@ h4, .h4 { font-size: 1.1rem; }
 }
 
 .main-content-layout {
-    margin-left: 260px;
-    padding-top: 64px; /* Reduced offset */
+    margin-left: 240px;
+    padding-top: 58px; /* Tighter navbar offset */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    width: calc(100% - 260px);
+    width: calc(100% - 240px);
     background-color: var(--bg-body);
 }
 
@@ -304,8 +306,8 @@ h4, .h4 { font-size: 1.1rem; }
     position: fixed;
     top: 0;
     right: 0;
-    left: 260px; /* Aligned with slimmer sidebar */
-    height: 64px; /* Slimmer navbar */
+    left: 240px; /* Aligned with minimized sidebar */
+    height: 58px; /* Tighter navbar height */
     background: rgba(var(--bg-surface-rgb), 0.7);
     backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
