@@ -182,10 +182,6 @@
                                 <a sec:authorize="hasRole('CLIENT')" th:if="${location.statut.name() == 'EN_ATTENTE'}" th:href="@{'/locations/annuler/' + ${location.id}}" class="btn btn-outline-danger py-2 fw-bold rounded-pill" onclick="return confirm('Voulez-vous vraiment annuler votre réservation ?')">
                                     <i class="bi bi-x-circle me-2"></i> Annuler ma demande
                                 </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
