@@ -9,9 +9,11 @@
 
         <div class="flex-grow-1 main-content-layout">
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
-            <!-- ==========================================
-                 ADMIN DASHBOARD
-                 ========================================== -->
+            
+            <div class="page-container">
+                <!-- ==========================================
+                     ADMIN DASHBOARD
+                     ========================================== -->
             <div sec:authorize="hasRole('ADMIN')" class="d-flex flex-column gap-4">
                 
                 <!-- Dashboard Control Header -->
@@ -391,6 +393,7 @@
                     </table>
                 </div>
             </div>
+            </div> <!-- Close page-container -->
         </div>
     </div>
 
