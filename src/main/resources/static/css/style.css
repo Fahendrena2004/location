@@ -57,6 +57,7 @@ body {
     color: var(--text-main);
     letter-spacing: -0.01em;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; /* Prevent horizontal overflow globally */
 }
 
 h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
@@ -150,6 +151,7 @@ h4, .h4 { font-size: 0.95rem; }
     flex-direction: column;
     width: calc(100% - 230px);
     background-color: var(--bg-body);
+    overflow-x: hidden; /* Extra safeguard for layout drift */
 }
 
 .page-container {
@@ -314,14 +316,15 @@ h4, .h4 { font-size: 0.95rem; }
     z-index: 1020;
     display: flex;
     align-items: center;
-    justify-content: center; /* Center content wrapper */
     padding: 0;
 }
 
 .top-navbar-content {
     width: 100%;
-    padding: 0 0.75rem;
+    padding: 0 1rem;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 @media (max-width: 991.98px) {
