@@ -140,11 +140,13 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    width: calc(100% - 280px);
 }
 
 .page-container {
     padding: var(--padding-page);
     flex-grow: 1;
+    max-width: 100%;
 }
 
 /* Responsive Hide Rules */

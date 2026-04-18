@@ -9,7 +9,8 @@
     </div>
 
     <!-- Mobile Sidebar Hull (Offcanvas) -->
-    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+    <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="sidebarOffcanvas"
+        aria-labelledby="sidebarOffcanvasLabel">
         <div class="offcanvas-header border-bottom py-3">
             <p class="h5 mb-0 fw-bold text-primary" id="sidebarOffcanvasLabel">AUTORENT</p>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -25,79 +26,82 @@
     <!-- Logo Area -->
     <div class="sidebar-logo px-4 py-5 mb-1">
         <div class="d-flex align-items-center gap-3">
-            <div class="logo-icon bg-primary rounded-3 text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);">
+            <div class="logo-icon bg-primary rounded-3 text-white d-flex align-items-center justify-content-center"
+                style="width: 44px; height: 44px; box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);">
                 <i class="bi bi-car-front-fill fs-4"></i>
             </div>
             <div class="logo-text">
                 <p class="h5 fw-bold mb-0 text-primary" style="letter-spacing: -0.5px; font-weight: 800;">AUTORENT</p>
                 <div class="d-flex align-items-center gap-1">
                     <span class="rounded-circle bg-success" style="width: 6px; height: 6px;"></span>
-                    <p class="small text-muted mb-0" style="font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700;">Premium</p>
+                    <p class="small text-muted mb-0"
+                        style="font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700;">
+                        Premium</p>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- User Context Card (Enhanced for breathing room) -->
-    <div class="px-4 mb-5">
-        <div class="bg-light-subtle rounded-4 p-3 border border-white border-opacity-10 d-flex align-items-center gap-3 shadow-sm transition-hover">
-             <div class="avatar-circle shadow-sm" th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</div>
-             <div class="overflow-hidden">
-                <p class="small fw-bold mb-0 text-main text-truncate" th:text="${#authentication.name}">Username</p>
-                <p class="xx-small text-muted mb-0 text-uppercase fw-bold" style="font-size: 0.55rem; letter-spacing: 0.8px; opacity: 0.7;" th:text="${#authentication.authorities[0]}">Role</p>
-             </div>
         </div>
     </div>
 
     <!-- Scrollable Menu Area -->
     <div class="flex-grow-1 overflow-y-auto px-2 custom-scrollbar">
         <div class="px-3 mb-2">
-            <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none" style="font-size: 0.6rem; letter-spacing: 0.1rem;">Général</p>
+            <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none"
+                style="font-size: 0.6rem; letter-spacing: 0.1rem;">Général</p>
         </div>
-        
-        <a href="/dashboard" class="sidebar-link" th:classappend="${requestURI != null and requestURI == '/dashboard' ? 'active' : ''}">
+
+        <a href="/dashboard" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI == '/dashboard' ? 'active' : ''}">
             <i class="bi bi-grid-1x2-fill"></i>
             <span>Tableau de bord</span>
         </a>
 
-        <a th:href="@{/profile}" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/profile') ? 'active' : ''}">
+        <a th:href="@{/profile}" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI.startsWith('/profile') ? 'active' : ''}">
             <i class="bi bi-person-badge-fill"></i>
             <span>Mon Profil</span>
         </a>
 
-        <a href="/notifications" class="sidebar-link d-flex align-items-center justify-content-between" th:classappend="${requestURI != null and requestURI.startsWith('/notifications') ? 'active' : ''}">
+        <a href="/notifications" class="sidebar-link d-flex align-items-center justify-content-between"
+            th:classappend="${requestURI != null and requestURI.startsWith('/notifications') ? 'active' : ''}">
             <div class="d-flex align-items-center gap-3">
                 <i class="bi bi-bell-fill"></i>
                 <span>Notifications</span>
             </div>
-            <span th:if="${unreadNotificationsCount > 0}" class="badge bg-danger rounded-pill px-2" style="font-size: 0.6rem;" th:text="${unreadNotificationsCount}"></span>
+            <span th:if="${unreadNotificationsCount > 0}" class="badge bg-danger rounded-pill px-2"
+                style="font-size: 0.6rem;" th:text="${unreadNotificationsCount}"></span>
         </a>
 
         <div class="px-3 mt-4 mb-2">
-            <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none" style="font-size: 0.6rem; letter-spacing: 0.1rem;">Opérations</p>
+            <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none"
+                style="font-size: 0.6rem; letter-spacing: 0.1rem;">Opérations</p>
         </div>
-        
-        <a href="/voitures" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/voitures') ? 'active' : ''}">
+
+        <a href="/voitures" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI.startsWith('/voitures') ? 'active' : ''}">
             <i class="bi bi-car-front-fill"></i>
             <span>Flotte Véhicules</span>
         </a>
 
-        <a href="/locations" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/locations') and !requestURI.contains('calendrier') ? 'active' : ''}">
+        <a href="/locations" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI.startsWith('/locations') and !requestURI.contains('calendrier') ? 'active' : ''}">
             <i class="bi bi-calendar-check-fill"></i>
             <span>Réservations</span>
         </a>
-        
-        <a href="/locations/calendrier" class="sidebar-link" th:classappend="${requestURI != null and requestURI.contains('calendrier') ? 'active' : ''}">
+
+        <a href="/locations/calendrier" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI.contains('calendrier') ? 'active' : ''}">
             <i class="bi bi-calendar3-range-fill"></i>
             <span>Planning</span>
         </a>
 
-        <a href="/paiements" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/paiements') ? 'active' : ''}">
+        <a href="/paiements" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI.startsWith('/paiements') ? 'active' : ''}">
             <i class="bi bi-credit-card-2-back-fill"></i>
             <span>Finances</span>
         </a>
 
-        <a href="/factures" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/factures') ? 'active' : ''}">
+        <a href="/factures" class="sidebar-link"
+            th:classappend="${requestURI != null and requestURI.startsWith('/factures') ? 'active' : ''}">
             <i class="bi bi-file-earmark-pdf-fill"></i>
             <span>Facturation</span>
         </a>
@@ -105,20 +109,24 @@
         <!-- ADMIN SPACE -->
         <div sec:authorize="hasRole('ADMIN')">
             <div class="px-3 mt-4 mb-2">
-                <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none" style="font-size: 0.6rem; letter-spacing: 0.1rem;">Administration</p>
+                <p class="text-uppercase text-muted fw-bold x-small mb-1 opacity-50 pe-none"
+                    style="font-size: 0.6rem; letter-spacing: 0.1rem;">Administration</p>
             </div>
-            
-            <a href="/clients" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/clients') ? 'active' : ''}">
+
+            <a href="/clients" class="sidebar-link"
+                th:classappend="${requestURI != null and requestURI.startsWith('/clients') ? 'active' : ''}">
                 <i class="bi bi-people-fill"></i>
                 <span>Gestion Clients</span>
             </a>
 
-            <a href="/entretien" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/entretien') ? 'active' : ''}">
+            <a href="/entretien" class="sidebar-link"
+                th:classappend="${requestURI != null and requestURI.startsWith('/entretien') ? 'active' : ''}">
                 <i class="bi bi-tools"></i>
                 <span>Maintenance</span>
             </a>
 
-            <a href="/users" class="sidebar-link" th:classappend="${requestURI != null and requestURI.startsWith('/users') ? 'active' : ''}">
+            <a href="/users" class="sidebar-link"
+                th:classappend="${requestURI != null and requestURI.startsWith('/users') ? 'active' : ''}">
                 <i class="bi bi-shield-lock-fill"></i>
                 <span>Accès & Sécurité</span>
             </a>
@@ -127,16 +135,18 @@
 
     <!-- Sidebar Footer -->
     <div class="sidebar-footer mt-auto p-4 border-top bg-light-subtle">
-         <!-- Currency Toggle -->
-         <div class="currency-glass p-1 mb-4">
+        <!-- Currency Toggle -->
+        <div class="currency-glass p-1 mb-4">
             <div class="d-flex align-items-center">
-                <button class="flex-grow-1 btn btn-sm rounded-pill currency-btn active-currency px-3" data-currency="MGA">MGA</button>
+                <button class="flex-grow-1 btn btn-sm rounded-pill currency-btn active-currency px-3"
+                    data-currency="MGA">MGA</button>
                 <button class="flex-grow-1 btn btn-sm rounded-pill currency-btn px-3" data-currency="EUR">EUR</button>
             </div>
         </div>
 
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-logout w-100 d-flex align-items-center justify-content-between px-3 py-2 shadow-sm">
+            <button type="submit"
+                class="btn btn-logout w-100 d-flex align-items-center justify-content-between px-3 py-2 shadow-sm">
                 <span class="small fw-bold">Se déconnecter</span>
                 <i class="bi bi-power fs-5"></i>
             </button>
