@@ -28,7 +28,7 @@ html { font-size: 13px; }
     --radius-sm: 5px;
     --radius-md: 8px;
     --radius-lg: 12px;
-    --padding-page: 0.35rem; /* Maximum expansion edge-to-edge */
+    --padding-page: 1rem; /* Restored breathing room to prevent collisions */
     
     /* Layered Shadows */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -145,7 +145,7 @@ h4, .h4 { font-size: 0.95rem; }
 
 .main-content-layout {
     margin-left: 230px;
-    padding-top: 60px; /* Refined navbar offset */
+    padding-top: 80px; /* Increased offset to prevent header collision */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
