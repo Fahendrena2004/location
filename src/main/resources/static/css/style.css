@@ -145,7 +145,7 @@ h4, .h4 { font-size: 0.95rem; }
 
 .main-content-layout {
     margin-left: 230px;
-    padding-top: 56px; /* Optimized navbar offset */
+    padding-top: 60px; /* Refined navbar offset */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -309,7 +309,7 @@ h4, .h4 { font-size: 0.95rem; }
     top: 0;
     right: 0;
     left: 230px; /* Aligned with ultra-minimized sidebar */
-    height: 56px; /* Ultra-tight navbar height */
+    height: 60px; /* Premium centered navbar height */
     background: rgba(var(--bg-surface-rgb), 0.7);
     backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
@@ -323,7 +323,7 @@ h4, .h4 { font-size: 0.95rem; }
 .top-navbar-content {
     width: 100% !important;
     max-width: none !important;
-    padding: 0 0.5rem !important;
+    padding: 0 1rem !important; /* Increased breathing room */
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
@@ -348,8 +348,6 @@ h4, .h4 { font-size: 0.95rem; }
     padding-top: var(--padding-page) !important;
     margin: 0 !important;
 }
- Linda 
- Linda 
 
 .row {
     margin-right: calc(var(--padding-page) * -0.5) !important;
