@@ -28,7 +28,7 @@ html { font-size: 13px; }
     --radius-sm: 5px;
     --radius-md: 8px;
     --radius-lg: 12px;
-    --padding-page: 0.5rem; /* Ultra-minimized for edge-to-edge feel */
+    --padding-page: 0.35rem; /* Maximum expansion edge-to-edge */
  Linda 
     
     /* Layered Shadows */
@@ -324,7 +324,7 @@ h4, .h4 { font-size: 0.95rem; }
 .top-navbar-content {
     width: 100% !important;
     max-width: none !important;
-    padding: 0 1rem !important;
+    padding: 0 0.5rem !important;
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
