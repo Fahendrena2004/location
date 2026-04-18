@@ -314,18 +314,21 @@ h4, .h4 { font-size: 0.95rem; }
     backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border);
     z-index: 1020;
-    display: flex;
-    align-items: center;
-    padding: 0;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important; /* Force start to let children space-between */
+    padding: 0 !important;
 }
 
 .top-navbar-content {
-    width: 100%;
-    padding: 0 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 1.25rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
 }
+ Linda 
 
 @media (max-width: 991.98px) {
     .top-navbar { left: 0; padding: 0 1rem; }
@@ -336,3 +339,27 @@ h4, .h4 { font-size: 0.95rem; }
 .text-main { color: var(--text-main); }
 .smaller { font-size: 0.75rem; }
 .xx-small { font-size: 0.6rem; }
+
+/* Definitive Fluidity & Overflow Fix */
+.container, .container-fluid, .page-container {
+    max-width: none !important;
+    width: 100% !important;
+    padding-left: var(--padding-page) !important;
+    padding-right: var(--padding-page) !important;
+    margin: 0 !important;
+}
+
+.row {
+    margin-right: calc(var(--padding-page) * -0.5) !important;
+    margin-left: calc(var(--padding-page) * -0.5) !important;
+}
+
+html, body {
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    position: relative;
+}
+
+.main-content-layout {
+    overflow-x: hidden !important;
+}
