@@ -26,7 +26,7 @@
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 20px;
-    --padding-page: 2.5rem; /* Increased for breathing room */
+    --padding-page: 2.5rem; /* Spacious premium padding */
     
     /* Layered Shadows */
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -136,7 +136,15 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
 
 .main-content-layout {
     margin-left: 280px;
-    padding-left: 1.5rem; /* Gutter between sidebar and content */
+    padding-top: 76px; /* Offset for fixed navbar */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-container {
+    padding: var(--padding-page);
+    flex-grow: 1;
 }
 
 /* Responsive Hide Rules */
@@ -256,14 +264,24 @@ h1, h2, h3, h4, .h1, .h2, .h3, .h4 {
     --bs-table-hover-bg: var(--primary-soft);
 }
 .table thead th {
-    background-color: var(--bg-body);
+    background-color: transparent !important;
     text-transform: uppercase;
     font-size: 0.65rem;
-    letter-spacing: 0.05rem;
+    letter-spacing: 0.1rem;
     font-weight: 700;
     color: var(--text-muted);
     border-bottom: 2px solid var(--border);
     padding: 1rem 1.5rem;
+}
+
+/* Breadcrumb Reset */
+.breadcrumb {
+    list-style: none !important;
+}
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "/";
+    color: var(--text-light);
+    opacity: 0.5;
 }
 .table tbody td {
     padding: 1rem 1.5rem;
