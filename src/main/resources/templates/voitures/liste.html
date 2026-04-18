@@ -114,15 +114,20 @@
 
                              <div class="d-flex gap-2">
                                 <a th:href="@{${#authorization.expression('hasRole(''ADMIN'')')} ? '/locations/ajouter?voitureId=' + ${voiture.id} : '/locations/reserver?voitureId=' + ${voiture.id}}" 
-                                   class="btn btn-primary flex-grow-1 shadow-sm">
+                                   class="btn btn-primary flex-grow-1 shadow-sm rounded-pill fw-bold">
                                     Réserver
                                 </a>
-                                <a th:href="@{'/voitures/' + ${voiture.id}}" class="btn btn-light border px-3 shadow-sm" title="Détails">
-                                    <i class="bi bi-eye text-primary"></i>
-                                </a>
-                                <a sec:authorize="hasRole('ADMIN')" th:href="@{'/voitures/modifier/' + ${voiture.id}}" class="btn btn-light border px-3 shadow-sm" title="Modifier">
-                                    <i class="bi bi-pencil text-warning"></i>
-                                </a>
+                                <div class="dropdown">
+                                    <button class="btn btn-light border px-2 shadow-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="border-radius:12px;">
+                                        <li><a class="dropdown-item rounded-3 py-2" th:href="@{'/voitures/' + ${voiture.id}}"><i class="bi bi-eye me-2 text-primary"></i>Détails</a></li>
+                                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item rounded-3 py-2" th:href="@{'/voitures/modifier/' + ${voiture.id}}"><i class="bi bi-pencil me-2 text-warning"></i>Modifier</a></li>
+                                        <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
+                                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item rounded-3 py-2 text-danger" th:href="@{'/voitures/supprimer/' + ${voiture.id}}" onclick="return confirm('Supprimer ce véhicule?')"><i class="bi bi-trash me-2"></i>Supprimer</a></li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
