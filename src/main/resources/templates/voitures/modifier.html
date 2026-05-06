@@ -4,18 +4,18 @@
     <title>Modifier la voiture - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
                 <div class="d-flex align-items-center mb-5">
                     <a href="/voitures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                         <i class="bi bi-arrow-left fs-5"></i>
                     </a>
                     <div>
                         <h2 class="fw-bold mb-1">Modifier le Véhicule</h2>
-                        <p class="text-muted small mb-0">Mettez à jour les informations techniques et les tarifs</p>
+                        <p class="text-muted small mb-0">Mettez Ã  jour les informations techniques et les tarifs</p>
                     </div>
                 </div>
 
@@ -143,7 +143,7 @@
 
                             <script>
                                 function removeImage(button) {
-                                    if(confirm('Supprimer cette photo ? Elle sera définitivement retirée à l\'enregistrement.')) {
+                                    if(confirm('Supprimer cette photo ? Elle sera définitivement retirée Ã  l\'enregistrement.')) {
                                         button.closest('.existing-image-wrapper').remove();
                                         if (document.querySelectorAll('.existing-image-wrapper').length === 0) {
                                             const container = document.getElementById('existing-images-container');
@@ -176,3 +176,5 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

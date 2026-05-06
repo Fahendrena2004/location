@@ -4,13 +4,13 @@
     <title>Instructions de Paiement - Location Voitures</title>
 </head>
 <body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
+    <div class="main-content-layout" id="mainContent">
+
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
             
-            <div class="page-container">
+            <main class="page-container">
                 
                 <!-- Stepper Header -->
                 <div class="mb-5">
@@ -62,13 +62,13 @@
 
                 <!-- Instructions Paiement sur Place (Cash) -->
                 <div th:if="${mode == 'CASH'}" class="card border-0 shadow-sm p-4 mb-4 text-center" style="border-radius: 20px;">
-                    <h4 class="fw-bold mb-4 text-main">Paiement sur place à l'agence</h4>
-                    <p class="text-muted mb-4">Votre véhicule vous attend ! Veuillez prévoir le règlement de <strong class="fs-5 text-primary amount-convertible" th:data-mga="${location.montantTotal}" th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'"></strong> lors de la perception des clés à notre agence.</p>
+                    <h4 class="fw-bold mb-4 text-main">Paiement sur place Ã  l'agence</h4>
+                    <p class="text-muted mb-4">Votre véhicule vous attend ! Veuillez prévoir le règlement de <strong class="fs-5 text-primary amount-convertible" th:data-mga="${location.montantTotal}" th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'"></strong> lors de la perception des clés Ã  notre agence.</p>
                     
                     <div class="bg-success-soft text-success p-4 rounded-4 d-inline-block mx-auto mb-4">
                         <i class="bi bi-geo-alt-fill fs-1 mb-2 d-block"></i>
                         <h5 class="fw-bold">AutoRent Agence Centrale</h5>
-                        <p class="mb-0 small">Analakely, Antananarivo<br>Ouvert de 08h00 à 18h00</p>
+                        <p class="mb-0 small">Analakely, Antananarivo<br>Ouvert de 08h00 Ã  18h00</p>
                     </div>
                     
                     <p class="small text-muted font-italic mb-0">Note : Veuillez vous munir de votre pièce d'identité et de votre permis de conduire original.</p>
@@ -90,8 +90,9 @@
                 
             </div>
         </div>
+    </main>
     </div>
-
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+

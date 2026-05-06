@@ -4,13 +4,13 @@
     <title>Résumé de Paiement - Location Voitures</title>
 </head>
 <body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
+    <div class="main-content-layout" id="mainContent">
+
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
             
-            <div class="page-container">
+            <main class="page-container">
                 
                 <!-- Stepper Header -->
                 <div class="mb-5">
@@ -73,7 +73,7 @@
                         <!-- Amount Details -->
                         <div class="col-md-6">
                             <div class="p-3 border rounded-3 h-100 bg-light">
-                                <label class="text-muted small text-uppercase fw-bold mb-2">Montant à Régler</label>
+                                <label class="text-muted small text-uppercase fw-bold mb-2">Montant Ã  Régler</label>
                                 <h3 class="fw-bold text-primary mb-0 amount-convertible" 
                                     th:data-mga="${location.montantTotal}"
                                     th:text="${#numbers.formatDecimal(location.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'">120,000 Ar</h3>
@@ -160,8 +160,8 @@
 
             </div>
         </div>
+    </main>
     </div>
-
     <div th:replace="~{fragments/footer :: footer}"></div>
 
     <style>
@@ -191,7 +191,7 @@
             const messages = {
                 'STRIPE': 'En continuant, vous allez être redirigé vers l\'interface de paiement sécurisé Stripe.',
                 'MOBILE_MONEY': 'Vous recevrez les instructions de transfert sur le prochain écran.',
-                'CASH': 'Votre location sera pré-reservée en attendant votre paiement à l\'agence.'
+                'CASH': 'Votre location sera pré-reservée en attendant votre paiement Ã  l\'agence.'
             };
 
             radios.forEach(radio => {
@@ -211,3 +211,4 @@
     </script>
 </body>
 </html>
+

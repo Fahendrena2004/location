@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import net.coobird.thumbnailator.Thumbnails;
+import java.util.Objects;
 
 @Service
 public class FileStorageService {
@@ -28,7 +29,7 @@ public class FileStorageService {
     }
 
     public String storeFile(MultipartFile file) {
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown.jpg");
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename() != null ? file.getOriginalFilename() : "unknown.jpg"));
 
         try {
             if (fileName.contains("..")) {

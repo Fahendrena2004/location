@@ -12,6 +12,7 @@ import org.example.location_voiture.service.NotificationService;
 import org.example.location_voiture.model.User;
 import org.example.location_voiture.model.Notification;
 import org.example.location_voiture.service.LocationService;
+import org.example.location_voiture.service.GeneralSettingService;
 
 @ControllerAdvice
 public class GlobalControllerAdvice {
@@ -24,6 +25,9 @@ public class GlobalControllerAdvice {
 
     @Autowired
     private LocationService locationService;
+
+    @Autowired
+    private GeneralSettingService generalSettingService;
 
     @ModelAttribute("unreadNotificationsCount")
     public long getUnreadNotificationsCount(Principal principal) {
@@ -67,5 +71,10 @@ public class GlobalControllerAdvice {
             return request.getRequestURI();
         }
         return "";
+    }
+
+    @ModelAttribute("exchangeRateEur")
+    public double getExchangeRateEur() {
+        return generalSettingService.getExchangeRateEur();
     }
 }

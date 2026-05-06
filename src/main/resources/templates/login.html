@@ -142,6 +142,22 @@
                 </div>
             </div>
 
+            <div th:if="${message}" class="alert alert-success mb-4 d-flex align-items-center shadow-sm">
+                <i class="bi bi-check-circle-fill fs-4 me-3 text-success"></i>
+                <div>
+                    <strong class="d-block">Succès</strong>
+                    <span class="small opacity-75" th:text="${message}">Message de succès ici.</span>
+                </div>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger mb-4 d-flex align-items-center shadow-sm">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-danger"></i>
+                <div>
+                    <strong class="d-block">Erreur</strong>
+                    <span class="small opacity-75" th:text="${error}">Message d'erreur ici.</span>
+                </div>
+            </div>
+
             <form th:action="@{/login}" method="post">
                 <div class="mb-4">
                     <label for="username" class="form-label">Identifiant Administrateur</label>
@@ -165,6 +181,17 @@
                 <button type="submit" class="btn btn-login mb-4">
                     Connexion sécurisée <i class="bi bi-chevron-right ms-2 small"></i>
                 </button>
+
+                <div class="d-flex align-items-center mb-4">
+                    <hr class="flex-grow-1 text-muted">
+                    <span class="mx-3 text-muted small text-uppercase fw-bold" style="letter-spacing: 1px;">Ou</span>
+                    <hr class="flex-grow-1 text-muted">
+                </div>
+
+                <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline-dark w-100 py-3 rounded-4 fw-bold shadow-sm d-flex align-items-center justify-content-center mb-4" style="border: 2px solid #f1f5f9; transition: all 0.2s;">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" class="me-3">
+                    Continuer avec Google
+                </a>
             </form>
 
             <div class="text-center pt-3 border-top mt-2">

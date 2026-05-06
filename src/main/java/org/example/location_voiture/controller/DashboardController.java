@@ -46,13 +46,25 @@ public class DashboardController {
             model.addAttribute("revenuTotal", paiementService.calculerRevenuTotal());
             model.addAttribute("revenuMois", paiementService.calculerRevenuMois());
             model.addAttribute("evolutionRevenus", paiementService.getEvolutionRevenuMois());
-            model.addAttribute("revenusParMois", paiementService.getRevenusParMois());
+            // Chart data - revenues last 6 months
+            java.util.List<Double> allRevenus = paiementService.getRevenusParMois();
+            java.time.LocalDate now = LocalDate.now();
+            java.util.List<Double> revenus6Mois = new java.util.ArrayList<>();
+            java.util.List<String> moisLabels = new java.util.ArrayList<>();
+            String[] moisNoms = {"Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"};
+            for (int i = 5; i >= 0; i--) {
+                java.time.LocalDate m = now.minusMonths(i);
+                revenus6Mois.add(allRevenus.get(m.getMonthValue() - 1));
+                moisLabels.add(moisNoms[m.getMonthValue() - 1]);
+            }
+            model.addAttribute("revenusParMois", revenus6Mois);
+            model.addAttribute("moisLabels", moisLabels);
             model.addAttribute("revenusParTypeClient", paiementService.getRevenusParTypeClient());
             model.addAttribute("locationsTerminees", locationService.countTerminees());
             model.addAttribute("locationsAnnulees", locationService.countAnnulees());
             model.addAttribute("locationsParMois", locationService.getLocationsParMois());
-            model.addAttribute("popularVoitures", locationService.getPopularVoitures(5));
-            model.addAttribute("topClients", locationService.getTopSpendingClients(5));
+            model.addAttribute("voituresPopulaires", locationService.getPopularVoitures(5));
+            model.addAttribute("meilleurClients", locationService.getTopSpendingClients(5));
             model.addAttribute("dernieresLocations", locationService.getDernieresLocations(5));
             model.addAttribute("locationsEnAttente", locationService.getLocationsEnAttente());
             model.addAttribute("locationsEnRetard", locationService.getLocationsEnRetard());

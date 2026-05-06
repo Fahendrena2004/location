@@ -3,83 +3,82 @@
 <head th:replace="~{fragments/header :: header}">
     <title>Planning des Locations - AutoRent</title>
 </head>
-<body class="bg-body">
+<body>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
 
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
-            <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
-            
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+
+        <main class="page-container">
 
             <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
-                    <h2 class="fw-bold mb-1">Planning &amp; Disponibilité</h2>
+                    <h4 class="fw-bold mb-1">Planning &amp; Disponibilité</h4>
                     <p class="text-muted small mb-0">Vue calendaire de l'activité de la flotte</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="/locations" class="btn btn-light px-4 shadow-sm border rounded-pill">
+                    <a href="/locations" class="btn btn-light px-4 shadow-sm border">
                         <i class="bi bi-list-task me-2"></i>Liste
                     </a>
-                    <a sec:authorize="hasRole('ADMIN')" href="/locations/ajouter" class="btn btn-primary px-4 shadow-sm rounded-pill">
+                    <a sec:authorize="hasRole('ADMIN')" href="/locations/ajouter" class="btn btn-primary px-4">
                         <i class="bi bi-plus-lg me-2"></i>Nouvelle Location
                     </a>
                 </div>
             </div>
 
             <!-- Stats Row -->
-            <div class="row g-3 mb-5">
+            <div class="row g-3 mb-4">
                 <div class="col-6 col-md-3">
-                    <div class="card border-0 shadow-sm p-3 h-100" style="border-radius:16px; border-left:4px solid #f59e0b !important;">
+                    <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #f59e0b;">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-box" style="background:rgba(245,158,11,.13); color:#f59e0b;">
+                            <div class="icon-box" style="background:rgba(245,158,11,.12); color:#f59e0b;">
                                 <i class="bi bi-hourglass-split"></i>
                             </div>
                             <div>
                                 <div class="stat-label">En Attente</div>
-                                <div class="h4 fw-black mb-0 text-warning" th:text="${#lists.size(locations.?[statut.name() == 'EN_ATTENTE'])}">0</div>
+                                <div class="h4 fw-bold mb-0 text-warning" th:text="${#lists.size(locations.?[statut.name() == 'EN_ATTENTE'])}">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="card border-0 shadow-sm p-3 h-100" style="border-radius:16px; border-left:4px solid #2563eb !important;">
+                    <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #2563eb;">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-box" style="background:rgba(37,99,235,.13); color:#2563eb;">
+                            <div class="icon-box" style="background:rgba(37,99,235,.12); color:#2563eb;">
                                 <i class="bi bi-car-front-fill"></i>
                             </div>
                             <div>
                                 <div class="stat-label">En Cours</div>
-                                <div class="h4 fw-black mb-0 text-primary" th:text="${#lists.size(locations.?[statut.name() == 'EN_COURS'])}">0</div>
+                                <div class="h4 fw-bold mb-0 text-primary" th:text="${#lists.size(locations.?[statut.name() == 'EN_COURS'])}">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="card border-0 shadow-sm p-3 h-100" style="border-radius:16px; border-left:4px solid #10b981 !important;">
+                    <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #10b981;">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-box" style="background:rgba(16,185,129,.13); color:#10b981;">
+                            <div class="icon-box" style="background:rgba(16,185,129,.12); color:#10b981;">
                                 <i class="bi bi-check-circle-fill"></i>
                             </div>
                             <div>
                                 <div class="stat-label">Terminées</div>
-                                <div class="h4 fw-black mb-0 text-success" th:text="${#lists.size(locations.?[statut.name() == 'TERMINEE'])}">0</div>
+                                <div class="h4 fw-bold mb-0 text-success" th:text="${#lists.size(locations.?[statut.name() == 'TERMINEE'])}">0</div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="card border-0 shadow-sm p-3 h-100" style="border-radius:16px; border-left:4px solid #ef4444 !important;">
+                    <div class="card border-0 shadow-sm p-3" style="border-left: 4px solid #ef4444;">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="icon-box" style="background:rgba(239,68,68,.13); color:#ef4444;">
+                            <div class="icon-box" style="background:rgba(239,68,68,.12); color:#ef4444;">
                                 <i class="bi bi-x-circle-fill"></i>
                             </div>
                             <div>
                                 <div class="stat-label">Annulées</div>
-                                <div class="h4 fw-black mb-0" style="color:#ef4444;" th:text="${#lists.size(locations.?[statut.name() == 'ANNULEE'])}">0</div>
+                                <div class="h4 fw-bold mb-0" style="color:#ef4444;" th:text="${#lists.size(locations.?[statut.name() == 'ANNULEE'])}">0</div>
                             </div>
                         </div>
                     </div>
@@ -87,37 +86,32 @@
             </div>
 
             <!-- Calendar Card -->
-            <div class="card border-0 shadow-sm" style="border-radius:20px; overflow:hidden;">
-                <!-- Calendar toolbar hint -->
-                <div class="px-4 pt-4 pb-2 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3 flex-wrap">
-                        <div class="legend-dot" style="background:#f59e0b;">En Attente</div>
-                        <div class="legend-dot" style="background:#2563eb;">En Cours</div>
-                        <div class="legend-dot" style="background:#10b981;">Terminée</div>
-                        <div class="legend-dot" style="background:#34d399;">Payée</div>
-                        <div class="legend-dot" style="background:#ef4444;">Annulée</div>
-                    </div>
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+                <div class="px-4 pt-4 pb-2 d-flex align-items-center gap-3 flex-wrap">
+                    <div class="legend-dot" style="background:#f59e0b;">En Attente</div>
+                    <div class="legend-dot" style="background:#2563eb;">En Cours</div>
+                    <div class="legend-dot" style="background:#10b981;">Terminée</div>
+                    <div class="legend-dot" style="background:#34d399;">Payée</div>
+                    <div class="legend-dot" style="background:#ef4444;">Annulée</div>
                 </div>
-                <div class="p-4" style="min-height:650px;">
+                <div class="p-4" style="min-height: 620px;">
                     <div id='calendar'></div>
                 </div>
             </div>
 
-        </div>
+        </main>
     </div>
 
     <!-- Event Detail Modal -->
     <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg" style="border-radius:20px; overflow:hidden;">
-                <div class="modal-header border-0" id="eventModalHeader" style="padding:24px 28px 8px;">
-                    <div class="flex-grow-1">
-                        <h5 class="modal-title fw-bold mb-2" id="modalTitle">Titre</h5>
-                        <span class="badge rounded-pill px-3 py-1 fw-semibold" id="modalBadge">Statut</span>
-                    </div>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header border-0" id="eventModalHeader" style="padding: 24px 28px 8px;">
+                    <h5 class="modal-title fw-bold mb-2" id="modalTitle">Titre</h5>
+                    <span class="badge rounded-pill px-3 py-1 fw-semibold" id="modalBadge">Statut</span>
                     <button type="button" class="btn-close ms-3" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" style="padding:16px 28px;">
+                <div class="modal-body" style="padding: 16px 28px;">
                     <div class="d-flex flex-column gap-3">
                         <div class="d-flex align-items-center gap-3">
                             <div class="modal-icon-box bg-primary-soft text-primary">
@@ -139,7 +133,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0" style="padding:0 28px 24px; gap:10px;">
+                <div class="modal-footer border-0" style="padding: 0 28px 24px; gap: 10px;">
                     <a href="#" id="modalLink" class="btn btn-primary px-4 rounded-pill">
                         <i class="bi bi-eye me-2"></i>Voir Détails
                     </a>
@@ -175,6 +169,12 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,listMonth'
                 },
+                buttonText: {
+                    today: "Aujourd'hui",
+                    month: 'Mois',
+                    week: 'Semaine',
+                    list: 'Planning'
+                },
                 events: '/api/locations/all-events',
                 eventDisplay: 'block',
                 eventClick: function(info) {
@@ -194,7 +194,7 @@
                     const start = ev.start ? ev.start.toLocaleDateString('fr-FR') : '-';
                     const rawEnd = ev.end ? new Date(ev.end.getTime() - 86400000) : null;
                     const end = rawEnd ? rawEnd.toLocaleDateString('fr-FR') : '-';
-                    document.getElementById('modalDates').textContent = start + '  →  ' + end;
+                    document.getElementById('modalDates').textContent = start + ' → ' + end;
 
                     const montant = props.montant;
                     document.getElementById('modalMontant').textContent = montant
@@ -220,46 +220,27 @@
     </script>
 
     <style>
-        /* Utility */
         .smaller { font-size: 0.72rem; }
         .stat-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: .05rem; margin-bottom: 2px; }
-        .icon-box { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
         .modal-icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-        .legend-dot { font-size: 0.72rem; font-weight: 600; color: white; padding: 3px 10px; border-radius: 20px; }
+        .legend-dot { font-size: 0.72rem; font-weight: 600; color: white; padding: 3px 12px; border-radius: 20px; }
 
         /* FullCalendar overrides */
         .fc { font-family: 'Inter', sans-serif; }
         .fc-toolbar-title { font-weight: 800 !important; font-size: 1.15rem !important; color: var(--text-main); }
-        .fc .fc-button-primary {
-            background: var(--bg-surface) !important;
-            border: 1px solid var(--border) !important;
-            color: var(--text-main) !important;
-            font-weight: 600 !important;
-            border-radius: 10px !important;
-            padding: 6px 14px !important;
-            box-shadow: none !important;
-            text-transform: capitalize !important;
-            transition: all .15s;
-        }
-        .fc .fc-button-primary:hover { background: var(--bg-body) !important; color: var(--primary) !important; border-color: var(--primary) !important; }
+        .fc .fc-button-primary { background: white !important; border: 1px solid var(--border) !important; color: var(--text-main) !important; font-weight: 600 !important; border-radius: 8px !important; padding: 6px 14px !important; box-shadow: none !important; text-transform: capitalize !important; transition: all .15s; }
+        .fc .fc-button-primary:hover { background: var(--primary-soft) !important; color: var(--primary) !important; border-color: var(--primary) !important; }
         .fc .fc-button-active, .fc .fc-button-primary:not(:disabled):active { background: var(--primary-soft) !important; border-color: var(--primary) !important; color: var(--primary) !important; }
         .fc th { padding: 12px 4px !important; font-size: 0.7rem; text-transform: uppercase; letter-spacing: .05rem; color: var(--text-muted); border: none !important; }
         .fc td { border-color: var(--border) !important; }
         .fc .fc-day-today { background: var(--primary-soft) !important; }
         .fc .fc-daygrid-event { border-radius: 8px !important; border-width: 1.5px !important; margin: 2px 4px !important; padding: 0 !important; cursor: pointer; transition: opacity .15s; }
         .fc .fc-daygrid-event:hover { opacity: 0.85; }
-
-        /* Custom event */
         .fc-event-custom { display: flex; align-items: center; gap: 5px; padding: 3px 7px; overflow: hidden; }
         .fc-event-icon-custom { font-size: 0.65rem; flex-shrink: 0; }
         .fc-event-text-custom { font-size: 0.7rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-        /* List view */
         .fc .fc-list-event:hover td { background: var(--bg-body); }
     </style>
-            </div>
-        </div>
-    </div>
 
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

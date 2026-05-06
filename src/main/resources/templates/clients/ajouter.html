@@ -4,18 +4,18 @@
     <title>Nouveau Client - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
                 <div class="d-flex align-items-center mb-5">
                     <a href="/clients" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                         <i class="bi bi-arrow-left fs-5"></i>
                     </a>
                     <div>
                         <h2 class="fw-bold mb-1">Nouveau Client</h2>
-                        <p class="text-muted small mb-0">Ajoutez un nouveau client à votre base de données</p>
+                        <p class="text-muted small mb-0">Ajoutez un nouveau client Ã  votre base de données</p>
                     </div>
                 </div>
 
@@ -91,7 +91,7 @@
 
                             <div class="col-12">
                                 <div class="bg-light p-4 rounded-3 border">
-                                    <label for="userId" class="form-label text-main fw-bold small text-uppercase mb-2">Associer à un compte utilisateur</label>
+                                    <label for="userId" class="form-label text-main fw-bold small text-uppercase mb-2">Associer Ã  un compte utilisateur</label>
                                     <select name="userId" id="userId" class="form-select py-2">
                                         <option value="">-- Aucun compte associé --</option>
                                         <option th:each="u : ${users}"
@@ -185,3 +185,5 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

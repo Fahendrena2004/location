@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PaiementService {
@@ -21,6 +22,9 @@ public class PaiementService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private EmailService emailService;
+
     public List<Paiement> getAllPaiements() {
         return paiementRepository.findAll();
     }
@@ -30,12 +34,12 @@ public class PaiementService {
     }
 
     public Paiement getPaiementById(Long id) {
-        return paiementRepository.findById(id)
+        return paiementRepository.findById(Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Paiement non trouvé avec l'id: " + id));
     }
 
     public Paiement savePaiement(Paiement paiement) {
-        Paiement saved = paiementRepository.save(paiement);
+        Paiement saved = paiementRepository.save(Objects.requireNonNull(paiement));
         if (saved.getStatut() == org.example.location_voiture.model.enums.StatutPaiement.EFFECTUE) {
             if (saved.getLocation() != null && saved.getLocation().getClient() != null && saved.getLocation().getClient().getUtilisateur() != null) {
                 notificationService.createNotification(
@@ -44,6 +48,17 @@ public class PaiementService {
                     "/paiements",
                     saved.getLocation().getClient().getUtilisateur()
                 );
+            }
+
+            // Envoyer un email de confirmation de paiement au client
+            if (saved.getLocation() != null && saved.getLocation().getClient() != null && saved.getLocation().getClient().getEmail() != null) {
+                String subject = "Confirmation de paiement - Location #" + saved.getLocation().getId();
+                String body = "Bonjour " + saved.getLocation().getClient().getPrenom() + ",\n\n" +
+                        "Nous vous confirmons la réception de votre paiement de " + saved.getMontant() + " Ar pour votre location #" + saved.getLocation().getId() + ".\n" +
+                        "Mode de paiement : " + saved.getModePaiement() + "\n" +
+                        "Référence : " + (saved.getReference() != null ? saved.getReference() : "N/A") + "\n\n" +
+                        "Merci de votre confiance.\n\nCordialement,\nL'équipe Location Voiture";
+                emailService.sendTextEmail(saved.getLocation().getClient().getEmail(), subject, body);
             }
         }
         return saved;
@@ -62,12 +77,12 @@ public class PaiementService {
         if (statut != null && !statut.isBlank()) {
             paiement.setStatut(StatutPaiement.valueOf(statut));
         }
-        return paiementRepository.save(paiement);
+        return paiementRepository.save(Objects.requireNonNull(paiement));
     }
 
     public void deletePaiement(Long id) {
         Paiement paiement = getPaiementById(id);
-        paiementRepository.delete(paiement);
+        paiementRepository.delete(Objects.requireNonNull(paiement));
     }
 
     public List<Paiement> getPaiementsByLocation(Long locationId) {

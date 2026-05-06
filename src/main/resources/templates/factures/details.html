@@ -4,10 +4,12 @@
     <title>Détails Facture - Location Voitures</title>
 </head>
 <body>
-<div class="d-flex">
     <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
+
             <div class="d-flex align-items-center mb-5">
                 <a href="/factures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                     <i class="bi bi-arrow-left fs-5"></i>
@@ -23,7 +25,7 @@
                     <div class="row align-items-start mb-5 g-4">
                         <div class="col-md-6 text-start">
                             <div class="mb-4">
-                                <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block" style="letter-spacing:1px;">Facturé à</label>
+                                <label class="form-label text-main fw-bold small text-uppercase mb-3 d-block" style="letter-spacing:1px;">Facturé Ã </label>
                                 <div class="bg-light p-4 rounded-4 border-0">
                                     <h5 class="fw-bold text-dark mb-2" th:text="${facture.location.client.nomComplet}">Rakoto Jean</h5>
                                     <div class="text-muted small">
@@ -160,3 +162,5 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

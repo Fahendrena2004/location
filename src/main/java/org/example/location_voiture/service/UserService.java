@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.time.LocalDateTime;
 
@@ -30,7 +31,7 @@ public class UserService {
         if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        return userRepository.save(user);
+        return userRepository.save(Objects.requireNonNull(user));
     }
 
     public Optional<User> findByEmail(String email) {
@@ -38,20 +39,22 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        userRepository.deleteById(Objects.requireNonNull(id));
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+        return userRepository.findById(Objects.requireNonNull(id)).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void createPasswordResetTokenForUser(User user, String token) {
-        // Supprimer l'ancien s'il existe
-        tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
+        // Supprimer tous les anciens tokens pour cet utilisateur directement
+        tokenRepository.deleteByUser(user);
+        tokenRepository.flush();
         
         PasswordResetToken myToken = new PasswordResetToken(token, user, LocalDateTime.now().plusMinutes(30));
         tokenRepository.save(myToken);
@@ -76,8 +79,17 @@ public class UserService {
     }
 
     public void changeUserPassword(User user, String password) {
-        user.setPassword(passwordEncoder.encode(password));
+        System.out.println("[INFO] Réinitialisation du mot de passe pour l'utilisateur: " + user.getEmail());
+        
+        // Hachage direct pour être sûr à 100%
+        String encodedPassword = passwordEncoder.encode(password);
+        user.setPassword(encodedPassword);
+        user.setActif(true);
+        
         userRepository.save(user);
+        
+        System.out.println("[INFO] Mot de passe changé avec succès !");
+        System.out.println("[DEBUG] Hash généré : " + encodedPassword.substring(0, 10) + "...");
     }
 
     public boolean existsByEmail(String email) {
@@ -86,5 +98,26 @@ public class UserService {
 
     public List<User> getAdmins() {
         return userRepository.findByRole(org.example.location_voiture.model.enums.Role.ADMIN);
+    }
+
+    public Optional<User> findByVerificationToken(String token) {
+        return userRepository.findByVerificationToken(token);
+    }
+
+    public boolean verifyAccount(String token) {
+        Optional<User> userOptional = userRepository.findByVerificationToken(token);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setActif(true);
+            user.setVerificationToken(null);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    @org.springframework.transaction.annotation.Transactional
+    public void deletePasswordResetToken(String token) {
+        tokenRepository.findByToken(token).ifPresent(tokenRepository::delete);
     }
 }

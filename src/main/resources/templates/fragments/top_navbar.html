@@ -1,70 +1,85 @@
 <div th:fragment="top-navbar" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <div class="top-navbar">
-        <div class="top-navbar-content">
-            <!-- Left Side: Toggle & Logo -->
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-action-square d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
-                    <i class="bi bi-list"></i>
+        <!-- Left: Hamburger + Breadcrumb -->
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn-nav-icon sidebar-toggle-btn" id="sidebarToggle" type="button" title="Toggle menu">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <nav class="nav-breadcrumb-path d-flex align-items-center gap-2">
+                <a href="/dashboard" class="text-muted" title="Accueil">
+                    <i class="bi bi-house fs-6"></i>
+                </a>
+                <span class="text-muted">/</span>
+                <span class="fw-semibold text-main small" th:text="${titrePage} ?: 'Accueil'">Accueil</span>
+            </nav>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="d-flex align-items-center gap-2">
+
+            <!-- Currency Toggle (dark pill style) -->
+            <div class="currency-pill-toggle">
+                <input type="radio" name="currencyToggle" id="navMGA" value="MGA" class="btn-check">
+                <label class="currency-pill-btn" for="navMGA">Ar</label>
+                <input type="radio" name="currencyToggle" id="navEUR" value="EUR" class="btn-check">
+                <label class="currency-pill-btn" for="navEUR">€</label>
+            </div>
+
+            <!-- Chevron (collapse/info button) -->
+            <button class="btn-nav-icon sidebar-toggle-btn" type="button" title="Réduire">
+                <i class="bi bi-chevron-left small"></i>
+            </button>
+
+            <!-- Notifications Bell -->
+            <div class="dropdown">
+                <button class="btn-nav-icon" type="button" data-bs-toggle="dropdown" id="notifDropdown">
+                    <i class="bi bi-bell fs-6"></i>
+                    <span class="notif-dot" th:if="${unreadNotificationsCount > 0}"></span>
                 </button>
-                <div class="d-none d-sm-flex align-items-center gap-2">
-                    <div class="bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-2 shadow-sm border border-primary border-opacity-10" style="font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;">
-                        <i class="bi bi-shield-check"></i> AUTORENT
+                <div class="dropdown-menu dropdown-menu-end shadow border-0 p-2 mt-1" style="min-width:280px; border-radius:12px;">
+                    <h6 class="px-3 py-1 text-muted x-small text-uppercase fw-bold mb-1">Notifications</h6>
+                    <div th:each="n : ${recentNotifications}">
+                        <a class="dropdown-item rounded-3 py-2 small" th:href="@{/notifications}"
+                           th:text="${n.titre}">Notification</a>
+                    </div>
+                    <div th:if="${recentNotifications == null or #lists.isEmpty(recentNotifications)}"
+                         class="text-center text-muted small py-3">
+                        Aucune notification
+                    </div>
+                    <div class="border-top mt-1 pt-1">
+                        <a href="/notifications" class="dropdown-item rounded-3 text-center text-primary small fw-bold">
+                            Voir tout
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Right Side: Actions -->
-            <div class="d-flex align-items-center gap-3">
-                <!-- Notifications Dropdown -->
-                <div class="dropdown">
-                    <button class="btn btn-link p-0 text-muted fs-5 position-relative dropdown-toggle no-caret" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-bell"></i>
-                        <span th:if="${unreadNotificationsCount > 0}" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 10px; height: 10px;"></span>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2" style="min-width: 300px; border-radius: 12px;">
-                        <h6 class="dropdown-header text-uppercase fw-bold pb-2" style="font-size: 0.65rem;">Notifications Recentes</h6>
-                        <div class="notification-list" style="max-height: 300px; overflow-y: auto;">
-                            <div th:each="n : ${recentNotifications}" class="dropdown-item py-2 px-3 border-bottom-0" th:classappend="${!n.lu ? 'bg-light fw-bold' : ''}">
-                                <div class="d-flex align-items-start gap-2">
-                                    <div class="rounded-circle bg-primary-soft p-1" style="font-size: 0.75rem;"><i class="bi bi-info-circle"></i></div>
-                                    <div class="overflow-hidden">
-                                        <p class="mb-0 text-main smaller text-truncate" th:text="${n.titre}">Notification</p>
-                                        <p class="mb-0 text-muted xx-small" th:text="${n.description}" style="font-size: 0.6rem;">Message...</p>
-                                        <p class="mb-0 text-primary" style="font-size: 0.55rem;" th:text="${#temporals.format(n.dateCreation, 'dd/MM HH:mm')}">Date</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div th:if="${#lists.isEmpty(recentNotifications)}" class="py-4 text-center text-muted small">
-                                <i class="bi bi-bell-slash fs-4 d-block mb-1"></i>
-                                Aucune notification
-                            </div>
-                        </div>
-                        <a href="/notifications" class="dropdown-item py-2 small text-muted text-center border-top mt-1">Voir tout</a>
-                    </div>
-                </div>
+            <!-- Settings Gear -->
+            <a href="/parametres" class="btn-nav-icon" title="Paramètres">
+                <i class="bi bi-gear fs-6"></i>
+            </a>
 
-                <!-- User Profile Dropdown -->
-                <div class="dropdown">
-                    <div class="d-flex align-items-center gap-2 cursor-pointer dropdown-toggle no-caret" data-bs-toggle="dropdown">
-                        <div class="text-end d-none d-sm-block">
-                            <p class="small fw-bold mb-0 text-main" sec:authentication="name">User</p>
-                            <p class="x-small text-muted mb-0" style="font-size: 0.65rem;" sec:authentication="principal.authorities[0].authority">Client</p>
-                        </div>
-                        <div class="bg-primary-soft rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border: 2px solid white; box-shadow: var(--shadow-sm);">
-                            <img src="https://ui-avatars.com/api/?name=U&background=2563eb&color=fff" class="rounded-circle w-100" alt="Avatar">
-                        </div>
-                    </div>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2" style="border-radius: 12px;">
-                        <li><a class="dropdown-item py-2" href="/profile"><i class="bi bi-person me-2"></i> Mon Profil</a></li>
-                        <li><a class="dropdown-item py-2" href="/locations"><i class="bi bi-clock-history me-2"></i> Historique</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form th:action="@{/logout}" method="post">
-                                <button type="submit" class="dropdown-item py-2 text-danger fw-bold"><i class="bi bi-box-arrow-right me-2"></i> Déconnexion</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+            <!-- User Avatar -->
+            <div class="dropdown">
+                <button class="nav-avatar-btn" type="button" data-bs-toggle="dropdown" title="Mon compte">
+                    <span th:text="${#authentication != null ? #strings.substring(#authentication.name, 0, 1).toUpperCase() : 'U'}">U</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2 mt-1" style="border-radius:12px; min-width:200px;">
+                    <li class="px-3 py-2 border-bottom mb-1">
+                        <div class="small fw-bold text-main" sec:authentication="principal.username">admin</div>
+                        <div class="x-small text-muted" sec:authentication="principal.authorities[0].authority">ROLE_ADMIN</div>
+                    </li>
+                    <li><a class="dropdown-item rounded-3 py-2 small" href="/profile"><i class="bi bi-person me-2"></i>Mon Profil</a></li>
+                    <li><a class="dropdown-item rounded-3 py-2 small" href="/parametres"><i class="bi bi-gear me-2"></i>Paramètres</a></li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li>
+                        <form th:action="@{/logout}" method="post">
+                            <button type="submit" class="dropdown-item rounded-3 py-2 small text-danger fw-bold">
+                                <i class="bi bi-power me-2"></i>Déconnexion
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

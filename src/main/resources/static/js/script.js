@@ -28,6 +28,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Sidebar Toggle Logic
+    const sidebar = document.querySelector('.sidebar-main');
+    const mainContent = document.querySelector('.main-content-layout');
+    const topNavbar = document.querySelector('.top-navbar');
+    const toggleBtns = document.querySelectorAll('.sidebar-toggle-btn');
+
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            // On desktop, we handle minimization
+            if (window.innerWidth >= 992) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                sidebar.classList.toggle('collapsed');
+                if (mainContent) mainContent.classList.toggle('expanded');
+                if (topNavbar) topNavbar.classList.toggle('expanded');
+                
+                const isCollapsed = sidebar.classList.contains('collapsed');
+                localStorage.setItem('sidebarCollapsed', isCollapsed);
+            }
+        });
+    });
+
+    // Apply saved sidebar state
+    if (localStorage.getItem('sidebarCollapsed') === 'true' && window.innerWidth >= 992) {
+        if (sidebar) sidebar.classList.add('collapsed');
+        if (mainContent) mainContent.classList.add('expanded');
+        if (topNavbar) topNavbar.classList.add('expanded');
+    }
+
     // Automatically append active currency to Facture actions
     document.addEventListener('click', function(e) {
         const link = e.target.closest('a');
@@ -43,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Global Currency Logic
-const EXCHANGE_RATE_EUR = 4500; // 1 EUR = 4500 Ar
+const EXCHANGE_RATE_EUR = window.EXCHANGE_RATE_EUR || 4500; // Use dynamic rate or fallback to 4500
 let currentCurrency = localStorage.getItem('preferredCurrency') || 'MGA';
 
 function updateCurrencyDisplay() {
@@ -75,9 +105,20 @@ function updateCurrencyDisplay() {
 
     const radioMGA = document.getElementById('currMGA');
     const radioEUR = document.getElementById('currEUR');
+    const labelMGA = document.getElementById('labelMGA');
+    const labelEUR = document.getElementById('labelEUR');
+
     if (radioMGA && radioEUR) {
-        if (currentCurrency === 'MGA') radioMGA.checked = true;
-        if (currentCurrency === 'EUR') radioEUR.checked = true;
+        if (currentCurrency === 'MGA') {
+            radioMGA.checked = true;
+            if(labelMGA) labelMGA.classList.add('active-currency');
+            if(labelEUR) labelEUR.classList.remove('active-currency');
+        }
+        if (currentCurrency === 'EUR') {
+            radioEUR.checked = true;
+            if(labelEUR) labelEUR.classList.add('active-currency');
+            if(labelMGA) labelMGA.classList.remove('active-currency');
+        }
     }
 }
 

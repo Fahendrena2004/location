@@ -8,4 +8,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
     java.util.List<User> findByRole(org.example.location_voiture.model.enums.Role role);
+    Optional<User> findByVerificationToken(String verificationToken);
 }

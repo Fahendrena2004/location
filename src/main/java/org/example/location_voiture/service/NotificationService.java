@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class NotificationService {
@@ -22,7 +23,7 @@ public class NotificationService {
                 .url(url)
                 .user(user)
                 .build();
-        notificationRepository.save(notif);
+        notificationRepository.save(Objects.requireNonNull(notif));
     }
 
     public List<Notification> getRecentNotifications(User user) {
@@ -39,14 +40,14 @@ public class NotificationService {
         for (Notification n : unread) {
             n.setLu(true);
         }
-        notificationRepository.saveAll(unread);
+        notificationRepository.saveAll(Objects.requireNonNull(unread));
     }
 
     @Transactional
     public void markAsRead(Long id) {
-        notificationRepository.findById(id).ifPresent(n -> {
+        notificationRepository.findById(Objects.requireNonNull(id)).ifPresent(n -> {
             n.setLu(true);
-            notificationRepository.save(n);
+            notificationRepository.save(Objects.requireNonNull(n));
         });
     }
 }

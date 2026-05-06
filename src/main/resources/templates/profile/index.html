@@ -4,13 +4,12 @@
     <title>Mon Profil - Location Voitures</title>
 </head>
 <body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
         <div class="main-content-layout">
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
             
-            <div class="page-container">
+            <main class="page-container">
                 <!-- Header Section -->
                 <!-- Header Section -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -72,7 +71,7 @@
                                     <input type="password" name="newPassword" class="form-control bg-light border-0 py-2" required style="border-radius: 10px;">
                                 </div>
                                 <div class="mb-3 text-end">
-                                    <button type="submit" class="btn btn-outline-danger border-0 fw-bold small">Mettre à jour l'accès</button>
+                                    <button type="submit" class="btn btn-outline-danger border-0 fw-bold small">Mettre Ã  jour l'accès</button>
                                 </div>
                             </form>
                         </div>
@@ -108,8 +107,10 @@
     </style>
 
         </div>
+    </main>
     </div>
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
 

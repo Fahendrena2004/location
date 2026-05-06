@@ -4,11 +4,11 @@
     <title>Nouveau Chauffeur - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
                 <div class="d-flex align-items-center mb-5">
                     <a href="/chauffeurs" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                         <i class="bi bi-arrow-left fs-5"></i>
@@ -44,7 +44,7 @@
                                        required>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('telephone')}" th:errors="*{telephone}"></div>
                             </div>
-                                <label for="numeroPermis" class="form-label text-main fw-bold small text-uppercase mb-2">N° Permis de conduire</label>
+                                <label for="numeroPermis" class="form-label text-main fw-bold small text-uppercase mb-2">NÂ° Permis de conduire</label>
                                 <input type="text" th:field="*{numeroPermis}" id="numeroPermis" 
                                        class="form-control py-2" 
                                        th:classappend="${#fields.hasErrors('numeroPermis')} ? 'is-invalid' : ''"
@@ -66,7 +66,7 @@
                                             Chauffeur disponible immédiatement
                                         </label>
                                     </div>
-                                    <p class="text-muted small mb-0 mt-2 ms-5">Si activé, ce chauffeur pourra être assigné à de nouvelles locations dès son enregistrement.</p>
+                                    <p class="text-muted small mb-0 mt-2 ms-5">Si activé, ce chauffeur pourra être assigné Ã  de nouvelles locations dès son enregistrement.</p>
                                 </div>
                             </div>
                         </div>
@@ -92,4 +92,6 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+
 

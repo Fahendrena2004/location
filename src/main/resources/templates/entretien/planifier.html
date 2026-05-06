@@ -4,11 +4,11 @@
     <title>Planifier Entretien - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
             <!-- Header Section -->
             <div class="d-flex align-items-center mb-5">
                 <a href="/entretien" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
@@ -24,7 +24,7 @@
                 <form th:action="@{/entretien/planifier}" th:object="${entretien}" method="post">
                     <div class="row g-4">
                         <div class="col-md-6 text-start">
-                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Véhicule à immobiliser</label>
+                            <label class="form-label text-main fw-bold small text-uppercase mb-2">Véhicule Ã  immobiliser</label>
                             <select class="form-select py-2" th:field="*{voiture}" required>
                                 <option value="">Sélectionner une voiture...</option>
                                 <option th:each="voiture : ${voitures}" th:value="${voiture.id}"
@@ -61,7 +61,7 @@
 
                         <div class="col-md-12 text-start">
                             <label class="form-label text-main fw-bold small text-uppercase mb-2">Description des travaux prévus</label>
-                            <textarea class="form-control py-3" th:field="*{description}" rows="3" placeholder="Détaillez les points à vérifier ou les pièces à remplacer" required></textarea>
+                            <textarea class="form-control py-3" th:field="*{description}" rows="3" placeholder="Détaillez les points Ã  vérifier ou les pièces Ã  remplacer" required></textarea>
                         </div>
 
                         <div class="col-md-6 text-start">
@@ -103,3 +103,5 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

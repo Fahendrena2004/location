@@ -13,6 +13,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 public class SecurityConfig {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private org.example.location_voiture.service.CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -25,7 +27,7 @@ public class SecurityConfig {
             // .csrf(csrf -> csrf.disable()) // ré-activé pour la sécurité
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/img/**", "/webjars/**", "/manifest.json", "/sw.js", "/offline.html", "/favicon.ico").permitAll()
-                .requestMatchers("/login", "/register", "/forgot-password", "/reset-password", "/access-denied").permitAll()
+                .requestMatchers("/login", "/register", "/verify-account", "/forgot-password", "/reset-password", "/access-denied").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
@@ -33,6 +35,13 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .defaultSuccessUrl("/dashboard", true)
                 .permitAll()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                )
+                .defaultSuccessUrl("/dashboard", true)
             )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

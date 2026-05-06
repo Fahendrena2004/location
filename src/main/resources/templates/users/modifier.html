@@ -5,11 +5,11 @@
 </head>
 <body>
 <body style="font-family: 'Inter', sans-serif; background-color: #f8fafc;">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
 
                 <!-- Header -->
                 <div class="d-flex align-items-center mb-5 mt-2">
@@ -80,13 +80,13 @@
                                     <label class="premium-label">Nouveau Code</label>
                                     <div class="input-group">
                                         <span class="input-group-text-premium"><i class="bi bi-key-fill"></i></span>
-                                        <input type="password" name="password" id="password" class="form-control premium-input" placeholder="••••••••">
+                                        <input type="password" name="password" id="password" class="form-control premium-input" placeholder=""¢"¢"¢"¢"¢"¢"¢"¢">
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="premium-label text-muted">Vérification</label>
-                                    <input type="password" id="confirmPassword" class="form-control premium-input" placeholder="••••••••">
+                                    <input type="password" id="confirmPassword" class="form-control premium-input" placeholder=""¢"¢"¢"¢"¢"¢"¢"¢">
                                 </div>
 
                                 <!-- Statut Switch -->
@@ -238,4 +238,6 @@
     </script>
 </body>
 </html>
+
+
 

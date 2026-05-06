@@ -5,6 +5,7 @@ import org.example.location_voiture.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ClientService {
@@ -17,12 +18,12 @@ public class ClientService {
     }
 
     public Client getClientById(Long id) {
-        return clientRepository.findById(id)
+        return clientRepository.findById(Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Client non trouvé avec l'id: " + id));
     }
 
     public Client saveClient(Client client) {
-        return clientRepository.save(client);
+        return clientRepository.save(Objects.requireNonNull(client));
     }
 
     public Client updateClient(Long id, Client clientDetails) {
@@ -38,7 +39,7 @@ public class ClientService {
 
     public void deleteClient(Long id) {
         Client client = getClientById(id);
-        clientRepository.delete(client);
+        clientRepository.delete(Objects.requireNonNull(client));
     }
 
     public long countClients() {

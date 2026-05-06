@@ -4,10 +4,10 @@
     <title>Mon Espace - Location Voitures</title>
 </head>
 <body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
+    <div class="main-content-layout" id="mainContent">
+
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
 
             <!-- Header -->
@@ -115,7 +115,7 @@
                                 </td>
                                 <td class="py-3 text-center">
                                     <div class="small fw-medium text-main" th:if="${loc.dateDebut != null and loc.dateFin != null}"
-                                         th:text="${#temporals.format(loc.dateDebut, 'dd MMM')} + ' → ' + ${#temporals.format(loc.dateFin, 'dd MMM yyyy')}">Date</div>
+                                         th:text="${#temporals.format(loc.dateDebut, 'dd MMM')} + ' â†’ ' + ${#temporals.format(loc.dateFin, 'dd MMM yyyy')}">Date</div>
                                     <div class="small fw-medium text-main" th:if="${loc.dateDebut == null or loc.dateFin == null}">Dates non définies</div>
                                 </td>
                                 <td class="py-3 text-center">
@@ -173,7 +173,10 @@
 
     <!-- Global Currency Logic is now in fragments/sidebar.html -->
 
+        </div>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
 

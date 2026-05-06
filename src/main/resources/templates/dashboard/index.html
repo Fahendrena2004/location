@@ -1,543 +1,443 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{fragments/header :: header}">
-    <title>Dashboard Admin - Location Voitures</title>
+    <title>Tableau de bord - AUTORENT</title>
 </head>
-<body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<body>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
-            <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
-            
-            <div class="page-container">
-                <!-- ==========================================
-                     ADMIN DASHBOARD
-                     ========================================== -->
-            <div sec:authorize="hasRole('ADMIN')" class="d-flex flex-column gap-4">
-                
-                <!-- Dashboard Control Header -->
-                <div class="d-flex justify-content-between align-items-end mb-4">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+
+        <main class="page-container">
+
+            <!-- ====== ADMIN DASHBOARD ====== -->
+            <div sec:authorize="hasRole('ADMIN')">
+
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2 class="fw-bold text-main mb-0">Vue d'ensemble</h2>
+                        <h4 class="fw-bold mb-1">Vue d'ensemble</h4>
+                        <p class="text-muted small mb-0">Suivi en temps réel de votre activité.</p>
                     </div>
                     <div class="d-flex gap-2">
-                         <button class="btn btn-action-square" title="Rafraîchir"><i class="bi bi-arrow-clockwise"></i></button>
-                         <a href="/locations/ajouter" class="btn btn-primary d-flex align-items-center gap-2 px-4 shadow-sm">
+                        <a href="/locations/ajouter" class="btn btn-primary d-flex align-items-center gap-2 px-4">
                             <i class="bi bi-plus-lg"></i> Nouvelle Location
-                         </a>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Metrics Strip -->
-                <div class="row g-4 mb-5">
-                    <!-- Revenue -->
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm p-4 h-100">
+                <!-- Stat Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card border-0 shadow-sm p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="icon-box bg-primary-soft text-primary rounded-3" style="width: 42px; height: 42px;">
-                                    <i class="bi bi-currency-dollar fs-5"></i>
+                                <div class="icon-box bg-primary-soft text-primary">
+                                    <i class="bi bi-currency-dollar fs-5" style="color: var(--primary)"></i>
                                 </div>
-                                <span class="badge badge-soft-success" th:text="${evolutionRevenus > 0 ? '+' : ''} + ${#numbers.formatDecimal(evolutionRevenus ?: 0, 1, 'COMMA', 1, 'POINT')} + '%'">+12%</span>
+                                <span class="badge-soft-success" th:text="${evolutionRevenus != null ? (evolutionRevenus > 0 ? '+' : '') + #numbers.formatDecimal(evolutionRevenus, 1,'COMMA',1,'POINT') + '%' : '+0%'}">+0%</span>
                             </div>
-                            <h3 class="fw-bold mb-1 amount-convertible" 
+                            <h4 class="fw-bold mb-1 amount-convertible"
                                 th:data-mga="${revenuTotal}"
-                                th:text="${#numbers.formatDecimal(revenuTotal ?: 0, 0, 'COMMA', 0, 'POINT')} + ' Ar'">0 Ar</h3>
-                            <p class="text-muted small mb-0 fw-medium">Chiffre d'Affaires</p>
+                                th:text="${#numbers.formatDecimal(revenuTotal ?: 0, 0,'COMMA',0,'POINT')} + ' Ar'">0 Ar</h4>
+                            <p class="text-muted small mb-0">Chiffre d'Affaires</p>
                         </div>
                     </div>
-                    <!-- Active Rentals -->
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm p-4 h-100">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card border-0 shadow-sm p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="icon-box bg-success-soft text-success rounded-3" style="width: 42px; height: 42px;">
-                                    <i class="bi bi-key fs-5"></i>
+                                <div class="icon-box bg-success-soft">
+                                    <i class="bi bi-key-fill fs-5" style="color:#16a34a"></i>
                                 </div>
-                                <span class="text-muted small fw-bold">IDLE: <span th:text="${voituresDisponibles}">0</span></span>
+                                <span class="text-muted x-small fw-bold">IDLE: <span th:text="${voituresDisponibles}">0</span></span>
                             </div>
-                            <h3 class="fw-bold mb-1" th:text="${locationsEnCours}">0</h3>
-                            <p class="text-muted small mb-0 fw-medium">Locations en cours</p>
+                            <h4 class="fw-bold mb-1" th:text="${locationsEnCours}">0</h4>
+                            <p class="text-muted small mb-0">Locations en cours</p>
                         </div>
                     </div>
-                    <!-- Fleet -->
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm p-4 h-100">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card border-0 shadow-sm p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="icon-box bg-warning-soft text-warning rounded-3" style="width: 42px; height: 42px;">
-                                    <i class="bi bi-car-front fs-5"></i>
+                                <div class="icon-box bg-warning-soft">
+                                    <i class="bi bi-car-front-fill fs-5" style="color:#d97706"></i>
                                 </div>
-                                <span class="text-danger small fw-bold" th:text="${totalVoitures - voituresDisponibles - voituresLouees}">0</span>
+                                <span class="text-danger x-small fw-bold" th:text="${totalVoitures - voituresDisponibles - (voituresLouees ?: 0)}">0</span>
                             </div>
-                            <h3 class="fw-bold mb-1" th:text="${totalVoitures}">0</h3>
-                            <p class="text-muted small mb-0 fw-medium">Véhicules Totaux</p>
+                            <h4 class="fw-bold mb-1" th:text="${totalVoitures}">0</h4>
+                            <p class="text-muted small mb-0">Véhicules Totaux</p>
                         </div>
                     </div>
-                    <!-- Clients -->
-                    <div class="col-md-3">
-                        <div class="card border-0 shadow-sm p-4 h-100">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card border-0 shadow-sm p-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="icon-box bg-info-soft text-info rounded-3" style="width: 42px; height: 42px;">
-                                    <i class="bi bi-people fs-5"></i>
+                                <div class="icon-box bg-info-soft">
+                                    <i class="bi bi-people-fill fs-5" style="color:#0284c7"></i>
                                 </div>
                                 <i class="bi bi-three-dots text-muted"></i>
                             </div>
-                            <h3 class="fw-bold mb-1" th:text="${totalClients}">0</h3>
-                            <p class="text-muted small mb-0 fw-medium">Clients Inscrits</p>
+                            <h4 class="fw-bold mb-1" th:text="${totalClients}">0</h4>
+                            <p class="text-muted small mb-0">Clients Inscrits</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Critical Alerts Section -->
-                <div class="row g-4" th:if="${!#lists.isEmpty(alertesMaintenance) or !#lists.isEmpty(locationsEnRetard) or !#lists.isEmpty(locationsEnAttente)}">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm bg-light-subtle p-4" style="border-left: 4px solid var(--primary); border-radius: 12px;">
-                            <h6 class="fw-bold text-main mb-3 hstack gap-2">
-                                <i class="bi bi-exclamation-triangle text-warning"></i> 
-                                Alertes Opérationnelles
-                            </h6>
-                            <div class="row g-3">
-                                <!-- Maintenance Alerts -->
-                                <div class="col-md-4" th:each="a : ${alertesMaintenance}">
-                                    <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-3">
-                                        <div class="badge-soft-danger p-2 rounded-circle"><i class="bi bi-tools"></i></div>
-                                        <div class="overflow-hidden">
-                                            <p class="mb-0 fw-bold text-main small text-truncate" th:text="${a.voiture.marque} + ' ' + ${a.voiture.modele}"></p>
-                                            <p class="mb-0 text-muted smaller" th:text="'Maintenance prévue: ' + ${a.dateEntretien}"></p>
-                                        </div>
-                                        <a th:href="@{'/entretien'}" class="btn btn-sm btn-link ms-auto"><i class="bi bi-arrow-right"></i></a>
-                                    </div>
-                                </div>
-                                <!-- Overdue Returns -->
-                                <div class="col-md-4" th:each="l : ${locationsEnRetard}">
-                                    <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-3" style="border-bottom: 2px solid #ef4444;">
-                                        <div class="badge-soft-danger p-2 rounded-circle text-danger"><i class="bi bi-clock-history"></i></div>
-                                        <div class="overflow-hidden">
-                                            <p class="mb-0 fw-bold text-danger small text-truncate" th:text="${l.client.nom} + ' - ' + ${l.voitures[0].marque}"></p>
-                                            <p class="mb-0 text-muted smaller">RETARD - Devrait être rendu</p>
-                                        </div>
-                                        <a th:href="@{'/locations/' + ${l.id}}" class="btn btn-sm btn-link ms-auto"><i class="bi bi-telephone"></i></a>
-                                    </div>
-                                </div>
-                                <!-- Pending Reservations -->
-                                <div class="col-md-4" th:each="att : ${locationsEnAttente}">
-                                    <div class="bg-white p-3 rounded-3 shadow-sm d-flex align-items-center gap-3">
-                                        <div class="badge-soft-info p-2 rounded-circle text-info"><i class="bi bi-hourglass-split"></i></div>
-                                        <div class="overflow-hidden">
-                                            <p class="mb-0 fw-bold text-main small text-truncate" th:text="${att.client.nom}"></p>
-                                            <p class="mb-0 text-muted smaller">Réservation en attente</p>
-                                        </div>
-                                        <a th:href="@{'/locations/' + ${att.id}}" class="btn btn-sm btn-link ms-auto text-info"><i class="bi bi-check2"></i></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Alertes Opérationnelles -->
+                <div th:if="${!#lists.isEmpty(alertesMaintenance) or !#lists.isEmpty(locationsEnRetard) or !#lists.isEmpty(locationsEnAttente)}"
+                     class="card border-0 shadow-sm p-4 mb-4">
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>Alertes Opérationnelles
+                    </h6>
+                    <div th:each="a : ${alertesMaintenance}" class="d-flex align-items-center gap-3 mb-2">
+                        <span class="badge-soft-warning"><i class="bi bi-tools me-1"></i>Maintenance</span>
+                        <a th:href="@{/voitures/{id}(id=${a.id})}" class="text-danger fw-semibold small"
+                           th:text="${a.marque + ' - ' + a.modele}">Voiture</a>
+                        <span class="text-muted x-small" th:text="${a.plaqueImmatriculation}"></span>
+                    </div>
+                    <div th:each="l : ${locationsEnRetard}" class="d-flex align-items-center gap-3 mb-2">
+                        <span class="badge-soft-danger"><i class="bi bi-clock me-1"></i>En Retard</span>
+                        <a th:href="@{/locations/{id}(id=${l.id})}" class="text-danger fw-semibold small"
+                           th:text="${l.client?.nom}">Client</a>
                     </div>
                 </div>
-            </div>
 
-
-            <!-- ==========================================
-                 CLIENT DASHBOARD
-                 ========================================== -->
-            <div sec:authorize="hasRole('CLIENT')" class="d-flex flex-column gap-4">
-                
-                <!-- Welcome & Active Status -->
-                <div class="row g-4">
+                <!-- Charts Row -->
+                <div class="row g-4 mb-4">
                     <div class="col-lg-8">
-                        <div class="card border-0 shadow-lg text-white overflow-hidden h-100" style="background: linear-gradient(135deg, var(--primary) 0%, #312e81 100%);">
-                            <div class="card-body p-5 position-relative">
-                                <div class="position-absolute top-0 end-0 p-4 opacity-10 display-1"><i class="bi bi-stars"></i></div>
-                                <h1 class="display-6 fw-bold mb-2">Bonjour, <span th:text="${#authentication.name}">Client</span> !</h1>
-                                <p class="lead mb-4 opacity-75">Prêt pour votre prochaine aventure ? Découvrez notre sélection de véhicules premium.</p>
-                                <div class="d-flex gap-3 mt-4">
-                                    <a href="/voitures" class="btn btn-light px-4 py-2 fw-bold text-primary shadow">Explorer la Flotte</a>
-                                    <a href="/locations" class="btn btn-outline-light px-4 py-2 fw-bold" style="border-width: 2px;">Mes Réservations</a>
-                                </div>
+                        <div class="card border-0 shadow-sm p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0">Évolution des Revenus</h6>
+                                <span class="badge-soft-info x-small">6 derniers mois</span>
                             </div>
+                            <canvas id="revenusChart" height="100"></canvas>
                         </div>
                     </div>
                     <div class="col-lg-4">
-                        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h6 class="fw-bold mb-0">Statut de Location</h6>
-                                <span class="badge badge-soft-warning rounded-pill px-3">Live</span>
+                        <div class="card border-0 shadow-sm p-4 h-100">
+                            <h6 class="fw-bold mb-3">Disponibilité de la Flotte</h6>
+                            <div style="height: 180px; position: relative;">
+                                <canvas id="fleetChart"></canvas>
                             </div>
-                            <div class="text-center py-2">
-                                <div class="display-4 fw-bold text-primary mb-1" th:text="${locationsEnCours}">0</div>
-                                <p class="text-muted small text-uppercase fw-bold x-small mb-4" style="letter-spacing: 0.1rem;">Locations Actives</p>
-                                <div class="progress mb-2" style="height: 6px; border-radius: 10px;">
-                                    <div class="progress-bar bg-primary" th:style="'width: ' + (${locationsEnCours > 0 ? 100 : 0}) + '%'"></div>
+                            <div class="mt-3">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="rounded-circle" style="width:10px;height:10px;background:#22c55e;display:inline-block;"></span>
+                                        <span class="small text-muted">Disponible</span>
+                                    </div>
+                                    <span class="fw-bold small" th:text="${voituresDisponibles}">0</span>
                                 </div>
-                                <p class="small text-muted mb-0">Consultez vos détails en temps réel.</p>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="rounded-circle" style="width:10px;height:10px;background:#3b82f6;display:inline-block;"></span>
+                                        <span class="small text-muted">Louée</span>
+                                    </div>
+                                    <span class="fw-bold small" th:text="${voituresLouees ?: 0}">0</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="rounded-circle" style="width:10px;height:10px;background:#ef4444;display:inline-block;"></span>
+                                        <span class="small text-muted">Maintenance</span>
+                                    </div>
+                                    <span class="fw-bold small" th:text="${totalVoitures - voituresDisponibles - (voituresLouees ?: 0)}">0</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Quick Services -->
-                <div class="row g-4">
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-4 transition-hover">
-                            <i class="bi bi-wallet2 fs-2 text-primary mb-3"></i>
-                            <h5 class="fw-bold mb-2">Paiements</h5>
-                            <p class="text-muted small mb-3">Gérez vos factures et payez en ligne en toute sécurité.</p>
-                            <a href="/factures" class="stretched-link"></a>
+                <!-- Second Charts Row -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h6 class="fw-bold mb-3">Activité Mensuelle</h6>
+                            <canvas id="locationsCountChart" height="120"></canvas>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-4 transition-hover">
-                            <i class="bi bi-calendar3 fs-2 text-primary mb-3"></i>
-                            <h5 class="fw-bold mb-2">Calendrier</h5>
-                            <p class="text-muted small mb-3">Planifiez vos voyages et vérifiez vos dates clés.</p>
-                            <a href="/locations/calendrier" class="stretched-link"></a>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card border-0 shadow-sm p-4 transition-hover">
-                            <i class="bi bi-shield-check fs-2 text-primary mb-3"></i>
-                            <h5 class="fw-bold mb-2">Sécurité</h5>
-                            <p class="text-muted small mb-3">Mettez à jour vos informations et votre permis.</p>
-                            <a href="/profile" class="stretched-link"></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row g-4 mt-5 mb-5">
-                <div class="col-lg-8">
-                    <div class="card border-0 p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h6 class="fw-bold mb-0">Évolution des Revenus</h6>
-                            <span class="badge badge-soft-primary">6 derniers mois</span>
-                        </div>
-                        <div style="position:relative;height:300px;">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card border-0 p-4 h-100">
-                        <h6 class="fw-bold mb-4">Disponibilité de la Flotte</h6>
-                        <div style="position:relative;height:240px;" class="mb-4">
-                            <canvas id="fleetChart"></canvas>
-                        </div>
-                        <div class="d-flex flex-column gap-2">
-                            <div class="d-flex justify-content-between align-items-center small">
-                                <span class="text-muted"><i class="bi bi-circle-fill me-2 text-success"></i> Disponible</span>
-                                <span class="fw-bold" th:text="${voituresDisponibles}">0</span>
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h6 class="fw-bold mb-3">Revenus par Type de Client</h6>
+                            <div style="height: 160px; position: relative;">
+                                <canvas id="clientTypeChart"></canvas>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center small">
-                                <span class="text-muted"><i class="bi bi-circle-fill me-2 text-primary"></i> Louée</span>
-                                <span class="fw-bold" th:text="${voituresLouees}">0</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center small">
-                                <span class="text-muted"><i class="bi bi-circle-fill me-2 text-danger"></i> Maintenance</span>
-                                <span class="fw-bold" th:text="${totalVoitures - voituresDisponibles - voituresLouees}">0</span>
+                            <div class="mt-3 d-flex gap-4 justify-content-center">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="rounded-circle" style="width:10px;height:10px;background:#f59e0b;display:inline-block;"></span>
+                                    <span class="x-small text-muted">Personne</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="rounded-circle" style="width:10px;height:10px;background:#ec4899;display:inline-block;"></span>
+                                    <span class="x-small text-muted">Association</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row g-4 mt-5 mb-5">
-                <div class="col-lg-7">
-                    <div class="card border-0 p-4 h-100">
-                        <h6 class="fw-bold mb-4">Activité Mensuelle</h6>
-                        <div style="position:relative;height:250px;">
-                            <canvas id="locationsCountChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="card border-0 p-4 h-100">
-                        <h6 class="fw-bold mb-4">Revenus par Type de Client</h6>
-                        <div style="position:relative;height:200px;" class="mb-4">
-                            <canvas id="clientTypeChart"></canvas>
-                        </div>
-                        <div class="d-flex justify-content-center gap-4">
-                            <div class="small text-center">
-                                <p class="mb-0 text-muted"><i class="bi bi-circle-fill me-2" style="color: #6366f1;"></i> Personne</p>
+                <!-- Bottom Row: Top Vehicles + Best Clients -->
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0">Véhicules les plus populaires</h6>
+                                <span class="badge-soft-info x-small">Top 5</span>
                             </div>
-                            <div class="small text-center">
-                                <p class="mb-0 text-muted"><i class="bi bi-circle-fill me-2" style="color: #f59e0b;"></i> Association</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== ANALYTICS TABLES ===== -->
-            <div class="row g-4 mt-5 mb-5">
-                <!-- Popular Vehicles -->
-                <div class="col-lg-7">
-                    <div class="card border-0 shadow-sm overflow-hidden h-100">
-                        <div class="card-header bg-white border-0 py-3 px-4 d-flex justify-content-between align-items-center">
-                            <h6 class="fw-bold mb-0 text-main">Véhicules les plus populaires</h6>
-                            <span class="badge badge-soft-primary rounded-pill">Top 5</span>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light-subtle">
-                                    <tr class="small text-uppercase text-muted" style="font-size: 0.65rem; letter-spacing: 0.05rem;">
-                                        <th class="px-4 py-3">Véhicule</th>
-                                        <th class="text-center py-3">Locations</th>
-                                        <th class="text-end px-4 py-3">Utilisation</th>
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Véhicule</th>
+                                        <th>Locations</th>
+                                        <th>Utilisation</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="entry : ${popularVoitures}">
-                                        <td class="px-4">
-                                            <div class="fw-bold text-main" th:text="${entry[0].marque} + ' ' + ${entry[0].modele}">Toyota Camry</div>
-                                            <div class="text-muted small" th:text="${entry[0].plaqueImmatriculation}">1234 TAE</div>
+                                    <tr th:each="v : ${voituresPopulaires}">
+                                        <td>
+                                            <div class="fw-semibold small" th:text="${v.marque + ' ' + v.modele}">-</div>
+                                            <div class="x-small text-muted" th:text="${v.plaqueImmatriculation}">-</div>
                                         </td>
-                                        <td class="text-center">
-                                            <span class="fw-bold text-primary" th:text="${entry[1]}">12</span>
-                                        </td>
-                                        <td class="px-4 text-end">
-                                            <div class="progress" style="height: 4px; width: 60px; display: inline-flex;">
-                                                <div class="progress-bar bg-primary" role="progressbar" 
-                                                     th:style="'width: ' + (${entry[1]} * 10 > 100 ? 100 : ${entry[1]} * 10) + '%'"></div>
+                                        <td class="fw-bold" th:text="${v.nombreLocations ?: 0}">0</td>
+                                        <td>
+                                            <div class="progress" style="height:6px;width:80px;">
+                                                <div class="progress-bar bg-primary" th:style="'width:' + ${v.tauxUtilisation ?: 0} + '%'"></div>
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr th:if="${#lists.isEmpty(popularVoitures)}">
-                                        <td colspan="3" class="text-center py-5 text-muted small">Aucune donnée disponible.</td>
+                                    <tr th:if="${#lists.isEmpty(voituresPopulaires)}">
+                                        <td colspan="3" class="text-center text-muted small py-3">Aucune donnée</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>
-
-                <!-- Top Clients -->
-                <div class="col-lg-5">
-                    <div class="card border-0 shadow-sm overflow-hidden h-100">
-                        <div class="card-header bg-white border-0 py-3 px-4">
-                            <h6 class="fw-bold mb-0 text-main">Meilleurs Clients</h6>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="bg-light-subtle">
-                                    <tr class="small text-uppercase text-muted" style="font-size: 0.65rem; letter-spacing: 0.05rem;">
-                                        <th class="px-4 py-3">Client</th>
-                                        <th class="text-end px-4 py-3">Total Dépensé</th>
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm p-4">
+                            <h6 class="fw-bold mb-3">Meilleurs Clients</h6>
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th class="text-end">Total Dépensé</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="entry : ${topClients}">
-                                        <td class="px-4">
-                                            <div class="fw-bold text-main" th:text="${entry[0].nom} + ' ' + ${entry[0].prenom}">Jean Dupont</div>
-                                            <div class="text-muted small" th:text="${entry[0].email}">jean@mail.com</div>
+                                    <tr th:each="c : ${meilleurClients}">
+                                        <td>
+                                            <div class="fw-semibold small" th:text="${c.nom}">-</div>
+                                            <div class="x-small text-muted" th:text="${c.email}">-</div>
                                         </td>
-                                        <td class="px-4 text-end">
-                                            <span class="fw-bold text-success amount-convertible" 
-                                                  th:data-mga="${entry[1]}"
-                                                  th:text="${#numbers.formatDecimal(entry[1], 0, 'COMMA', 0, 'POINT')} + ' Ar'">1.2M Ar</span>
-                                        </td>
+                                        <td class="text-end fw-bold text-primary amount-convertible"
+                                            th:data-mga="${c.totalDepense}"
+                                            th:text="${#numbers.formatDecimal(c.totalDepense ?: 0, 0,'COMMA',0,'POINT')} + ' Ar'">0 Ar</td>
                                     </tr>
-                                    <tr th:if="${#lists.isEmpty(topClients)}">
-                                        <td colspan="2" class="text-center py-5 text-muted small">Aucun client enregistré.</td>
+                                    <tr th:if="${#lists.isEmpty(meilleurClients)}">
+                                        <td colspan="2" class="text-center text-muted small py-3">Aucune donnée</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- ===== RECENT LOCATIONS TABLE ===== -->
-            <div class="table-container mt-4 shadow-sm border-0">
-                <div class="card-header border-0 d-flex justify-content-between align-items-center bg-white py-3 px-4">
-                    <h6 class="fw-bold mb-0 text-main">Dernières Locations</h6>
-                    <a href="/locations" class="text-decoration-none small fw-bold text-primary">Voir tout <i class="bi bi-arrow-right ms-1"></i></a>
+                <!-- Last Locations -->
+                <div class="card border-0 shadow-sm p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold mb-0">Dernières Locations</h6>
+                        <a href="/locations" class="btn btn-outline-primary btn-sm">Voir tout →</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Véhicule</th>
+                                    <th>Période</th>
+                                    <th class="text-end">Total</th>
+                                    <th class="text-center">Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="loc : ${dernieresLocations}">
+                                    <td>
+                                        <div class="fw-semibold small" th:text="${loc.client?.nom}">-</div>
+                                        <div class="x-small text-muted" th:text="${loc.client?.email}">-</div>
+                                    </td>
+                                    <td class="small" th:text="${!#lists.isEmpty(loc.voitures) ? loc.voitures[0].marque + ' ' + loc.voitures[0].modele : '-'}">-</td>
+                                    <td class="small x-small text-muted"
+                                        th:text="${#temporals.format(loc.dateDebut,'dd/MM/yyyy')} + ' → ' + ${#temporals.format(loc.dateFin,'dd/MM/yyyy')}">-</td>
+                                    <td class="text-end fw-bold amount-convertible"
+                                        th:data-mga="${loc.montantTotal}"
+                                        th:text="${#numbers.formatDecimal(loc.montantTotal ?: 0, 0,'COMMA',0,'POINT')} + ' Ar'">0 Ar</td>
+                                    <td class="text-center">
+                                        <span th:classappend="${loc.statut?.name() == 'EN_COURS' ? 'badge-soft-success' : loc.statut?.name() == 'TERMINEE' ? 'badge-soft-info' : loc.statut?.name() == 'ANNULEE' ? 'badge-soft-danger' : 'badge-soft-warning'}"
+                                              th:text="${loc.statut?.name()?.replace('_',' ')}">-</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(dernieresLocations)}">
+                                    <td colspan="5" class="text-center text-muted small py-4">Aucune location récente.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Véhicules</th>
-                                <th>Période</th>
-                                <th>Total</th>
-                                <th>Statut</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="loc : ${dernieresLocations}">
-                                <td>
-                                    <div class="fw-bold text-main" th:text="${loc.client.nom} + ' ' + ${loc.client.prenom}">Jean R.</div>
-                                    <div class="text-muted" style="font-size:0.75rem;" th:text="${loc.client.telephone}">034...</div>
-                                </td>
-                                <td>
-                                    <span class="small fw-medium" th:each="v, s : ${loc.voitures}">[[${v.marque}]] [[${v.modele}]][[${!s.last ? ', ' : ''}]]</span>
-                                </td>
-                                <td class="small text-muted" th:text="${loc.dateDebut} + ' → ' + ${loc.dateFin}">01/01/24</td>
-                                <td class="fw-bold text-main amount-convertible" 
-                                    th:data-mga="${loc.montantTotal}"
-                                    th:text="${#numbers.formatDecimal(loc.montantTotal, 0, 'COMMA', 0, 'POINT')} + ' Ar'">150k Ar</td>
-                                <td>
-                                    <span class="badge"
-                                          th:classappend="${loc.statut.name() == 'EN_COURS' ? 'badge-soft-primary' : (loc.statut.name() == 'TERMINEE' ? 'badge-soft-success' : 'badge-soft-danger')}"
-                                          th:text="${loc.statut}">En cours</span>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(dernieresLocations)}">
-                                <td colspan="5" class="text-center py-5 text-muted small">Aucune location récente.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+
             </div>
-            </div> <!-- Close page-container -->
-        </div>
+            <!-- ====== END ADMIN DASHBOARD ====== -->
+
+        </main>
     </div>
 
-    <style>
-        .quick-action {
-            cursor: pointer;
-            transition: var(--transition);
-            border: 1px solid var(--border) !important;
-        }
-        .quick-action:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary) !important;
-            box-shadow: var(--shadow-md) !important;
-        }
-        .bg-primary-soft { background: var(--primary-soft); }
-        .bg-success-soft { background: rgba(16, 185, 129, 0.1); }
-        .bg-warning-soft { background: rgba(245, 158, 11, 0.1); }
-        .bg-info-soft { background: rgba(59, 130, 246, 0.1); }
-        .bg-danger-soft { background: rgba(239, 68, 68, 0.1); }
-        .icon-box {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        [data-bs-theme="dark"] .bg-white { background-color: var(--bg-surface) !important; }
-    </style>
+    <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Dashboard Charts (after footer so Chart.js is loaded) -->
     <script th:inline="javascript">
-        const revenusParMois = /*[[${revenusParMois}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
-        const last6 = revenusParMois.slice(-6);
+        window.addEventListener('load', function() {
 
-        // Use last 6 months labels dynamically
-        const now = new Date();
-        const monthNames = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
-        const last6Labels = [];
-        for (let i = 5; i >= 0; i--) {
-            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            last6Labels.push(monthNames[d.getMonth()]);
+        const revenusParMois = /*[[${revenusParMois}]]*/ [0,0,0,0,0,0];
+        const moisLabels     = /*[[${moisLabels}]]*/ ['Nov','Déc','Jan','Fév','Mar','Avr'];
+
+        const revenusCtx = document.getElementById('revenusChart');
+        if (revenusCtx) {
+            const maxRevenu = Math.max(...revenusParMois, 1000);
+            new Chart(revenusCtx, {
+                type: 'line',
+                data: {
+                    labels: moisLabels,
+                    datasets: [{
+                        label: 'Revenus (Ar)',
+                        data: revenusParMois,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79,70,229,0.08)',
+                        borderWidth: 2.5,
+                        pointBackgroundColor: '#4f46e5',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    return ' ' + new Intl.NumberFormat('fr-FR').format(Math.round(ctx.parsed.y)) + ' Ar';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: maxRevenu * 1.2,
+                            grid: { color: 'rgba(0,0,0,0.04)' },
+                            ticks: {
+                                color: '#64748b',
+                                font: { family: 'Inter', size: 11 },
+                                callback: function(v) {
+                                    if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
+                                    if (v >= 1000) return (v/1000).toFixed(0) + 'k';
+                                    return v;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color:'#64748b', font: { family: 'Inter', size: 11 } }
+                        }
+                    }
+                }
+            });
         }
 
-        // Revenue line chart
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(revenueCtx, {
-            type: 'line',
-            data: {
-                labels: last6Labels,
-                datasets: [{
-                    label: 'Revenus',
-                    data: last6,
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.05)',
-                    fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#2563eb',
-                    pointBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color:'rgba(0,0,0,0.05)' }, ticks: { color:'#64748b', font: { family: 'Inter' } } },
-                    x: { grid: { display: false }, ticks: { color:'#64748b', font: { family: 'Inter' } } }
-                }
-            }
-        });
-
-        // Fleet donut chart
         const dispo = /*[[${voituresDisponibles}]]*/ 0;
-        const louee = /*[[${voituresLouees}]]*/ 0;
+        const louees = /*[[${voituresLouees}]]*/ 0;
         const total = /*[[${totalVoitures}]]*/ 0;
-        const maintenance = Math.max(0, total - dispo - louee);
-        const fleetCtx = document.getElementById('fleetChart').getContext('2d');
-        new Chart(fleetCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Disponible', 'Louée', 'Maintenance'],
-                datasets: [{
-                    data: [dispo || 1, louee, maintenance],
-                    backgroundColor: ['#10b981', '#2563eb', '#ef4444'],
-                    hoverOffset: 4,
-                    borderWidth: 0,
-                    cutout: '80%'
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
+        const maintenance = total - dispo - louees;
 
-        // Client Type revenue chart
-        const revClient = /*[[${revenusParTypeClient}]]*/ {};
-        const clientLabels = Object.keys(revClient);
-        const clientData = Object.values(revClient);
-        
-        const clientTypeCtx = document.getElementById('clientTypeChart').getContext('2d');
-        new Chart(clientTypeCtx, {
-            type: 'doughnut',
-            data: {
-                labels: clientLabels,
-                datasets: [{
-                    data: clientData.length > 0 ? clientData : [1],
-                    backgroundColor: ['#6366f1', '#f59e0b', '#ec4899'],
-                    borderWidth: 0,
-                    cutout: '80%'
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } }
-            }
-        });
-
-        // Activity bar chart
-        const locationsParMois = /*[[${locationsParMois}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
-        const locCtx = document.getElementById('locationsCountChart').getContext('2d');
-        new Chart(locCtx, {
-            type: 'bar',
-            data: {
-                labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-                datasets: [{
-                    label: 'Nombre de Locations',
-                    data: locationsParMois,
-                    backgroundColor: '#2563eb',
-                    hoverBackgroundColor: '#1d4ed8',
-                    borderRadius: 8,
-                    maxBarThickness: 30
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, grid: { color:'rgba(0,0,0,0.05)' }, ticks: { color:'#64748b', font: { family: 'Inter' }, stepSize: 1 } },
-                    x: { grid: { display: false }, ticks: { color:'#64748b', font: { family: 'Inter' } } }
+        const fleetCtx = document.getElementById('fleetChart');
+        if (fleetCtx) {
+            const maintenanceCount = Math.max(0, total - dispo - louees);
+            const hasFleetData = (dispo + louees + maintenanceCount) > 0;
+            new Chart(fleetCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Disponible', 'Louée', 'Maintenance'],
+                    datasets: [{
+                        data: hasFleetData
+                            ? [dispo, louees, maintenanceCount]
+                            : [1, 0, 0],
+                        backgroundColor: ['#22c55e', '#3b82f6', '#ef4444'],
+                        borderWidth: 0,
+                        cutout: '78%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
                 }
-            }
-        });
+            });
+        }
+
+        const locationsParMois = /*[[${locationsParMois}]]*/ [0,0,0,0,0,0,0,0,0,0,0,0];
+        const locCtx = document.getElementById('locationsCountChart');
+        if (locCtx) {
+            const maxLoc = Math.max(...locationsParMois, 1);
+            new Chart(locCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
+                    datasets: [{
+                        label: 'Locations',
+                        data: locationsParMois,
+                        backgroundColor: 'rgba(79,70,229,0.85)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        maxBarThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: maxLoc + 1,
+                            grid: { color: 'rgba(0,0,0,0.04)' },
+                            ticks: { color:'#64748b', stepSize: 1, font: { family: 'Inter', size: 11 } }
+                        },
+                        x: { grid: { display: false }, ticks: { color:'#64748b', font: { family: 'Inter', size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        const revClient = /*[[${revenusParTypeClient}]]*/ {};
+        const clientCtx = document.getElementById('clientTypeChart');
+        if (clientCtx) {
+            const vals = Object.values(revClient);
+            const hasClientData = vals.length > 0 && vals.some(v => v > 0);
+            new Chart(clientCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: hasClientData ? Object.keys(revClient) : ['Aucune donnée'],
+                    datasets: [{
+                        data: hasClientData ? vals : [1],
+                        backgroundColor: hasClientData ? ['#f59e0b','#ec4899','#6366f1'] : ['#e2e8f0'],
+                        borderWidth: 0,
+                        cutout: '78%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+
+        }); // end window.load
     </script>
 
-    <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

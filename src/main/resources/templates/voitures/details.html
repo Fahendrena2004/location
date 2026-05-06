@@ -4,11 +4,11 @@
     <title>Détails du Véhicule - Location Voitures</title>
 </head>
 <body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
                 <div class="d-flex align-items-center mb-5">
                     <a href="/voitures" class="btn btn-light rounded-3 p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                         <i class="bi bi-arrow-left fs-5"></i>
@@ -80,35 +80,30 @@
                             <div class="spec-list">
                                 <div class="spec-item">
                                     <div class="icon-box"><i class="bi bi-calendar-event"></i></div>
-                                    <div class="flex-grow-1">
                                         <p class="label">Année</p>
                                         <p class="value" th:text="${voiture.annee}">2024</p>
                                     </div>
                                 </div>
                                 <div class="spec-item">
                                     <div class="icon-box"><i class="bi bi-people"></i></div>
-                                    <div class="flex-grow-1">
                                         <p class="label">Capacité</p>
                                         <p class="value" th:text="${voiture.places} + ' places'">5 places</p>
                                     </div>
                                 </div>
                                 <div class="spec-item">
                                     <div class="icon-box"><i class="bi bi-gear"></i></div>
-                                    <div class="flex-grow-1">
                                         <p class="label">Transmission</p>
                                         <p class="value" th:text="${voiture.transmission}">Automatique</p>
                                     </div>
                                 </div>
                                 <div class="spec-item">
                                     <div class="icon-box"><i class="bi bi-fuel-pump"></i></div>
-                                    <div class="flex-grow-1">
                                         <p class="label">Carburant</p>
                                         <p class="value" th:text="${voiture.carburant}">Hybride</p>
                                     </div>
                                 </div>
                                 <div class="spec-item">
                                     <div class="icon-box"><i class="bi bi-palette"></i></div>
-                                    <div class="flex-grow-1">
                                         <p class="label">Couleur</p>
                                         <p class="value" th:text="${voiture.couleur}">Gris Anthracite</p>
                                     </div>
@@ -129,7 +124,6 @@
                                     <i class="bi bi-calendar-check me-2"></i> Réserver maintenant
                                 </a>
                                 <div class="d-flex gap-2">
-                                    <a sec:authorize="hasRole('ADMIN')" th:href="@{'/voitures/modifier/' + ${voiture.id}}" class="btn btn-light border flex-grow-1 py-2 rounded-3 fw-bold">
                                         <i class="bi bi-pencil me-1"></i> Modifier
                                     </a>
                                     <button class="btn btn-light border py-2 px-3 rounded-3">
@@ -175,3 +169,5 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.security.Principal;
@@ -181,7 +182,7 @@ public class FactureController {
         Facture pdfFacture = facture;
         if ("EUR".equalsIgnoreCase(devise)) {
             pdfFacture = new Facture();
-            org.springframework.beans.BeanUtils.copyProperties(facture, pdfFacture);
+            org.springframework.beans.BeanUtils.copyProperties(Objects.requireNonNull(facture), Objects.requireNonNull(pdfFacture));
             double rate = settingService.getExchangeRate();
             if (rate > 0) {
                 pdfFacture.setDevise(org.example.location_voiture.model.enums.Currency.EUR);
@@ -204,8 +205,8 @@ public class FactureController {
         return ResponseEntity
                 .ok()
                 .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .contentType(Objects.requireNonNull(MediaType.APPLICATION_PDF))
+                .body(new InputStreamResource(Objects.requireNonNull(bis)));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

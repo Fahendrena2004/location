@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 @Service
@@ -32,12 +33,12 @@ public class FactureService {
     }
 
     public Facture getFactureById(Long id) {
-        return factureRepository.findById(id)
+        return factureRepository.findById(Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Facture non trouvée avec l'id: " + id));
     }
 
     public Facture saveFacture(Facture facture) {
-        return factureRepository.save(facture);
+        return factureRepository.save(Objects.requireNonNull(facture));
     }
 
     public Facture updateFacture(Long id, Facture factureDetails) {
@@ -48,12 +49,12 @@ public class FactureService {
         facture.setTva(factureDetails.getTva());
         facture.setMontantTTC(factureDetails.getMontantTTC());
         facture.setStatut(factureDetails.getStatut());
-        return factureRepository.save(facture);
+        return factureRepository.save(Objects.requireNonNull(facture));
     }
 
     public void deleteFacture(Long id) {
         Facture facture = getFactureById(id);
-        factureRepository.delete(facture);
+        factureRepository.delete(Objects.requireNonNull(facture));
     }
 
 
@@ -112,7 +113,7 @@ public class FactureService {
         facture.setMontantTTC(montantHT); // TTC = HT
         facture.setStatut(StatutFacture.EN_ATTENTE);
 
-        Facture saved = factureRepository.save(facture);
+        Facture saved = factureRepository.save(Objects.requireNonNull(facture));
         
         if (saved.getLocation().getClient() != null && saved.getLocation().getClient().getUtilisateur() != null) {
             notificationService.createNotification(

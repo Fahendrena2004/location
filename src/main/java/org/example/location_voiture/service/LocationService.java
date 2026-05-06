@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class LocationService {
@@ -28,6 +29,9 @@ public class LocationService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private EmailService emailService;
+
     public List<Location> getAllLocations() {
         return locationRepository.findAll();
     }
@@ -37,7 +41,7 @@ public class LocationService {
     }
 
     public Location getLocationById(Long id) {
-        return locationRepository.findById(id)
+        return locationRepository.findById(Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Location non trouvée avec l'id: " + id));
     }
 
@@ -65,7 +69,7 @@ public class LocationService {
         if (location.getChauffeurs() != null) {
             Location oldLocation = null;
             if (location.getId() != null) {
-                oldLocation = locationRepository.findById(location.getId()).orElse(null);
+                oldLocation = locationRepository.findById(Objects.requireNonNull(location.getId())).orElse(null);
             }
             for (org.example.location_voiture.model.Chauffeur c : location.getChauffeurs()) {
                 boolean alreadyAssigned = false;
@@ -88,7 +92,7 @@ public class LocationService {
         }
 
         boolean isNew = location.getId() == null;
-        Location saved = locationRepository.save(location);
+        Location saved = locationRepository.save(Objects.requireNonNull(location));
 
         if (isNew) {
             String clientName = (saved.getClient() != null) ? saved.getClient().getNom() + " " + saved.getClient().getPrenom() : "Inconnu";
@@ -101,6 +105,19 @@ public class LocationService {
                     "/locations/" + saved.getId(),
                     admin
                 );
+            }
+
+            // Envoyer un email de confirmation de réception au client
+            if (saved.getClient() != null && saved.getClient().getEmail() != null) {
+                String subject = "Confirmation de demande de réservation #" + saved.getId();
+                String body = "Bonjour " + saved.getClient().getPrenom() + ",\n\n" +
+                        "Nous avons bien reçu votre demande de réservation #" + saved.getId() + ".\n" +
+                        "Un administrateur va l'examiner et vous recevrez une confirmation sous peu.\n\n" +
+                        "Détails :\n" +
+                        "- Date de début : " + saved.getDateDebut() + "\n" +
+                        "- Date de fin : " + saved.getDateFin() + "\n\n" +
+                        "Cordialement,\nL'équipe Location Voiture";
+                emailService.sendTextEmail(saved.getClient().getEmail(), subject, body);
             }
         }
 
@@ -135,7 +152,7 @@ public class LocationService {
         }
 
         location.setStatut(StatutLocation.EN_COURS);
-        Location saved = locationRepository.save(location);
+        Location saved = locationRepository.save(Objects.requireNonNull(location));
 
         // Notifier le client
         if (saved.getClient() != null && saved.getClient().getUtilisateur() != null) {
@@ -145,6 +162,16 @@ public class LocationService {
                 "/locations/" + saved.getId(),
                 saved.getClient().getUtilisateur()
             );
+        }
+
+        // Notifier le client par email
+        if (saved.getClient() != null && saved.getClient().getEmail() != null) {
+            String subject = "Votre réservation #" + saved.getId() + " est confirmée !";
+            String body = "Bonjour " + saved.getClient().getPrenom() + ",\n\n" +
+                    "Bonne nouvelle ! Votre demande de réservation #" + saved.getId() + " a été acceptée par l'administrateur.\n" +
+                    "Vous pouvez maintenant passer récupérer le véhicule aux dates prévues.\n\n" +
+                    "Cordialement,\nL'équipe Location Voiture";
+            emailService.sendTextEmail(saved.getClient().getEmail(), subject, body);
         }
 
         return saved;
@@ -163,7 +190,7 @@ public class LocationService {
             throw new RuntimeException("Seules les locations EN_ATTENTE peuvent être rejetées (Statut actuel: " + location.getStatut() + ")");
         }
         location.setStatut(StatutLocation.ANNULEE);
-        Location saved = locationRepository.save(location);
+        Location saved = locationRepository.save(Objects.requireNonNull(location));
 
         // Notifier le client
         if (saved.getClient() != null && saved.getClient().getUtilisateur() != null) {
@@ -173,6 +200,16 @@ public class LocationService {
                 "/locations/" + saved.getId(),
                 saved.getClient().getUtilisateur()
             );
+        }
+
+        // Notifier le client par email
+        if (saved.getClient() != null && saved.getClient().getEmail() != null) {
+            String subject = "Mise à jour concernant votre réservation #" + saved.getId();
+            String body = "Bonjour " + saved.getClient().getPrenom() + ",\n\n" +
+                    "Nous vous informons que votre demande de réservation #" + saved.getId() + " a été refusée.\n" +
+                    "N'hésitez pas à nous contacter ou à essayer une autre réservation avec d'autres véhicules ou dates.\n\n" +
+                    "Cordialement,\nL'équipe Location Voiture";
+            emailService.sendTextEmail(saved.getClient().getEmail(), subject, body);
         }
 
         return saved;
@@ -220,7 +257,7 @@ public class LocationService {
             }
         }
 
-        return locationRepository.save(location);
+        return locationRepository.save(Objects.requireNonNull(location));
     }
 
     public Location updateLocation(Long id, Location locationDetails) {
@@ -230,7 +267,7 @@ public class LocationService {
         location.setVoitures(locationDetails.getVoitures());
         location.setChauffeurs(locationDetails.getChauffeurs());
         location.setMontantTotal(calculerMontantTotal(location));
-        return locationRepository.save(location);
+        return locationRepository.save(Objects.requireNonNull(location));
     }
 
     @Transactional

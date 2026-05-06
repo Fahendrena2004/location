@@ -4,11 +4,11 @@
     <title>Modifier l'Entretien - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
             <!-- Header Section -->
             <div class="d-flex align-items-center mb-5">
                 <a href="/entretien" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
@@ -89,7 +89,7 @@
                     <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
                         <a href="/entretien" class="btn btn-light px-4">Annuler</a>
                         <button type="submit" class="btn btn-primary px-5 shadow-sm">
-                            <i class="bi bi-save me-2"></i> Mettre à jour l'intervention
+                            <i class="bi bi-save me-2"></i> Mettre Ã  jour l'intervention
                         </button>
                     </div>
                 </form>
@@ -108,3 +108,5 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

@@ -4,18 +4,18 @@
     <title>Modifier Facture - Location Voitures</title>
 </head>
 <body>
-<div class="d-flex">
     <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <div class="flex-grow-1 p-4" style="margin-left: 260px; min-height: 100vh;">
-        <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        <main class="page-container">
             <div class="d-flex align-items-center mb-5">
                 <a href="/factures" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                     <i class="bi bi-arrow-left fs-5"></i>
                 </a>
                 <div>
                     <h2 class="fw-bold mb-1">Modifier la Facture</h2>
-                    <p class="text-muted small mb-0">Régularisez les montants ou mettez à jour l'état de facturation</p>
+                    <p class="text-muted small mb-0">Régularisez les montants ou mettez Ã  jour l'état de facturation</p>
                 </div>
             </div>
 
@@ -62,7 +62,7 @@
                     <div class="d-flex justify-content-end align-items-center gap-3 mt-5">
                         <a href="/factures" class="btn btn-light px-4">Annuler</a>
                         <button type="submit" class="btn btn-warning px-5 shadow-sm text-white fw-bold">
-                            <i class="bi bi-arrow-repeat me-2"></i> Mettre à jour la facture
+                            <i class="bi bi-arrow-repeat me-2"></i> Mettre Ã  jour la facture
                         </button>
                     </div>
                 </form>
@@ -84,3 +84,5 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
+

@@ -29,22 +29,33 @@ public class PasswordResetController {
 
     @PostMapping("/forgot-password")
     public String processForgotPassword(@RequestParam("email") String email, RedirectAttributes redirectAttributes) {
+        if (!userService.existsByEmail(email)) {
+            redirectAttributes.addFlashAttribute("error", "Désolé, aucune adresse correspondante n'a été trouvée.");
+            return "redirect:/forgot-password";
+        }
+
         try {
             User user = userService.getUserByEmail(email);
-            if (user != null) {
-                String token = UUID.randomUUID().toString();
-                userService.createPasswordResetTokenForUser(user, token);
-                
-                String resetUrl = "http://localhost:8080/reset-password?token=" + token;
-                emailService.sendTextEmail(user.getEmail(), "Réinitialisation de mot de passe", 
-                        "Pour réinitialiser votre mot de passe, cliquez sur ce lien : \n" + resetUrl);
-            }
+            String token = UUID.randomUUID().toString();
+            userService.createPasswordResetTokenForUser(user, token);
+            
+            String resetUrl = "http://localhost:8080/reset-password?token=" + token;
+            String subject = "Réinitialisation de votre mot de passe - Location Voiture";
+            String htmlContent = emailService.buildHtmlMessage("Réinitialisation de mot de passe", 
+                          "Vous avez demandé la réinitialisation de votre mot de passe. Veuillez cliquer sur le bouton ci-dessous pour choisir un nouveau mot de passe :\n\n" +
+                          "<a href=\"" + resetUrl + "\" style=\"display: inline-block; padding: 12px 25px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;\">Réinitialiser mon mot de passe</a>\n\n" +
+                          "Ce lien est valable pendant 30 minutes.\n\n" +
+                          "Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail.");
+            
+            emailService.sendHtmlEmail(user.getEmail(), subject, htmlContent);
+            
+            redirectAttributes.addFlashAttribute("message", "Un e-mail avec un lien de réinitialisation vous a été envoyé.");
+            return "redirect:/forgot-password";
         } catch (Exception e) {
-            // Ignorer si l'utilisateur n'est pas trouvé pour des raisons de sécurité
+            e.printStackTrace(); // Mba ho hitantsika ao amin'ny terminal ny antony marina
+            redirectAttributes.addFlashAttribute("error", "Une erreur est survenue lors de l'envoi de l'e-mail : " + e.getMessage());
+            return "redirect:/forgot-password";
         }
-        
-        redirectAttributes.addFlashAttribute("message", "Si un compte est associé à cette adresse, un e-mail avec un lien de réinitialisation vous a été envoyé.");
-        return "redirect:/login";
     }
 
     @GetMapping("/reset-password")
@@ -71,6 +82,8 @@ public class PasswordResetController {
         User user = userService.getUserByPasswordResetToken(token);
         if (user != null) {
             userService.changeUserPassword(user, password);
+            // Supprimer le token après utilisation pour plus de sécurité
+            userService.deletePasswordResetToken(token);
             redirectAttributes.addFlashAttribute("message", "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.");
         }
         

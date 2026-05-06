@@ -21,6 +21,9 @@ public class VoitureController {
     @Autowired
     private org.example.location_voiture.service.FileStorageService fileStorageService;
 
+    @Autowired
+    private org.example.location_voiture.service.ReviewService reviewService;
+
     @GetMapping
     public String listVoitures(
             @RequestParam(required = false) String search,
@@ -140,7 +143,10 @@ public class VoitureController {
 
     @GetMapping("/{id}")
     public String detailsVoiture(@PathVariable Long id, Model model) {
-        model.addAttribute("voiture", voitureService.getVoitureById(id));
+        Voiture voiture = voitureService.getVoitureById(id);
+        model.addAttribute("voiture", voiture);
+        model.addAttribute("reviews", reviewService.getReviewsByVoiture(id));
+        model.addAttribute("averageRating", reviewService.getAverageRating(id));
         return "voitures/details";
     }
 }

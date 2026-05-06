@@ -4,10 +4,11 @@
     <title>Comptes de Paiement - Admin</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 p-4" style="margin-left: 280px; background-color: #fbf9f4; min-height: 100vh;">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold mb-0">Comptes de Paiement</h2>
                 <a href="/admin/comptes/ajouter" class="btn btn-primary px-4 py-2" style="border-radius: 12px;">
@@ -35,7 +36,7 @@
                                 <span class="fw-medium" th:text="${compte.nomTitulaire}">RAKOTO Jean</span>
                             </div>
                             <div class="mb-3">
-                                <label class="small text-muted d-block">N° de Compte</label>
+                                <label class="small text-muted d-block">NÂ° de Compte</label>
                                 <code class="text-dark bg-light px-2 py-1 rounded" th:text="${compte.numeroCompte}">00001 0234 5678 90</code>
                             </div>
                             <div th:if="${compte.iban}" class="mb-4">
@@ -88,7 +89,10 @@
         .badge { font-weight: 500; font-size: 0.75rem; }
     </style>
 
+        </div>
+
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+
 

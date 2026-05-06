@@ -4,13 +4,13 @@
     <title>Détails Location - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
+    <div class="main-content-layout" id="mainContent">
+
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
             
-            <div class="page-container">
+            <main class="page-container">
                 <div class="d-flex align-items-center mb-5">
                     <a href="/locations" class="btn btn-light rounded-circle p-2 me-3 shadow-sm d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                         <i class="bi bi-arrow-left fs-5"></i>
@@ -73,7 +73,6 @@
                                     <div class="d-flex flex-column gap-3">
                                         <div th:each="v : ${location.voitures}" class="d-flex align-items-center p-3 rounded-3 border bg-white shadow-sm-hover transition">
                                             <div class="bg-light rounded p-2 me-3"><i class="bi bi-car-front text-primary"></i></div>
-                                            <div class="flex-grow-1">
                                                 <p class="fw-bold text-main mb-0 small" th:text="${v.marque} + ' ' + ${v.modele}">Toyota</p>
                                                 <p class="text-muted mb-0 smaller" th:text="${v.plaqueImmatriculation}">AB-123</p>
                                             </div>
@@ -245,8 +244,8 @@
                 </form>
             </div>
         </div>
+    </main>
     </div>
-    
     <div th:replace="~{fragments/footer :: footer}"></div>
     
     <script th:inline="javascript">
@@ -340,3 +339,4 @@
     </script>
 </body>
 </html>
+

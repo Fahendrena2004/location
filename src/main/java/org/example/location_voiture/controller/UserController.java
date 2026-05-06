@@ -23,6 +23,8 @@ public class UserController {
     @GetMapping
     public String listUsers(Model model) {
         model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("user", new User());
+        model.addAttribute("roles", org.example.location_voiture.model.enums.Role.values());
         model.addAttribute("page", "users");
         return "users/liste";
     }

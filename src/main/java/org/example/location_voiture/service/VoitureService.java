@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class VoitureService {
@@ -21,13 +22,13 @@ public class VoitureService {
     }
 
     public Voiture getVoitureById(Long id) {
-        return voitureRepository.findById(id)
+        return voitureRepository.findById(Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Voiture non trouvée avec l'id: " + id));
     }
 
     public Voiture saveVoiture(Voiture voiture) {
         voiture.setStatut(StatutVoiture.DISPONIBLE);
-        return voitureRepository.save(voiture);
+        return voitureRepository.save(Objects.requireNonNull(voiture));
     }
 
     public Voiture updateVoiture(Long id, Voiture voitureDetails) {
@@ -39,12 +40,12 @@ public class VoitureService {
         voiture.setPrixParJour(voitureDetails.getPrixParJour());
         voiture.setDescription(voitureDetails.getDescription());
         voiture.setImages(voitureDetails.getImages());
-        return voitureRepository.save(voiture);
+        return voitureRepository.save(Objects.requireNonNull(voiture));
     }
 
     public void deleteVoiture(Long id) {
         Voiture voiture = getVoitureById(id);
-        voitureRepository.delete(voiture);
+        voitureRepository.delete(Objects.requireNonNull(voiture));
     }
 
     public List<Voiture> getVoituresDisponibles() {
@@ -66,7 +67,7 @@ public class VoitureService {
     public Voiture updateStatut(Long id, StatutVoiture statut) {
         Voiture voiture = getVoitureById(id);
         voiture.setStatut(statut);
-        return voitureRepository.save(voiture);
+        return voitureRepository.save(Objects.requireNonNull(voiture));
     }
 
     public Page<Voiture> searchVoitures(String search, String categorie, String transmission, String carburant, Double prixMax, Pageable pageable) {
@@ -97,6 +98,6 @@ public class VoitureService {
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("prixParJour"), prixMax));
         }
 
-        return voitureRepository.findAll(spec, pageable);
+        return voitureRepository.findAll(spec, Objects.requireNonNull(pageable));
     }
 }

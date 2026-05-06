@@ -4,13 +4,13 @@
     <title>Voitures - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
+    <div class="main-content-layout" id="mainContent">
+
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
             
-            <div class="page-container">
+            <main class="page-container">
                 <!-- Header Section -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -67,7 +67,6 @@
                         </div>
                         <div class="col-md-3 text-end">
                             <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary flex-grow-1 shadow-sm rounded-pill">
                                     <i class="bi bi-filter me-2"></i>Filtrer
                                 </button>
                                 <a th:href="@{/voitures}" class="btn btn-light border rounded-pill px-3 shadow-sm" title="Réinitialiser">
@@ -114,7 +113,6 @@
 
                              <div class="d-flex gap-2">
                                 <a th:href="@{${#authorization.expression('hasRole(''ADMIN'')')} ? '/locations/ajouter?voitureId=' + ${voiture.id} : '/locations/reserver?voitureId=' + ${voiture.id}}" 
-                                   class="btn btn-primary flex-grow-1 shadow-sm rounded-pill fw-bold">
                                     Réserver
                                 </a>
                                 <div class="dropdown">
@@ -296,6 +294,9 @@
         });
     </script>
 
+        </main>
+    </div>
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+

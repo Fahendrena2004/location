@@ -4,13 +4,12 @@
     <title>Clients - Location Voitures</title>
 </head>
 <body>
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
-            <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
-            
-            <div class="page-container">
+    <div class="main-content-layout" id="mainContent">
+        <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
+        
+        <main class="page-container">
                 <!-- Header Section -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -94,7 +93,7 @@
                 </div>
             </div>
             </div> <!-- Close page-container -->
-        </div>
+        </main>
     </div>
 
     <style>
@@ -121,3 +120,4 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
+

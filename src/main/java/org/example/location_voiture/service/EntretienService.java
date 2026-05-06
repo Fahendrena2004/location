@@ -6,6 +6,7 @@ import org.example.location_voiture.repository.EntretienRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class EntretienService {
@@ -21,7 +22,7 @@ public class EntretienService {
     }
 
     public Entretien getEntretienById(Long id) {
-        return entretienRepository.findById(id)
+        return entretienRepository.findById(Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Entretien non trouvé avec l'id: " + id));
     }
 
@@ -30,7 +31,7 @@ public class EntretienService {
         if (!entretien.getTermine()) {
             voitureService.updateStatut(entretien.getVoiture().getId(), org.example.location_voiture.model.enums.StatutVoiture.MAINTENANCE);
         }
-        return entretienRepository.save(entretien);
+        return entretienRepository.save(Objects.requireNonNull(entretien));
     }
 
     @org.springframework.transaction.annotation.Transactional
@@ -53,7 +54,7 @@ public class EntretienService {
             voitureService.updateStatut(entretien.getVoiture().getId(), org.example.location_voiture.model.enums.StatutVoiture.MAINTENANCE);
         }
         
-        return entretienRepository.save(entretien);
+        return entretienRepository.save(Objects.requireNonNull(entretien));
     }
 
     private void updateVoitureMileage(Entretien e) {
@@ -105,6 +106,6 @@ public class EntretienService {
             voitureService.updateStatut(entretien.getVoiture().getId(), org.example.location_voiture.model.enums.StatutVoiture.MAINTENANCE);
         }
         
-        return entretienRepository.save(entretien);
+        return entretienRepository.save(Objects.requireNonNull(entretien));
     }
 }

@@ -4,12 +4,12 @@
     <title>Maintenance & Entretiens - AutoRent</title>
 </head>
 <body class="bg-body">
-    <div class="d-flex">
-        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <div class="flex-grow-1 main-content-layout">
+    <div class="main-content-layout" id="mainContent">
+
             <div th:replace="~{fragments/top_navbar :: top-navbar}"></div>
-            <div class="page-container">
+            <main class="page-container">
                 <!-- Header Section -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -58,7 +58,6 @@
                         </div>
                         <div class="col-md-3">
                             <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary flex-grow-1 shadow-sm rounded-pill">
                                     <i class="bi bi-filter me-2"></i>Filtrer
                                 </button>
                                 <a th:if="${selectedVoitureId != null}" th:href="@{/entretien}" class="btn btn-light border rounded-pill px-3 shadow-sm">
@@ -159,8 +158,11 @@
         .badge-soft-warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
     </style>
 
+        </main>
+    </div>
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>
 
 </html>
+

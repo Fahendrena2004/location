@@ -22,6 +22,9 @@ public class RegisterController {
     @Autowired
     private ClientRepository clientRepository;
 
+    @Autowired
+    private org.example.location_voiture.service.EmailService emailService;
+
     @GetMapping("/register")
     public String showRegisterForm() {
         return "register";
@@ -52,9 +55,34 @@ public class RegisterController {
             return "redirect:/register";
         }
 
-        if (userService.findByEmail(email).isPresent()) {
-            redirectAttributes.addFlashAttribute("error", "Cet email est déjà utilisé.");
-            return "redirect:/register";
+        java.util.Optional<User> existingUser = userService.findByEmail(email);
+        Client existingClient = clientRepository.findByEmail(email);
+
+        if (existingUser.isPresent() || existingClient != null) {
+            User user = existingUser.orElse(existingClient != null ? existingClient.getUtilisateur() : null);
+            
+            if (user != null && !user.isActif()) {
+                // Si le compte existe mais n'est pas encore activé, on renvoie un nouveau token
+                String newToken = java.util.UUID.randomUUID().toString();
+                user.setVerificationToken(newToken);
+                userService.saveUser(user);
+                
+                String verificationUrl = "http://localhost:8080/verify-account?token=" + newToken;
+                String subject = "Activation de votre compte - Location Voiture";
+                String htmlContent = emailService.buildHtmlMessage("Activation de Compte", 
+                              "Bonjour " + prenom + ",\n\n" +
+                              "Un compte non-actif existe déjà avec cet email. Veuillez cliquer sur le lien ci-dessous pour activer votre compte :\n\n" +
+                              "<a href=\"" + verificationUrl + "\" style=\"display: inline-block; padding: 12px 25px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;\">Activer mon compte</a>\n\n" +
+                              "Si le bouton ne fonctionne pas, copiez ce lien : " + verificationUrl);
+                
+                emailService.sendHtmlEmail(email, subject, htmlContent);
+                
+                redirectAttributes.addFlashAttribute("message", "Un compte existait déjà mais n'était pas activé. Un nouveau lien de vérification vous a été envoyé.");
+                return "redirect:/login";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Cet email est déjà utilisé par un compte actif ou les données sont inconsistantes.");
+                return "redirect:/register";
+            }
         }
 
         try {
@@ -63,7 +91,10 @@ public class RegisterController {
             newUser.setEmail(email);
             newUser.setPassword(password); // UserService s'occupera du hachage
             newUser.setRole(Role.CLIENT);
-            newUser.setActif(true);
+            newUser.setActif(false);
+            
+            String token = java.util.UUID.randomUUID().toString();
+            newUser.setVerificationToken(token);
 
             User savedUser = userService.saveUser(newUser);
 
@@ -76,12 +107,33 @@ public class RegisterController {
 
             clientRepository.save(newClient);
 
-            redirectAttributes.addFlashAttribute("message", "Compte créé avec succès ! Vous pouvez maintenant vous connecter.");
+            // Envoyer l'email de vérification
+            String verificationUrl = "http://localhost:8080/verify-account?token=" + token;
+            String subject = "Activez votre compte - Location Voiture";
+            String htmlContent = emailService.buildHtmlMessage("Bienvenue !", 
+                          "Merci de vous être inscrit. Veuillez cliquer sur le bouton ci-dessous para activer votre compte :\n\n" +
+                          "<a href=\"" + verificationUrl + "\" style=\"display: inline-block; padding: 12px 25px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;\">Activer mon compte</a>\n\n" +
+                          "Si le bouton ne fonctionne pas, copiez ce lien : " + verificationUrl);
+            
+            emailService.sendHtmlEmail(email, subject, htmlContent);
+
+            redirectAttributes.addFlashAttribute("message", "Compte créé avec succès ! Veuillez vérifier votre email pour activer votre compte.");
             return "redirect:/login";
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erreur lors de la création du compte: " + e.getMessage());
             return "redirect:/register";
         }
+    }
+
+    @GetMapping("/verify-account")
+    public String verifyAccount(@RequestParam("token") String token, RedirectAttributes redirectAttributes) {
+        boolean verified = userService.verifyAccount(token);
+        if (verified) {
+            redirectAttributes.addFlashAttribute("message", "Votre compte a été activé avec succès ! Vous pouvez maintenant vous connecter.");
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Lien de vérification invalide ou expiré.");
+        }
+        return "redirect:/login";
     }
 }

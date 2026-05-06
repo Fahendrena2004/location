@@ -42,7 +42,9 @@ public class User {
     private Role role;
 
     @Builder.Default
-    private boolean actif = true;
+    private boolean actif = false;
+
+    private String verificationToken;
 
     @OneToOne(mappedBy = "utilisateur")
     @ToString.Exclude

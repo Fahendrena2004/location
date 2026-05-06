@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.List;
@@ -433,7 +434,7 @@ public class LocationController {
         response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
 
         java.io.ByteArrayInputStream bis = contratPdfGenerator.generateContratPdf(location);
-        FileCopyUtils.copy(bis, response.getOutputStream());
+        FileCopyUtils.copy(Objects.requireNonNull(bis), Objects.requireNonNull(response.getOutputStream()));
         response.flushBuffer();
     }
 
